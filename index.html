@@ -39,11 +39,16 @@
     gap:12px;
   }
   .topbar svg{ height:26px; width:auto; display:block; }
+  .topbar .greeting{
+    color:var(--blanco);
+    font-size:13px;
+    font-weight:700;
+    line-height:1.3;
+  }
   .topbar .subtitle{
     color:var(--gris-claro);
-    font-size:12px;
+    font-size:11px;
     letter-spacing:0.4px;
-    margin-top:2px;
   }
   .wrap{
     max-width:640px;
@@ -73,7 +78,19 @@
     color:inherit;
     box-shadow:0 1px 3px rgba(0,0,0,0.08);
     border:1px solid var(--gris-claro);
-    transition:transform .1s ease, box-shadow .1s ease;
+    transition:transform .12s ease, box-shadow .12s ease;
+    opacity:0;
+    transform:translateY(10px);
+    animation:cardIn .45s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  .card:nth-of-type(1){ animation-delay:.05s; }
+  .card:nth-of-type(2){ animation-delay:.12s; }
+  .card:nth-of-type(3){ animation-delay:.19s; }
+  @keyframes cardIn{
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .card{ animation:none; opacity:1; transform:none; }
   }
   .card:active{
     transform:scale(0.98);
@@ -87,12 +104,12 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:22px;
     color:var(--blanco);
   }
-  .icon.precios{ background:var(--azul-ev); }
-  .icon.creditos{ background:var(--verde-dm); }
-  .icon.reporte{ background:var(--carbon); }
+  .icon svg{ width:22px; height:22px; }
+  .icon.precios{ background:linear-gradient(135deg,#1565D8,#0E4AA8); }
+  .icon.creditos{ background:linear-gradient(135deg,#388E3C,#256B29); }
+  .icon.reporte{ background:linear-gradient(135deg,#2A2A2A,#0A0A0A); }
   .card-body{ flex:1; min-width:0; }
   .card-body .t{
     font-size:15px;
@@ -105,11 +122,19 @@
     color:var(--gris-oscuro);
     margin:0;
   }
+  .card-body .u{
+    font-size:11px;
+    color:var(--azul-ev);
+    font-weight:600;
+    margin:4px 0 0;
+  }
   .chev{
     flex:0 0 auto;
     color:var(--gris-medio);
     font-size:18px;
+    transition:transform .12s ease;
   }
+  .card:active .chev{ transform:translateX(2px); }
   .group-label{
     font-size:11px;
     font-weight:700;
@@ -155,7 +180,7 @@
 </style>
 </head>
 <body class="gate-locked">
-<div id="bydGate" style="position:fixed;inset:0;z-index:999999;background:#0A0A0A;display:flex;align-items:center;justify-content:center;padding:24px;">
+<div id="bydGate" style="position:fixed;inset:0;z-index:999999;background:#0A0A0A;display:flex;align-items:center;justify-content:center;padding:24px;opacity:1;">
   <form id="bydGateForm" style="width:100%;max-width:300px;text-align:center;font-family:Arial,sans-serif;">
     <div style="color:#fff;font-weight:800;font-size:16px;margin-bottom:4px;">BYD Yacopini</div>
     <div style="color:#8C8C8C;font-size:12px;margin-bottom:18px;">Acceso interno &middot; Gerencia</div>
@@ -164,12 +189,16 @@
     <div id="bydGateError" style="color:#E85555;font-size:12px;margin-top:10px;display:none;">Clave incorrecta</div>
   </form>
 </div>
-<style>body.gate-locked > *:not(#bydGate){display:none !important;}</style>
+<style>
+  body.gate-locked > *:not(#bydGate){display:none !important;}
+  #bydGate{ transition:opacity .25s ease; }
+  #bydGate.fadeOut{ opacity:0; }
+</style>
 <script>
 (function(){
   var HASH = "a734aecec77bc8826bec68f0264b70228ab419e52a8fcdf05016ebee0465f257";
   var body = document.body;
-  function unlock(){ body.classList.remove('gate-locked'); var g=document.getElementById('bydGate'); if(g) g.remove(); }
+  function unlock(){ var g=document.getElementById('bydGate'); if(g){ g.classList.add('fadeOut'); setTimeout(function(){ body.classList.remove('gate-locked'); g.remove(); }, 220); } else { body.classList.remove('gate-locked'); } }
   if (sessionStorage.getItem('bydGateOk') === '1') { unlock(); }
   else {
     document.getElementById('bydGateForm').addEventListener('submit', function(e){
@@ -206,6 +235,7 @@
       </g>
     </svg>
     <div>
+      <div class="greeting" id="greeting">Hola</div>
       <div class="subtitle">Godoy Cruz · Mendoza</div>
     </div>
   </div>
@@ -220,16 +250,17 @@
     </div>
 
     <a class="card" href="./gestor_precios.html">
-      <div class="icon precios">$</div>
+      <div class="icon precios"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v20M17 5.5c0-1.93-2.24-3.5-5-3.5s-5 1.57-5 3.5S9.24 9 12 9s5 1.57 5 3.5-2.24 3.5-5 3.5-5-1.57-5-3.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="card-body">
         <p class="t">Lista de Precios</p>
         <p class="d">Editor y vistas para vendedores / gerencia</p>
+        <p class="u" id="preciosUpdated">Actualizado: 15 jul 2026</p>
       </div>
       <div class="chev">›</div>
     </a>
 
     <a class="card" href="./calculadora_creditos.html">
-      <div class="icon creditos">%</div>
+      <div class="icon creditos"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="3" stroke="#fff" stroke-width="2"/><circle cx="17" cy="17" r="3" stroke="#fff" stroke-width="2"/><path d="M18 6L6 18" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></div>
       <div class="card-body">
         <p class="t">Calculadora de Créditos</p>
         <p class="d">Entidad, línea, plazo y datero para el cliente</p>
@@ -239,7 +270,7 @@
 
     <div class="group-label">Reporte diario</div>
     <a class="card" href="https://docs.google.com/spreadsheets/d/1ObY4iqlgQa48qHcnxHpifKCvxDMrKqfFuM-QCc11eZ4/edit" target="_blank" rel="noopener">
-      <div class="icon reporte">📊</div>
+      <div class="icon reporte"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 20V10M12 20V4M20 20v-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="card-body">
         <p class="t">Ver planilla en vivo</p>
         <p class="d">Números del día antes de que llegue el mail de las 20hs</p>
@@ -268,6 +299,10 @@
   if (!isStandalone) {
     document.getElementById('installHint').classList.add('show');
   }
+  // Saludo dinámico según la hora
+  const h = new Date().getHours();
+  const g = h < 6 ? 'Buenas noches' : h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
+  document.getElementById('greeting').textContent = g;
 </script>
 </body>
 </html>
