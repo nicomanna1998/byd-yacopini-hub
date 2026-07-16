@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BYD Yacopini · Gestor de Lista de Precios</title>
+<style>
+  :root{
+    --negro:#0A0A0A;
+    --carbon:#2A2A2A;
+    --gris-oscuro:#4A4A4A;
+    --gris-medio:#8C8C8C;
+    --gris-claro:#D4D4D4;
+    --gris-fondo:#F2F2F2;
+    --blanco:#FFFFFF;
+    --azul-ev:#1565D8;
+    --verde-dm:#388E3C;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--gris-fondo);
+    color:var(--carbon);
+    font-family:'Segoe UI', Arial, Helvetica, sans-serif;
+  }
+  .app{
+    max-width:1100px;
+    margin:0 auto;
+    padding:24px 24px 60px;
+  }
+  .app-topbar{
+    background:var(--negro);
+    margin:-24px -24px 24px;
+    padding:20px 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .app-topbar img{
+    height:34px;
+    display:block;
+  }
+  .app-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:20px;
+  }
+  .app-header h1{
+    font-size:22px;
+    font-weight:800;
+    color:var(--negro);
+    margin:0 0 4px;
+  }
+  .app-header p{
+    font-size:13px;
+    color:#5A6B7A;
+    margin:0;
+  }
+  .badge-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .badge{
+    font-size:11px;
+    font-weight:700;
+    padding:5px 10px;
+    border-radius:20px;
+    letter-spacing:0.4px;
+  }
+  .badge.ok{ background:var(--gris-fondo); color:var(--negro); border:1px solid var(--gris-claro); }
+  .badge.info{ background:var(--gris-fondo); color:var(--gris-oscuro); border:1px solid var(--gris-claro); }
+
+  .toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:18px;
+  }
+  button{
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    border-radius:8px;
+    border:1px solid var(--gris-claro);
+    background:var(--blanco);
+    color:var(--carbon);
+    padding:9px 16px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    transition:all .15s ease;
+  }
+  button:hover{ background:var(--gris-fondo); }
+  button:active{ transform:scale(0.98); }
+  button.primary{
+    background:var(--negro);
+    color:var(--blanco);
+    border-color:var(--negro);
+  }
+  button.primary:hover{ background:#2A2A2A; }
+  button.accent{
+    background:var(--gris-medio);
+    color:var(--blanco);
+    border-color:var(--gris-medio);
+  }
+  button.accent:hover{ background:#6E6E6E; }
+  button.ghost-danger{
+    color:#A32D2D;
+    border-color:#F0C1C1;
+    background:#FCEBEB;
+  }
+  button.small{ padding:5px 10px; font-size:12px; }
+
+  .panel{
+    background:var(--blanco);
+    border:1px solid var(--gris-claro);
+    border-radius:12px;
+    padding:20px;
+    margin-bottom:20px;
+  }
+  .panel h2{
+    font-size:15px;
+    font-weight:800;
+    color:var(--negro);
+    margin:0 0 14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  /* Tabla de modelos */
+  table.modelos{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12.5px;
+  }
+  table.modelos th{
+    text-align:right;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    color:#8A97A3;
+    font-weight:700;
+    padding:6px 6px;
+    border-bottom:2px solid var(--gris-claro);
+    white-space:nowrap;
+  }
+  table.modelos th.left{ text-align:left; }
+  table.modelos td{
+    padding:6px 6px;
+    border-bottom:1px solid var(--gris-claro);
+    text-align:right;
+    vertical-align:middle;
+  }
+  table.modelos td.left{ text-align:left; }
+  table.modelos input, table.modelos select{
+    width:100%;
+    border:1px solid transparent;
+    background:transparent;
+    font-size:12.5px;
+    font-family:inherit;
+    padding:6px 5px;
+    border-radius:6px;
+    text-align:right;
+    color:var(--carbon);
+  }
+  table.modelos td.left input{ text-align:left; }
+  table.modelos input:hover, table.modelos select:hover{
+    border-color:var(--gris-claro);
+    background:var(--gris-fondo);
+  }
+  table.modelos input:focus, table.modelos select:focus{
+    outline:none;
+    border-color:var(--gris-medio);
+    background:var(--blanco);
+  }
+  table.modelos select{ text-align:left; }
+  .col-categoria{ width:70px; }
+  .col-precio{ width:90px; }
+  td.calculado{
+    color:var(--gris-oscuro);
+    font-style:italic;
+    background:var(--gris-fondo);
+  }
+  th.calculado{
+    color:var(--gris-medio);
+  }
+  .col-accion{ width:36px; text-align:center; }
+  td.col-accion{ text-align:center; }
+
+  .cat-pill{
+    display:inline-block;
+    font-size:10px;
+    font-weight:800;
+    padding:3px 8px;
+    border-radius:10px;
+    letter-spacing:0.5px;
+  }
+  .cat-pill.ev{ background:var(--gris-fondo); color:var(--negro); border:1px solid var(--gris-claro); }
+  .cat-pill.dm{ background:var(--gris-fondo); color:var(--gris-oscuro); border:1px solid var(--gris-claro); }
+
+  .icon-btn{
+    border:none;
+    background:transparent;
+    color:#A32D2D;
+    font-size:16px;
+    padding:4px;
+    cursor:pointer;
+    border-radius:6px;
+    line-height:1;
+  }
+  .icon-btn:hover{ background:#FCEBEB; }
+
+  /* Accesorios */
+  table.accesorios{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12.5px;
+  }
+  table.accesorios th{
+    text-align:left;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    color:#8A97A3;
+    font-weight:700;
+    padding:6px;
+    border-bottom:2px solid var(--gris-claro);
+  }
+  table.accesorios th.right{ text-align:right; }
+  table.accesorios td{
+    padding:6px;
+    border-bottom:1px solid var(--gris-claro);
+  }
+  table.accesorios input{
+    width:100%;
+    border:1px solid transparent;
+    background:transparent;
+    font-size:12.5px;
+    font-family:inherit;
+    padding:6px 5px;
+    border-radius:6px;
+    color:var(--carbon);
+  }
+  table.accesorios input:hover{ border-color:var(--gris-claro); background:var(--gris-fondo); }
+  table.accesorios input:focus{ outline:none; border-color:var(--gris-medio); background:var(--blanco); }
+  table.accesorios td.right input{ text-align:right; }
+
+  .add-row-btn{
+    margin-top:10px;
+  }
+
+  .toast{
+    position:fixed;
+    bottom:24px;
+    right:24px;
+    background:var(--negro);
+    color:var(--blanco);
+    padding:12px 18px;
+    border-radius:10px;
+    font-size:13px;
+    font-weight:600;
+    box-shadow:0 4px 14px rgba(0,0,0,0.18);
+    z-index:1100;
+    display:none;
+  }
+  .toast.show{ display:block; }
+
+  .hint{
+    font-size:11.5px;
+    color:#8A97A3;
+    margin-top:8px;
+    line-height:1.5;
+  }
+
+  @media (max-width:720px){
+    .app{ padding:16px 12px 50px; }
+    table.modelos{ font-size:11px; }
+    .col-categoria, .col-precio{ width:auto; }
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="gate-locked">
+<div id="bydGate" style="position:fixed;inset:0;z-index:999999;background:#0A0A0A;display:flex;align-items:center;justify-content:center;padding:24px;">
+  <form id="bydGateForm" style="width:100%;max-width:300px;text-align:center;font-family:Arial,sans-serif;">
+    <div style="color:#fff;font-weight:800;font-size:16px;margin-bottom:4px;">BYD Yacopini</div>
+    <div style="color:#8C8C8C;font-size:12px;margin-bottom:18px;">Acceso interno &middot; Gerencia</div>
+    <input id="bydGatePass" type="password" inputmode="numeric" placeholder="Clave" autocomplete="off" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #4A4A4A;background:#2A2A2A;color:#fff;font-size:16px;text-align:center;box-sizing:border-box;">
+    <button type="submit" style="width:100%;margin-top:10px;padding:12px;border-radius:10px;border:none;background:#1565D8;color:#fff;font-weight:700;font-size:14px;">Entrar</button>
+    <div id="bydGateError" style="color:#E85555;font-size:12px;margin-top:10px;display:none;">Clave incorrecta</div>
+  </form>
+</div>
+<style>body.gate-locked > *:not(#bydGate){display:none !important;}</style>
+<script>
+(function(){
+  var HASH = "a734aecec77bc8826bec68f0264b70228ab419e52a8fcdf05016ebee0465f257";
+  var body = document.body;
+  function unlock(){ body.classList.remove('gate-locked'); var g=document.getElementById('bydGate'); if(g) g.remove(); }
+  if (sessionStorage.getItem('bydGateOk') === '1') { unlock(); }
+  else {
+    document.getElementById('bydGateForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      var val = document.getElementById('bydGatePass').value;
+      crypto.subtle.digest('SHA-256', new TextEncoder().encode(val)).then(function(buf){
+        var hex = Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+        if (hex === HASH) {
+          sessionStorage.setItem('bydGateOk','1');
+          unlock();
+        } else {
+          document.getElementById('bydGateError').style.display = 'block';
+          document.getElementById('bydGatePass').value = '';
+          document.getElementById('bydGatePass').focus();
+        }
+      });
+    });
+  }
+})();
+</script>
+
+<div class="app">
+
+  <div class="app-topbar">
+    <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iQ2FwYV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDU1MCAyMzkuMTkiPgogIDwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyOS41LjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiAyLjEuMCBCdWlsZCAxNDEpICAtLT4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLnN0MCB7CiAgICAgICAgZmlsbDogI0ZGRkZGRjsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPHJlY3QgY2xhc3M9InN0MCIgeD0iNDc1LjEzIiB5PSIyMTIuNTEiIHdpZHRoPSI0Ljk4IiBoZWlnaHQ9IjIyLjExIi8+CiAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTQ4OS45OCwyMzQuNjJsNi45Mi0yMi4xMWg2bDYuOTIsMjIuMTFoLTUuMjlsLTEuMzYtNS4yNmgtNi43NWwtMS4zNiw1LjI2aC01LjA5Wk00OTcuOTgsMjIzLjQzbC0uNTQsMi4wM2g0LjcxbC0uNTEtMi4wM2MtLjMyLTEuMTEtLjYyLTIuMjgtLjkxLTMuNTMtLjMtMS4yNC0uNTktMi40NC0uODgtMy41OWgtLjE0Yy0uMjcsMS4xOC0uNTUsMi4zOC0uODMsMy42MS0uMjksMS4yMy0uNTgsMi40LS45LDMuNTEiLz4KICA8cG9seWdvbiBjbGFzcz0ic3QwIiBwb2ludHM9IjUxOS42OCAyMzQuNjIgNTE5LjY4IDIxMi41MSA1MjQuNjcgMjEyLjUxIDUyNC42NyAyMzAuNDEgNTMzLjQyIDIzMC40MSA1MzMuNDIgMjM0LjYyIDUxOS42OCAyMzQuNjIiLz4KICA8cmVjdCBjbGFzcz0ic3QwIiB4PSI1MTkuNSIgeT0iMTM3LjYzIiB3aWR0aD0iMTEuMyIgaGVpZ2h0PSI0My4zMSIvPgogIDxnPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTE2Mi45MywxOS4xOGMtOC4wNi0xMi4xNi0yMS44OC0xNC41My0zMS4yMy0xNC43NS04LjIzLS4xOS00My45LS4yMy02NC42Ny0uMjQtNDAuOTEtLjAzLTE3LjUxLS4wMS01NC4zNi0uMDF2MTkuNTRjNDMuNzUsMCw5NS42OC0uMSwxMTguNDEuMjUsNC4wNi4wNiw4LjA4LjQ3LDExLjI3LDMuMywyLjk3LDIuNjQsNC4wMiw2Ljc5LDIuNjksMTAuNC0yLjE0LDUuODMtOC4wNyw3LjI4LTEzLjk2LDcuMzctOS4wMS4xNC0zMy43Ny4xOS01Mi4yNC4yMi00NS4zLjA2LTI1LjY4LjAzLTY2LjE2LjAzdjE5LjQ5YzQzLjcyLDAsOTUuNzYtLjA5LDExOC40MS4yNSw3LjA2LjEsMTQuNTMsMi41NiwxNC41MywxMC40M3MtNy40NiwxMC40NS0xNC41MywxMC41NmMtMjIuNTkuMzMtNzQuNjYuMjQtMTE4LjQxLjI0djE5LjUzYzQzLjg4LDAsMTAxLjMyLjE2LDExOS4wMy0uMjUsOS4zNS0uMjIsMjMuMTgtMi41OSwzMS4yMy0xNC43NSw3LjU2LTExLjQxLDUuNzEtMjYuMjctNC4yMi0zNS44LDkuOTMtOS41NCwxMS43OC0yNC4zOSw0LjIxLTM1LjgiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik01MjAuMDgsMTUuOTNjLTEzLjM1LTkuNTgtMjcuODUtMTAuOTQtMzkuNjEtMTEuMjEtMTEuNTgtLjI3LTI5LjA1LS4zOS00NC41LS40NS0zNy42Ny0uMTUtMTUuMDItLjA4LTUwLjkxLS4wOHYxOS42YzM4LjE5LDAsNjQuOTctLjMyLDk0LjQ2LjUyLDguNjYuMjQsMTcuOTUsMS4xNiwyNi4zMSw2Ljk2LDcuOTIsNS41LDEyLjYyLDE0LjI2LDEyLjYyLDIzLjcycy00LjU3LDE4LjI0LTEyLjQ5LDIzLjc0Yy04LjM2LDUuODEtMTcuNjUsNi43Mi0yNi4zMSw2Ljk2LTI5LjQ5LjgzLTU2LjI3LjUxLTk0LjQ2LjUxbC0uMTMsMTkuNTljMzguNDEsMCw2Ni4wMy4xNCw5NS40MS0uNTQsMTEuNzYtLjI3LDI2LjI2LTEuNjMsMzkuNjEtMTEuMjEsMTIuNjctOS4wOSwyMC4zMy0yMy4zNiwyMC4zMy0zOS4wNXMtNy42Ny0yOS45Ny0yMC4zMy0zOS4wNSIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTIyNy4yMiw0OC4wNmMtMTAuMjMtLjItMTMuNDktMy41NC0xMy41Ni0xMy43My0uMDctOS40Mi0uMDItMjAuNTgtLjAyLTMwLjE0aC0yMi41NmMwLDkuNjctLjE5LDI5LjI0LjE5LDM4LjcuNzQsMTguMzgsNi43NywyNC4xMSwyNS41NSwyNC43NSwxMy4wMi40NCwyMy4zNi4yOSw0MS4zNi4yOHYtMTkuNjljLTE0LjQzLDAtMjAuMzEuMDQtMzAuOTYtLjE2Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMzM5LjA0LDM0LjY4Yy0uMDcsOS45Mi0zLjMsMTMuMTgtMTMuNTYsMTMuMzgtNC44OS4wOS0xNy43NS4xNC0yOC4zMy4xNmgwcy0uMS4wMS0uMS4wMWMtMTAuODEsMC0yMi4zNC0uMDItMjkuMS0uMDJ2NTcuNTdoMjYuNTJ2LTM3Ljg4Yy44MSwwLDEuNjgsMCwyLjU4LDBoMHMuMSwwLC4xLDB2LjAyYzEzLjgsMCwzMS4wNC0uMDYsMzcuNTUtLjI2LDE5LjkzLS42MSwyNi02LjIzLDI2LjczLTI0Ljc4LjEtMi40OC4xNi01LjYyLjE5LTkuMDZWNC4xOGgtMjIuNTZjMCw5LjguMDQsMjAuODEtLjAzLDMwLjUiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0yMS40MiwyMzUuMDJjLTEuNCwwLTIuNzItLjI1LTMuOTctLjczLTEuMjQtLjQ4LTIuMzMtMS4yLTMuMjctMi4xNS0uOTQtLjk1LTEuNjgtMi4xMy0yLjIyLTMuNTQtLjU0LTEuNDEtLjgxLTMuMDUtLjgxLTQuOXMuMjgtMy40Ni44NS00LjljLjU3LTEuNDMsMS4zMi0yLjY1LDIuMjctMy42NC45NS0xLDIuMDYtMS43NSwzLjMyLTIuMjcsMS4yNy0uNTIsMi42LS43OCw0LS43OHMyLjcuMjksMy44My44N2MxLjEzLjU3LDIuMDcsMS4yNSwyLjgxLDIuMDJsLTIuNjUsMy4xOWMtLjU3LS41Mi0xLjE2LS45NC0xLjc4LTEuMjctLjYyLS4zMy0xLjMzLS40OS0yLjEyLS40OS0uNzUsMC0xLjQ1LjE2LTIuMTIuNDktLjY3LjMzLTEuMjQuOC0xLjczLDEuNDEtLjQ5LjYxLS44NywxLjM2LTEuMTUsMi4yNHMtLjQyLDEuODgtLjQyLDIuOThjMCwyLjI4LjQ5LDQuMDUsMS40Niw1LjMxLjk3LDEuMjUsMi4yNywxLjg4LDMuOSwxLjg4LjksMCwxLjcxLS4yLDIuNDMtLjU5LjcxLS40LDEuMzQtLjg5LDEuODgtMS40OGwyLjY1LDMuMTJjLTEuODUsMi4xNy00LjI0LDMuMjYtNy4xNSwzLjI2Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNDcuMTIsMjM1LjAzYy0xLjQ5LDAtMi44NS0uMjctNC4wOS0uOC0xLjIzLS41My0yLjI5LTEuMjktMy4xNy0yLjI5LS44OC0uOTktMS41Ni0yLjItMi4wNS0zLjYzLS40OC0xLjQyLS43My0zLjA0LS43My00Ljg1cy4yNC0zLjQyLjczLTQuODNjLjQ5LTEuNDEsMS4xNy0yLjYsMi4wNS0zLjU2Ljg4LS45NiwxLjk0LTEuNywzLjE3LTIuMiwxLjIzLS41MSwyLjU5LS43Niw0LjA5LS43NnMyLjg1LjI1LDQuMDkuNzZjMS4yMy41MSwyLjI5LDEuMjUsMy4xNywyLjIyLjg4Ljk3LDEuNTYsMi4xNiwyLjA1LDMuNTguNDgsMS40MS43MywzLjAxLjczLDQuOHMtLjI0LDMuNDItLjczLDQuODVjLS40OSwxLjQyLTEuMTcsMi42My0yLjA1LDMuNjMtLjg4LDEtMS45NCwxLjc2LTMuMTcsMi4yOS0xLjIzLjUzLTIuNTkuOC00LjA5LjhNNDcuMTIsMjMwLjcyYzEuNTEsMCwyLjcxLS42NSwzLjU5LTEuOTUuODgtMS4zLDEuMzItMy4wNywxLjMyLTUuMzFzLS40NC0zLjk0LTEuMzItNS4xOWMtLjg4LTEuMjQtMi4wOC0xLjg3LTMuNTktMS44N3MtMi43MS42Mi0zLjU5LDEuODdjLS44OCwxLjI0LTEuMzIsMi45Ny0xLjMyLDUuMTlzLjQ0LDQuMDEsMS4zMiw1LjMxYy44OCwxLjMsMi4wOCwxLjk1LDMuNTksMS45NSIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTY4Ljc5LDIzNC42MnYtMjIuMTFoNS4xMmw1Ljc2LDEwLjk5LDIuMTcsNC44OGguMTRjLS4xMi0xLjE4LS4yNC0yLjQ5LS4zOS0zLjkzLS4xNS0xLjQ1LS4yMi0yLjgzLS4yMi00LjE0di03LjhoNC43NXYyMi4xMWgtNS4xMmwtNS43Ni0xMS4wMi0yLjE3LTQuODFoLS4xNGMuMTEsMS4yMi4yNCwyLjUzLjM5LDMuOTMuMTUsMS40LjIyLDIuNzYuMjIsNC4wN3Y3LjgzaC00Ljc1WiIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTEwOC4wMiwyMzUuMDJjLTEuNCwwLTIuNzItLjI1LTMuOTctLjczcy0yLjMzLTEuMi0zLjI3LTIuMTVjLS45NC0uOTUtMS42OC0yLjEzLTIuMjItMy41NC0uNTQtMS40MS0uODEtMy4wNS0uODEtNC45cy4yOC0zLjQ2Ljg1LTQuOWMuNTYtMS40MywxLjMyLTIuNjUsMi4yNy0zLjY0Ljk1LTEsMi4wNi0xLjc1LDMuMzItMi4yNywxLjI2LS41MiwyLjYtLjc4LDQtLjc4czIuNy4yOSwzLjgzLjg3YzEuMTMuNTcsMi4wNywxLjI1LDIuODEsMi4wMmwtMi42NCwzLjE5Yy0uNTctLjUyLTEuMTYtLjk0LTEuNzgtMS4yNy0uNjItLjMzLTEuMzMtLjQ5LTIuMTItLjQ5LS43NSwwLTEuNDUuMTYtMi4xMi40OS0uNjcuMzMtMS4yNC44LTEuNzMsMS40MS0uNDkuNjEtLjg3LDEuMzYtMS4xNSwyLjI0LS4yOC44OC0uNDIsMS44OC0uNDIsMi45OCwwLDIuMjguNDgsNC4wNSwxLjQ2LDUuMzEuOTcsMS4yNSwyLjI3LDEuODgsMy45LDEuODguOSwwLDEuNzEtLjIsMi40Mi0uNTkuNzEtLjQsMS4zNC0uODksMS44OC0xLjQ4bDIuNjQsMy4xMmMtMS44NSwyLjE3LTQuMjQsMy4yNi03LjE1LDMuMjYiLz4KICAgIDxwb2x5Z29uIGNsYXNzPSJzdDAiIHBvaW50cz0iMTI1Ljk5IDIzNC42MiAxMjUuOTkgMjEyLjUxIDEzOS44MyAyMTIuNTEgMTM5LjgzIDIxNi43MSAxMzAuOTggMjE2LjcxIDEzMC45OCAyMjEuMTUgMTM4LjUxIDIyMS4xNSAxMzguNTEgMjI1LjMzIDEzMC45OCAyMjUuMzMgMTMwLjk4IDIzMC40MSAxNDAuMTcgMjMwLjQxIDE0MC4xNyAyMzQuNjIgMTI1Ljk5IDIzNC42MiIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTE1OC43OCwyMzUuMDJjLTEuNDUsMC0yLjg5LS4yNy00LjMyLS44LTEuNDQtLjUzLTIuNzItMS4zMy0zLjg1LTIuMzlsMi44NS0zLjQyYy43OS42OCwxLjY3LDEuMjMsMi42MywxLjY2Ljk2LjQzLDEuOS42NSwyLjgzLjY1LDEuMDQsMCwxLjgyLS4xOSwyLjMyLS41OC41MS0uMzguNzYtLjkuNzYtMS41NiwwLS4zNC0uMDctLjYzLS4yMi0uODgtLjE1LS4yNS0uMzYtLjQ3LS42NC0uNjYtLjI4LS4xOS0uNjItLjM3LTEuMDItLjU0LS40LS4xNy0uODMtLjM2LTEuMy0uNTZsLTIuODgtMS4yMmMtLjU3LS4yMy0xLjEyLS41Mi0xLjY1LS44OC0uNTMtLjM2LTEuMDEtLjc5LTEuNDItMS4yNy0uNDItLjQ4LS43NS0xLjA1LTEtMS42OS0uMjUtLjY1LS4zNy0xLjM3LS4zNy0yLjE5LDAtLjkuMTktMS43Ni41OC0yLjU2LjM5LS44LjkzLTEuNSwxLjYzLTIuMS43LS42LDEuNTMtMS4wNywyLjQ5LTEuNDEuOTYtLjM0LDIuMDItLjUxLDMuMTctLjUxLDEuMjksMCwyLjU2LjI1LDMuODEuNzUsMS4yNS41LDIuMzYsMS4yMiwzLjMxLDIuMTdsLTIuNTQsMy4xNWMtLjcyLS41Ni0xLjQ1LTEtMi4xNy0xLjMtLjcyLS4zMS0xLjUyLS40Ni0yLjQxLS40NnMtMS41NC4xOC0yLjA1LjUyYy0uNTEuMzUtLjc2Ljg0LS43NiwxLjQ4LDAsLjM0LjA4LjYzLjI2Ljg3LjE3LjI0LjQxLjQ1LjcxLjY0LjMxLjE5LjY2LjM3LDEuMDcuNTQuNDEuMTcuODUuMzYsMS4zMi41NmwyLjg1LDEuMTVjMS4zNi41NCwyLjQyLDEuMjksMy4yLDIuMjRzMS4xNywyLjIsMS4xNywzLjc2YzAsLjkzLS4xOSwxLjgtLjU2LDIuNjMtLjM3LjgyLS45MiwxLjU1LTEuNjMsMi4xNy0uNzEuNjItMS41OSwxLjEyLTIuNjMsMS40OS0xLjA0LjM3LTIuMjIuNTYtMy41My41NiIvPgogICAgPHJlY3QgY2xhc3M9InN0MCIgeD0iMTc4LjM1IiB5PSIyMTIuNTEiIHdpZHRoPSI0Ljk4IiBoZWlnaHQ9IjIyLjExIi8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjA1LDIzNS4wM2MtMS40OSwwLTIuODUtLjI3LTQuMDktLjgtMS4yMy0uNTMtMi4yOS0xLjI5LTMuMTctMi4yOS0uODgtLjk5LTEuNTYtMi4yLTIuMDUtMy42My0uNDgtMS40Mi0uNzMtMy4wNC0uNzMtNC44NXMuMjQtMy40Mi43My00LjgzYy40OS0xLjQxLDEuMTctMi42LDIuMDUtMy41Ni44OC0uOTYsMS45NC0xLjcsMy4xNy0yLjIsMS4yMy0uNTEsMi41OS0uNzYsNC4wOS0uNzZzMi44NS4yNSw0LjA5Ljc2YzEuMjMuNTEsMi4yOSwxLjI1LDMuMTcsMi4yMi44OC45NywxLjU2LDIuMTYsMi4wNSwzLjU4LjQ4LDEuNDEuNzMsMy4wMS43Myw0LjhzLS4yNCwzLjQyLS43Myw0Ljg1Yy0uNDksMS40Mi0xLjE3LDIuNjMtMi4wNSwzLjYzLS44OCwxLTEuOTQsMS43Ni0zLjE3LDIuMjktMS4yMy41My0yLjU5LjgtNC4wOS44TTIwNSwyMzAuNzJjMS41MSwwLDIuNzEtLjY1LDMuNTktMS45NS44OC0xLjMsMS4zMi0zLjA3LDEuMzItNS4zMXMtLjQ0LTMuOTQtMS4zMi01LjE5Yy0uODgtMS4yNC0yLjA4LTEuODctMy41OS0xLjg3cy0yLjcxLjYyLTMuNTksMS44N2MtLjg4LDEuMjQtMS4zMiwyLjk3LTEuMzIsNS4xOXMuNDQsNC4wMSwxLjMyLDUuMzFjLjg4LDEuMywyLjA4LDEuOTUsMy41OSwxLjk1Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjI2LjY3LDIzNC42MnYtMjIuMTFoNS4xMmw1Ljc2LDEwLjk5LDIuMTcsNC44OGguMTRjLS4xMi0xLjE4LS4yNC0yLjQ5LS4zOS0zLjkzLS4xNS0xLjQ1LS4yMi0yLjgzLS4yMi00LjE0di03LjhoNC43NXYyMi4xMWgtNS4xMmwtNS43Ni0xMS4wMi0yLjE3LTQuODFoLS4xNGMuMTEsMS4yMi4yNCwyLjUzLjM5LDMuOTMuMTUsMS40LjIyLDIuNzYuMjIsNC4wN3Y3LjgzaC00Ljc1WiIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTI1My44NywyMzQuNjJsNi45Mi0yMi4xMWg2bDYuOTIsMjIuMTFoLTUuMjlsLTEuMzUtNS4yNmgtNi43NWwtMS4zNiw1LjI2aC01LjA5Wk0yNjEuODcsMjIzLjQzbC0uNTQsMi4wM2g0LjcxbC0uNTEtMi4wM2MtLjMyLTEuMTEtLjYyLTIuMjgtLjkyLTMuNTMtLjI5LTEuMjQtLjU5LTIuNDQtLjg4LTMuNTloLS4xNGMtLjI3LDEuMTgtLjU1LDIuMzgtLjgzLDMuNjEtLjI4LDEuMjMtLjU4LDIuNC0uOSwzLjUxIi8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjgzLjU3LDIzNC42MnYtMjIuMTFoNy45N2MxLjE4LDAsMi4yOC4xMSwzLjMxLjM0LDEuMDMuMjMsMS45My42MSwyLjcsMS4xNC43Ny41MywxLjM4LDEuMjQsMS44MywyLjEyLjQ1Ljg4LjY4LDEuOTguNjgsMy4yOSwwLDEuNjMtLjM2LDIuOTctMS4wNyw0LjAyLS43MSwxLjA1LTEuNjcsMS44NC0yLjg3LDIuMzZsNS4wMiw4Ljg1aC01LjU5bC00LjI0LTcuOTdoLTIuNzV2Ny45N2gtNC45OFpNMjg4LjU2LDIyMi42OGgyLjU4YzEuMzEsMCwyLjMxLS4yOCwzLS44My42OS0uNTUsMS4wMy0xLjM3LDEuMDMtMi40NnMtLjM1LTEuODQtMS4wMy0yLjI3Yy0uNjktLjQzLTEuNjktLjY0LTMtLjY0aC0yLjU4djYuMjFaIi8+CiAgICA8cmVjdCBjbGFzcz0ic3QwIiB4PSIzMTEuODIiIHk9IjIxMi41MSIgd2lkdGg9IjQuOTgiIGhlaWdodD0iMjIuMTEiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0zMzguNDcsMjM1LjAzYy0xLjQ5LDAtMi44NS0uMjctNC4wOS0uOC0xLjIzLS41My0yLjI5LTEuMjktMy4xNy0yLjI5LS44OC0uOTktMS41Ny0yLjItMi4wNS0zLjYzLS40OS0xLjQyLS43My0zLjA0LS43My00Ljg1cy4yNC0zLjQyLjczLTQuODNjLjQ4LTEuNDEsMS4xNy0yLjYsMi4wNS0zLjU2Ljg4LS45NiwxLjk0LTEuNywzLjE3LTIuMiwxLjIzLS41MSwyLjYtLjc2LDQuMDktLjc2czIuODUuMjUsNC4wOS43NmMxLjIzLjUxLDIuMjksMS4yNSwzLjE3LDIuMjIuODguOTcsMS41NywyLjE2LDIuMDUsMy41OC40OCwxLjQxLjczLDMuMDEuNzMsNC44cy0uMjUsMy40Mi0uNzMsNC44NWMtLjQ5LDEuNDItMS4xNywyLjYzLTIuMDUsMy42My0uODgsMS0xLjk0LDEuNzYtMy4xNywyLjI5LTEuMjMuNTMtMi42LjgtNC4wOS44TTMzOC40NywyMzAuNzJjMS41MSwwLDIuNzEtLjY1LDMuNTktMS45NS44OC0xLjMsMS4zMi0zLjA3LDEuMzItNS4zMXMtLjQ0LTMuOTQtMS4zMi01LjE5Yy0uODgtMS4yNC0yLjA4LTEuODctMy41OS0xLjg3cy0yLjcxLjYyLTMuNTksMS44N2MtLjg4LDEuMjQtMS4zMiwyLjk3LTEuMzIsNS4xOXMuNDQsNC4wMSwxLjMyLDUuMzFjLjg4LDEuMywyLjA4LDEuOTUsMy41OSwxLjk1Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMzgzLjM3LDIzNS4wM2MtMS40OSwwLTIuODUtLjI3LTQuMDktLjgtMS4yMy0uNTMtMi4yOS0xLjI5LTMuMTctMi4yOS0uODgtLjk5LTEuNTctMi4yLTIuMDUtMy42My0uNDktMS40Mi0uNzMtMy4wNC0uNzMtNC44NXMuMjQtMy40Mi43My00LjgzYy40OC0xLjQxLDEuMTctMi42LDIuMDUtMy41Ni44OC0uOTYsMS45NC0xLjcsMy4xNy0yLjIsMS4yMy0uNTEsMi42LS43Niw0LjA5LS43NnMyLjg1LjI1LDQuMDkuNzZjMS4yMy41MSwyLjI5LDEuMjUsMy4xNywyLjIyLjg4Ljk3LDEuNTcsMi4xNiwyLjA1LDMuNTguNDgsMS40MS43MywzLjAxLjczLDQuOHMtLjI1LDMuNDItLjczLDQuODVjLS40OSwxLjQyLTEuMTcsMi42My0yLjA1LDMuNjMtLjg4LDEtMS45NCwxLjc2LTMuMTcsMi4yOS0xLjIzLjUzLTIuNi44LTQuMDkuOE0zODMuMzcsMjMwLjcyYzEuNTEsMCwyLjcxLS42NSwzLjU5LTEuOTUuODgtMS4zLDEuMzItMy4wNywxLjMyLTUuMzFzLS40NC0zLjk0LTEuMzItNS4xOWMtLjg4LTEuMjQtMi4wOC0xLjg3LTMuNTktMS44N3MtMi43MS42Mi0zLjU5LDEuODdjLS44OCwxLjI0LTEuMzIsMi45Ny0xLjMyLDUuMTlzLjQ0LDQuMDEsMS4zMiw1LjMxYy44OCwxLjMsMi4wOCwxLjk1LDMuNTksMS45NSIvPgogICAgPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSI0MDUuMDQgMjM0LjYyIDQwNS4wNCAyMTIuNTEgNDE4Ljk3IDIxMi41MSA0MTguOTcgMjE2LjcxIDQxMC4wMiAyMTYuNzEgNDEwLjAyIDIyMS44MyA0MTcuNjkgMjIxLjgzIDQxNy42OSAyMjYuMDQgNDEwLjAyIDIyNi4wNCA0MTAuMDIgMjM0LjYyIDQwNS4wNCAyMzQuNjIiLz4KICAgIDxyZWN0IGNsYXNzPSJzdDAiIHg9IjQzMC4yNiIgeT0iMjEyLjUxIiB3aWR0aD0iNC45OSIgaGVpZ2h0PSIyMi4xMSIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTQ1Ny4xNSwyMzUuMDJjLTEuNCwwLTIuNzItLjI1LTMuOTctLjczcy0yLjMzLTEuMi0zLjI3LTIuMTVjLS45NC0uOTUtMS42OC0yLjEzLTIuMjItMy41NC0uNTQtMS40MS0uODEtMy4wNS0uODEtNC45cy4yOC0zLjQ2Ljg1LTQuOWMuNTYtMS40MywxLjMyLTIuNjUsMi4yNy0zLjY0Ljk1LTEsMi4wNi0xLjc1LDMuMzItMi4yNywxLjI2LS41MiwyLjYtLjc4LDQtLjc4czIuNy4yOSwzLjgzLjg3YzEuMTMuNTcsMi4wNywxLjI1LDIuODEsMi4wMmwtMi42NCwzLjE5Yy0uNTctLjUyLTEuMTYtLjk0LTEuNzgtMS4yNy0uNjItLjMzLTEuMzMtLjQ5LTIuMTItLjQ5LS43NSwwLTEuNDUuMTYtMi4xMi40OS0uNjcuMzMtMS4yNC44LTEuNzMsMS40MS0uNDkuNjEtLjg3LDEuMzYtMS4xNSwyLjI0LS4yOC44OC0uNDIsMS44OC0uNDIsMi45OCwwLDIuMjguNDgsNC4wNSwxLjQ2LDUuMzEuOTcsMS4yNSwyLjI3LDEuODgsMy45LDEuODguOSwwLDEuNzEtLjIsMi40Mi0uNTkuNzEtLjQsMS4zNC0uODksMS44OC0xLjQ4bDIuNjQsMy4xMmMtMS44NSwyLjE3LTQuMjQsMy4yNi03LjE1LDMuMjYiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0zMjIuMTgsMTQyLjY0Yy01LjY5LTQuMDgtMTEuODctNC42Ni0xNi44OC00Ljc4LTQtLjA5LTI2LjkyLS4xMi0zMS45NywwLTUuMDEuMTItMTEuMTkuNjktMTYuODgsNC43OC01LjQsMy44Ny04LjY3LDkuOTYtOC42NywxNi42NHMzLjI3LDEyLjc3LDguNjcsMTYuNjRjNS42OSw0LjA4LDExLjg3LDQuNjYsMTYuODgsNC43OCw0LC4wOSwyNi45Mi4xMiwzMS45NywwLDUuMDEtLjEyLDExLjE5LS42OSwxNi44OC00Ljc4LDUuNC0zLjg3LDguNjctOS45Niw4LjY3LTE2LjY0cy0zLjI3LTEyLjc3LTguNjctMTYuNjRNMzE2LjE2LDE2OS40Yy0zLjU2LDIuNDctNy41MiwyLjg2LTExLjIxLDIuOTctNC45OS4xNC0yNi4yMi4xMy0zMS4yMSwwLTMuNjktLjEtNy42NS0uNDktMTEuMjEtMi45Ny0zLjM4LTIuMzQtNS4zOC02LjA4LTUuMzgtMTAuMTFzMS45NS03Ljc3LDUuMzMtMTAuMTJjMy41Ny0yLjQ3LDcuNTItMi44NiwxMS4yMS0yLjk3LDQuOTktLjE0LDI2LjIyLS4xMywzMS4yMSwwLDMuNjkuMSw3LjY1LjQ5LDExLjIxLDIuOTcsMy4zOCwyLjM0LDUuMzgsNi4wOCw1LjM4LDEwLjExcy0xLjk1LDcuNzctNS4zMywxMC4xMiIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTE4My4yMSwxNzUuOTNjNS42OSw0LjA4LDExLjg3LDQuNjYsMTYuODgsNC43OCw0Ljk0LjExLDEyLjM4LjE3LDE4Ljk3LjE5LDE2LjA2LjA2LDYuNC4wNCwyMS43LjA0di04LjM1Yy0xNi4yNywwLTI3LjY5LjE0LTQwLjI2LS4yMi0zLjY5LS4xLTcuNjUtLjQ5LTExLjIxLTIuOTctMy4zOC0yLjM0LTUuMzgtNi4wOC01LjM4LTEwLjExczEuOTUtNy43Nyw1LjMzLTEwLjEyYzMuNTctMi40Nyw3LjUyLTIuODYsMTEuMjEtMi45NywxMi41Ny0uMzUsMjMuOTgtLjIyLDQwLjI2LS4yMmwuMDUtOC4zNWMtMTYuMzcsMC0yOC4xNC0uMDYtNDAuNjYuMjMtNS4wMS4xMi0xMS4xOS42OS0xNi44OCw0Ljc4LTUuNCwzLjg3LTguNjcsOS45Ni04LjY3LDE2LjY0czMuMjcsMTIuNzcsOC42NywxNi42NCIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTI1LjAxLDE1Ni4zM2MtNC4zNi0uMDgtNS43NS0xLjUxLTUuNzgtNS44NS0uMDMtNC4wMSwwLTguNzcsMC0xMi44NWgtOS42MWMwLDQuMTItLjA4LDEyLjQ2LjA4LDE2LjQ5LjMxLDcuODQsMi44OSwxMC4yOCwxMC44OSwxMC41NSw1LjU1LjE5LDkuOTYuMTIsMTcuNjMuMTJ2LTguMzljLTYuMTUsMC04LjY1LjAyLTEzLjItLjA3Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNzIuNjYsMTUwLjYzYy0uMDMsNC4yMy0xLjQxLDUuNjItNS43OCw1LjctMi4wOS4wNC03LjU2LjA2LTEyLjA3LjA3aDBzLS4wNCwwLS4wNCwwaDBjLTQuNjEsMC05LjUyLDAtMTIuNCwwdjI0LjUzaDExLjN2LTE2LjE0Yy4zNSwwLC43MiwwLDEuMSwwaC4wNGM1Ljg4LDAsMTMuMjMtLjAyLDE2LS4xLDguNDktLjI2LDExLjA4LTIuNjUsMTEuMzktMTAuNTYuMDQtMS4wNi4wNy0yLjM5LjA4LTMuODZ2LTEyLjYzaC05LjYxYzAsNC4xOC4wMiw4Ljg3LS4wMSwxMyIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTEwNy43MSwxNDYuMTFjLTQuMzcuMDgtNS43NSwxLjQ3LTUuNzgsNS43LS4wMyw0LjEzLS4wMSwyNC45NS0uMDEsMjkuMTNoLTkuNjF2LTI4Ljc2Yy4wMi0xLjQ3LjA0LTIuOC4wOC0zLjg2LjMxLTcuOTEsMi45LTEwLjMsMTEuMzktMTAuNTYsMi43OC0uMDgsNDQuNjktLjE3LDUwLjI0LjAyLDgsLjI3LDEwLjU3LDIuNzEsMTAuODksMTAuNTUuMTYsNC4wMy4wOCwyOC41MS4wOCwzMi42M2gtOS42MWMwLTQuMDguMDItMjQuOTcsMC0yOC45OC0uMDMtNC4zNS0xLjQyLTUuNzctNS43OC01Ljg1LTQuNTQtLjA4LTM5Ljc5LS4wNC00MS44OCwwIi8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNDU0LjM0LDE0Ni4xMWMtNC4zNy4wOC01Ljc1LDEuNDctNS43OCw1LjctLjAzLDQuMTMtLjAxLDI0Ljk1LS4wMSwyOS4xM2gtOS42MXYtMjguNzZjLjAyLTEuNDcuMDQtMi44LjA4LTMuODYuMzEtNy45MSwyLjktMTAuMywxMS4zOS0xMC41NiwyLjc4LS4wOCw0NC42OS0uMTcsNTAuMjQuMDIsOCwuMjcsMTAuNTcsMi43MSwxMC44OSwxMC41NS4xNiw0LjAzLjA4LDI4LjUxLjA4LDMyLjYzaC05LjYxYzAtNC4wOC4wMi0yNC45Ny0uMDEtMjguOTgtLjAzLTQuMzUtMS40Mi01Ljc3LTUuNzgtNS44NS00LjU0LS4wOC0zOS43OS0uMDQtNDEuODgsMCIvPgogICAgPHJlY3QgY2xhc3M9InN0MCIgeD0iNDE5Ljc4IiB5PSIxMzcuNjMiIHdpZHRoPSIxMS4zIiBoZWlnaHQ9IjQzLjMxIi8+CiAgICA8cmVjdCBjbGFzcz0ic3QwIiB4PSI5NS4zNyIgeT0iMTU2LjUiIHdpZHRoPSI2NS41OCIgaGVpZ2h0PSI4LjM4Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMzk4LjM5LDEzNy43NGgtNDguMnYtLjExaC0xMS4zdjQzLjMxaDExLjN2LTE2LjE1aDQ4LjJjNy40NiwwLDEzLjUzLTYuMDcsMTMuNTMtMTMuNTNzLTYuMDctMTMuNTMtMTMuNTMtMTMuNTNNMzk4LjM5LDE1NS45aC00OC4ydi05LjI4aDQ4LjJjMi41NiwwLDQuNjQsMi4wOCw0LjY0LDQuNjRzLTIuMDgsNC42NC00LjY0LDQuNjQiLz4KICA8L2c+Cjwvc3ZnPg==" alt="BYD Yacopini">
+  </div>
+
+  <div class="app-header">
+    <div>
+      <h1>Gestor de Lista de Precios</h1>
+      <p>BYD Yacopini · Godoy Cruz, Mendoza</p>
+    </div>
+    <div class="badge-row">
+      <span class="badge ok" id="status-badge">Sin guardar</span>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="primary" onclick="generarListas()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>Generar listas (HTML)</button>
+    <button onclick="generarPdfVendedores()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF Vendedores</button>
+    <button onclick="generarPdfGerencia()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF Gerencia</button>
+    <button onclick="exportarDatos()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exportar datos (.json)</button>
+    <button onclick="document.getElementById('import-input').click()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Importar datos</button>
+    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importarDatos(event)">
+  </div>
+
+  <div class="panel">
+    <h2>Modelos y versiones</h2>
+    <table class="modelos">
+      <thead>
+        <tr>
+          <th class="left col-categoria">Categoría</th>
+          <th class="left">Modelo / versión</th>
+          <th class="col-precio">Lista</th>
+          <th class="col-precio">Flete</th>
+          <th class="col-precio">Patentam.</th>
+          <th class="col-precio calculado">Lleno</th>
+          <th class="col-precio calculado">Prom. Web</th>
+          <th class="col-precio">Web</th>
+          <th class="col-precio calculado">Prom. Piso</th>
+          <th class="col-precio calculado">Piso Venta</th>
+          <th class="col-precio">Piso Gerencia</th>
+          <th class="col-accion"></th>
+        </tr>
+      </thead>
+      <tbody id="tabla-modelos"></tbody>
+    </table>
+    <button class="add-row-btn small" onclick="agregarModelo()">+ Agregar modelo</button>
+    <p class="hint">Lleno = Lista + Flete + Patentamiento. Piso Venta = Piso Gerencia + 300 (ya no se edita a mano). Prom. Web = (Lleno + Web) / 2. Prom. Piso = (Web + Piso Venta) / 2. Piso Gerencia solo aparece en la lista de gerencia.</p>
+  </div>
+
+  <div class="panel">
+    <h2>Accesorios</h2>
+    <table class="accesorios">
+      <thead>
+        <tr>
+          <th>Accesorio</th>
+          <th class="right" style="width:160px">Precio (texto libre)</th>
+          <th style="width:36px"></th>
+        </tr>
+      </thead>
+      <tbody id="tabla-accesorios"></tbody>
+    </table>
+    <button class="add-row-btn small" onclick="agregarAccesorio()">+ Agregar accesorio</button>
+    <p class="hint">El precio es texto libre: podés escribir "Incluido", "USD 600", "$120.000", etc.</p>
+  </div>
+
+  <div class="panel">
+    <h2>Guardado</h2>
+    <p class="hint" style="margin-top:0">
+      Esta app guarda tu trabajo en el navegador automáticamente. "Generar listas (HTML)" descarga los dos
+      archivos HTML (vendedores y gerencia) listos para subir a tu carpeta de Google Drive o compartir por WhatsApp.
+      "PDF Vendedores" y "PDF Gerencia" abren el diálogo de impresión del navegador — elegí "Guardar como PDF"
+      ahí para descargarlo en ese formato, ya configurado en hoja horizontal para que la tabla entre completa.
+      Si el navegador bloquea la ventana o la segunda descarga, permitilo desde el aviso que aparece arriba de la página.
+    </p>
+    <button onclick="exportarDatos()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Descargar datos (respaldo .json)</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ DATOS ============
+let modelos = [];
+let accesorios = [];
+let tabActual = 'vendedores';
+let htmlVendedores = '';
+let htmlGerencia = '';
+
+const STORAGE_KEY = 'byd_yacopini_lista_precios_v1';
+
+function datosIniciales(){
+  return {
+    modelos: [
+      {id: cid(), categoria:'EV', nombre:'Dolphin Mini EV GL', lista:23990, flete:550, patentamiento:720, web:24060, pisoGerencia:23340},
+      {id: cid(), categoria:'EV', nombre:'Dolphin Mini EV GS', lista:24990, flete:550, patentamiento:750, web:25290, pisoGerencia:24790},
+      {id: cid(), categoria:'EV', nombre:'Yuan Pro EV 380km (ADAS)', lista:31990, flete:550, patentamiento:927, web:31867, pisoGerencia:30907},
+      {id: cid(), categoria:'DM', nombre:'Atto 2 DM-i', lista:33990, flete:550, patentamiento:963, web:35152, pisoGerencia:34500},
+      {id: cid(), categoria:'DM', nombre:'Song Pro DM-i 1.5L FWD 71km', lista:35490, flete:550, patentamiento:1026, web:34937, pisoGerencia:33872},
+      {id: cid(), categoria:'DM', nombre:'Song Pro DM-i 1.5L FWD 100km', lista:37490, flete:550, patentamiento:1086, web:37626, pisoGerencia:36876},
+      {id: cid(), categoria:'DM', nombre:'Shark DMO GS', lista:59990, flete:550, patentamiento:1744, web:59884, pisoGerencia:57484}
+    ],
+    accesorios: [
+      {id: cid(), nombre:'Cargador Portátil 220V', precio:'Incluido'},
+      {id: cid(), nombre:'Cargador Monofásico 7kWh', precio:'Incluido'},
+      {id: cid(), nombre:'Cargador Portátil 220V (adicional)', precio:'USD 600'},
+      {id: cid(), nombre:'Cargador Trifásico 22kWh', precio:'USD 1.400'},
+      {id: cid(), nombre:'Polarizado', precio:'USD 120'},
+      {id: cid(), nombre:'Tuercas Antirrobo', precio:'USD 100'}
+    ]
+  };
+}
+
+function cid(){
+  return 'id_' + Math.random().toString(36).slice(2, 10);
+}
+
+function cargarDatos(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      modelos = parsed.modelos || [];
+      accesorios = parsed.accesorios || [];
+      if(modelos.length === 0 && accesorios.length === 0){
+        const init = datosIniciales();
+        modelos = init.modelos;
+        accesorios = init.accesorios;
+      }
+      setStatus('Cargado del navegador', 'info');
+    } else {
+      const init = datosIniciales();
+      modelos = init.modelos;
+      accesorios = init.accesorios;
+      setStatus('Datos iniciales', 'info');
+    }
+  } catch(e){
+    const init = datosIniciales();
+    modelos = init.modelos;
+    accesorios = init.accesorios;
+  }
+}
+
+function guardarLocal(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({modelos, accesorios, guardado: new Date().toISOString()}));
+  setStatus('Guardado en navegador', 'ok');
+}
+
+function setStatus(texto, tipo){
+  const b = document.getElementById('status-badge');
+  b.textContent = texto;
+  b.className = 'badge ' + (tipo === 'ok' ? 'ok' : 'info');
+}
+
+// ============ RENDER TABLA MODELOS ============
+function renderModelos(){
+  const tbody = document.getElementById('tabla-modelos');
+  tbody.innerHTML = '';
+  modelos.forEach(m => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="left col-categoria">
+        <select onchange="actualizarModelo('${m.id}','categoria',this.value)">
+          <option value="EV" ${m.categoria==='EV'?'selected':''}>EV</option>
+          <option value="DM" ${m.categoria==='DM'?'selected':''}>DM</option>
+        </select>
+      </td>
+      <td class="left">
+        <input type="text" value="${escapeAttr(m.nombre)}" onchange="actualizarModelo('${m.id}','nombre',this.value)">
+      </td>
+      <td class="col-precio"><input type="number" value="${m.lista ?? ''}" onchange="actualizarModelo('${m.id}','lista',this.value)"></td>
+      <td class="col-precio"><input type="number" value="${m.flete ?? ''}" onchange="actualizarModelo('${m.id}','flete',this.value)"></td>
+      <td class="col-precio"><input type="number" value="${m.patentamiento ?? ''}" onchange="actualizarModelo('${m.id}','patentamiento',this.value)"></td>
+      <td class="col-precio calculado">${fmt(calcLleno(m))}</td>
+      <td class="col-precio calculado">${fmt(calcPromWeb(m))}</td>
+      <td class="col-precio"><input type="number" value="${m.web ?? ''}" onchange="actualizarModelo('${m.id}','web',this.value)"></td>
+      <td class="col-precio calculado">${fmt(calcPromPiso(m))}</td>
+      <td class="col-precio calculado">${fmt(calcPisoVenta(m))}</td>
+      <td class="col-precio"><input type="number" value="${m.pisoGerencia ?? ''}" onchange="actualizarModelo('${m.id}','pisoGerencia',this.value)"></td>
+      <td class="col-accion"><button class="icon-btn" title="Eliminar" onclick="eliminarModelo('${m.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function actualizarModelo(id, campo, valor){
+  const m = modelos.find(x => x.id === id);
+  if(!m) return;
+  if(campo === 'nombre' || campo === 'categoria'){
+    m[campo] = valor;
+  } else {
+    m[campo] = valor === '' ? null : Number(valor);
+  }
+  guardarLocal();
+  if(campo === 'lista' || campo === 'flete' || campo === 'patentamiento' || campo === 'web' || campo === 'pisoGerencia'){
+    renderModelos();
+  }
+}
+
+function agregarModelo(){
+  modelos.push({id: cid(), categoria:'EV', nombre:'Nuevo modelo', lista:0, flete:0, patentamiento:0, web:0, pisoGerencia:0});
+  renderModelos();
+  guardarLocal();
+}
+
+function eliminarModelo(id){
+  modelos = modelos.filter(x => x.id !== id);
+  renderModelos();
+  guardarLocal();
+}
+
+// ============ RENDER TABLA ACCESORIOS ============
+function renderAccesorios(){
+  const tbody = document.getElementById('tabla-accesorios');
+  tbody.innerHTML = '';
+  accesorios.forEach(a => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="text" value="${escapeAttr(a.nombre)}" onchange="actualizarAccesorio('${a.id}','nombre',this.value)"></td>
+      <td class="right"><input type="text" value="${escapeAttr(a.precio)}" onchange="actualizarAccesorio('${a.id}','precio',this.value)"></td>
+      <td style="text-align:center"><button class="icon-btn" title="Eliminar" onclick="eliminarAccesorio('${a.id}')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function actualizarAccesorio(id, campo, valor){
+  const a = accesorios.find(x => x.id === id);
+  if(!a) return;
+  a[campo] = valor;
+  guardarLocal();
+}
+
+function agregarAccesorio(){
+  accesorios.push({id: cid(), nombre:'Nuevo accesorio', precio:''});
+  renderAccesorios();
+  guardarLocal();
+}
+
+function eliminarAccesorio(id){
+  accesorios = accesorios.filter(x => x.id !== id);
+  renderAccesorios();
+  guardarLocal();
+}
+
+function escapeAttr(str){
+  return String(str ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function escapeHtml(str){
+  return String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function fmt(n){
+  if(n === null || n === undefined || isNaN(n)) return '—';
+  return 'USD ' + Math.round(n).toLocaleString('es-AR');
+}
+
+// ============ EXPORT / IMPORT JSON ============
+function exportarDatos(){
+  const data = {modelos, accesorios, guardado: new Date().toISOString()};
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const fecha = new Date().toISOString().slice(0,10);
+  a.href = url;
+  a.download = `lista_precios_datos_${fecha}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  mostrarToast('Datos descargados');
+}
+
+function importarDatos(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const data = JSON.parse(e.target.result);
+      modelos = data.modelos || [];
+      accesorios = data.accesorios || [];
+      renderModelos();
+      renderAccesorios();
+      guardarLocal();
+      mostrarToast('Datos importados correctamente');
+    } catch(err){
+      mostrarToast('Error al leer el archivo');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ============ GENERACION DE HTML FINAL ============
+function categoriaLabel(cat){
+  return cat === 'EV' ? 'Eléctricos' : 'Híbridos enchufables';
+}
+
+function tagLabel(cat){
+  return cat === 'EV' ? 'Eléctrico' : 'Híbrido';
+}
+
+function calcLleno(m){
+  return (m.lista ?? 0) + (m.flete ?? 0) + (m.patentamiento ?? 0);
+}
+function calcPromWeb(m){
+  return (calcLleno(m) + (m.web ?? 0)) / 2;
+}
+function calcPisoVenta(m){
+  return (m.pisoGerencia ?? 0) + 300;
+}
+function calcPromPiso(m){
+  return ((m.web ?? 0) + calcPisoVenta(m)) / 2;
+}
+
+function construirTablaModelos(modelosGrupo, incluirGerencia){
+  let rows = '';
+  modelosGrupo.forEach(m => {
+    const cat = m.categoria === 'EV' ? 'ev' : 'dm';
+    const tag = m.categoria === 'EV' ? 'Eléctrico' : 'Híbrido';
+    rows += `
+          <tr class="${cat}">
+            <td class="col-nombre"><span class="model-name">${escapeHtml(m.nombre)}</span><span class="model-tag">● ${tag}</span></td>
+            <td class="col-lista">${fmt(m.lista)}</td>
+            <td class="flete-cell">${fmt(m.flete)}</td>
+            <td class="patentam-cell">${fmt(m.patentamiento)}</td>
+            <td class="sector-end lleno-cell">${fmt(calcLleno(m))}</td>
+            <td class="sector-start">${fmt(calcPromWeb(m))}</td>
+            <td class="sector-end web-cell">${fmt(m.web)}</td>
+            <td class="sector-start">${fmt(calcPromPiso(m))}</td>
+            <td class="sector-end piso-cell">${fmt(calcPisoVenta(m))}</td>${incluirGerencia ? `
+            <td class="sector-start sector-end gerencia-cell">${fmt(m.pisoGerencia)}</td>` : ''}
+          </tr>`;
+  });
+
+  const gerenciaHeadCell = incluirGerencia ? `
+            <th class="sector-start sector-end gerencia-head">Piso Gerencia</th>` : '';
+
+  return `
+    <div class="price-table-wrap">
+      <table class="price-table">
+        <thead>
+          <tr>
+            <th class="col-nombre">Modelo</th>
+            <th class="col-lista">Lista</th>
+            <th>Flete</th>
+            <th>Patentam.</th>
+            <th class="sector-end lleno-cell">Lleno</th>
+            <th class="sector-start">Prom. Web</th>
+            <th class="sector-end web-cell">Web</th>
+            <th class="sector-start">Prom. Piso</th>
+            <th class="sector-end piso-cell">Piso Venta</th>${gerenciaHeadCell}
+          </tr>
+        </thead>
+        <tbody>${rows}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function construirTarjetasModelos(incluirGerencia){
+  const grupos = {EV: [], DM: []};
+  modelos.forEach(m => grupos[m.categoria === 'EV' ? 'EV' : 'DM'].push(m));
+
+  let html = '';
+  ['EV','DM'].forEach(cat => {
+    if(grupos[cat].length === 0) return;
+    html += `
+  <div class="category">
+    <div class="category-head">
+      <span class="category-pill ${cat.toLowerCase()}">${cat}</span>
+      <span class="category-title">${categoriaLabel(cat)}</span>
+      <hr>
+    </div>
+    ${construirTablaModelos(grupos[cat], incluirGerencia)}
+  </div>
+`;
+  });
+  return html;
+}
+
+function construirAccesorios(){
+  let rows = '';
+  accesorios.forEach(a => {
+    const esIncluido = /incluido/i.test(a.precio);
+    rows += `
+          <tr>
+            <td>${escapeHtml(a.nombre)}</td>
+            <td class="right ${esIncluido ? '' : 'precio'}">${esIncluido ? `<span class="incluido-badge">Incluido</span>` : escapeHtml(a.precio)}</td>
+          </tr>`;
+  });
+  return rows;
+}
+
+function generarHtmlCompleto(version){
+  const esGerencia = version === 'gerencia';
+  const fecha = new Date().toLocaleDateString('es-AR', {day:'2-digit', month:'long', year:'numeric'});
+
+  const leadText = esGerencia
+    ? 'Valores de referencia con piso de gerencia incluido. Documento confidencial — uso exclusivo del gerente de concesionario.'
+    : 'Valores de referencia para el equipo de ventas. Uso interno — no distribuir fuera del concesionario.';
+
+  const bannerHtml = esGerencia
+    ? `\n  <div class="confidential-banner">Uso exclusivo de Gerencia — No compartir con el equipo de ventas</div>`
+    : '';
+
+  const legendGerenciaItem = esGerencia
+    ? `\n    <div class="item"><span class="dot" style="background:var(--carbon)"></span> Piso Gerencia (confidencial)</div>`
+    : '';
+
+  const footerNote = esGerencia
+    ? 'Documento confidencial de uso interno gerencial. El piso de gerencia es el límite mínimo absoluto de negociación y no debe comunicarse al equipo de ventas.'
+    : 'Precios sujetos a modificación sin previo aviso. Consultar disponibilidad de stock y color antes de confirmar con el cliente.';
+
+  const footerBrand = esGerencia ? 'BYD Yacopini · Gerencia de Concesionario' : 'BYD Yacopini · Equipo de Ventas';
+
+  const titleSuffix = esGerencia ? ' (Gerencia)' : '';
+
+  return `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BYD Yacopini · Lista de Precios${titleSuffix}</title>
+<style>
+  :root{
+    --negro:#0A0A0A;
+    --carbon:#2A2A2A;
+    --gris-oscuro:#4A4A4A;
+    --gris-medio:#8C8C8C;
+    --gris-claro:#D4D4D4;
+    --gris-fondo:#F2F2F2;
+    --blanco:#FFFFFF;
+    --azul-ev:#1565D8;
+    --verde-dm:#388E3C;
+    --amarillo-web:#F9A825;
+    --amarillo-fondo:#FFF8E1;
+    --verde-lleno:#2E7D32;
+    --verde-lleno-fondo:#E8F5E9;
+    --rojo-piso:#C62828;
+    --rojo-fondo:#FDECEA;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background:var(--gris-fondo);
+    color:var(--negro);
+    font-family:'Segoe UI', Arial, Helvetica, sans-serif;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .page{
+    max-width:1320px; margin:0 auto; background:var(--blanco);
+    background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22600%22%20height%3D%22400%22%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%22100%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2220%22%20font-weight%3D%22700%22%20fill%3D%22rgba%2810%2C10%2C10%2C0.07%29%22%20transform%3D%22rotate%28-30%20300%20100%29%22%20text-anchor%3D%22middle%22%3EUSO%20INTERNO%20%C2%B7%20BYD%20YACOPINI%3C/text%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%22250%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2220%22%20font-weight%3D%22700%22%20fill%3D%22rgba%2810%2C10%2C10%2C0.07%29%22%20transform%3D%22rotate%28-30%20300%20250%29%22%20text-anchor%3D%22middle%22%3EUSO%20INTERNO%20%C2%B7%20BYD%20YACOPINI%3C/text%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%22400%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2220%22%20font-weight%3D%22700%22%20fill%3D%22rgba%2810%2C10%2C10%2C0.07%29%22%20transform%3D%22rotate%28-30%20300%20400%29%22%20text-anchor%3D%22middle%22%3EUSO%20INTERNO%20%C2%B7%20BYD%20YACOPINI%3C/text%3E%0A%3C/svg%3E");
+    background-repeat:repeat;
+  }
+  .header{
+    background:var(--negro);
+    color:var(--blanco);
+    padding:36px 40px 28px;
+    background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22600%22%20height%3D%22400%22%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%22100%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2220%22%20font-weight%3D%22700%22%20fill%3D%22rgba%28255%2C255%2C255%2C0.08%29%22%20transform%3D%22rotate%28-30%20300%20100%29%22%20text-anchor%3D%22middle%22%3EUSO%20INTERNO%20%C2%B7%20BYD%20YACOPINI%3C/text%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%22250%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2220%22%20font-weight%3D%22700%22%20fill%3D%22rgba%28255%2C255%2C255%2C0.08%29%22%20transform%3D%22rotate%28-30%20300%20250%29%22%20text-anchor%3D%22middle%22%3EUSO%20INTERNO%20%C2%B7%20BYD%20YACOPINI%3C/text%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%22400%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2220%22%20font-weight%3D%22700%22%20fill%3D%22rgba%28255%2C255%2C255%2C0.08%29%22%20transform%3D%22rotate%28-30%20300%20400%29%22%20text-anchor%3D%22middle%22%3EUSO%20INTERNO%20%C2%B7%20BYD%20YACOPINI%3C/text%3E%0A%3C/svg%3E");
+    background-repeat:repeat;
+    position:relative;
+  }
+  .header-top{ display:flex; justify-content:space-between; align-items:center; }
+  .brand-logo{ height:48px; display:block; }
+  .header-date{ text-align:right; font-size:12px; color:#A8A8A8; }
+  .header-date .vig-label{ text-transform:uppercase; letter-spacing:1px; font-size:10.5px; opacity:0.85; }
+  .header-date .vig-value{ font-size:14px; font-weight:700; color:var(--blanco); margin-top:2px; }
+  .header h1{ margin:26px 0 4px; font-size:30px; font-weight:800; letter-spacing:0.3px; }
+  .header p.lead{ margin:0; font-size:13.5px; color:#C2C2C2; max-width:560px; line-height:1.5; }
+  .confidential-banner{
+    background:var(--carbon); color:var(--blanco); text-align:center;
+    font-size:11.5px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; padding:8px 20px;
+  }
+  .legend-bar{
+    display:flex; flex-wrap:wrap; gap:18px; padding:14px 40px;
+    background:var(--gris-fondo); border-bottom:1px solid var(--gris-claro); font-size:11.5px; color:var(--gris-oscuro);
+  }
+  .legend-bar .item{ display:flex; align-items:center; gap:6px; }
+  .legend-bar .dot{ width:9px;height:9px;border-radius:2px; flex-shrink:0; }
+  .category{ padding:30px 40px 6px; overflow:hidden; }
+  .category-head{ display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+  .category-pill{ font-size:11px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; padding:5px 12px; border-radius:20px; color:var(--blanco); }
+  .category-pill.ev{ background:var(--azul-ev); }
+  .category-pill.dm{ background:var(--verde-dm); }
+  .category-head .category-title{ font-size:13px; color:var(--gris-medio); letter-spacing:0.3px; }
+  .category-head hr{ flex:1; border:none; border-top:1px solid var(--gris-claro); }
+
+  .price-table-wrap{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-x pan-y;
+    border:1px solid var(--gris-claro);
+    border-radius:10px;
+    margin-bottom:24px;
+    display:block;
+    width:100%;
+  }
+  table.price-table{
+    border-collapse:separate;
+    border-spacing:0;
+    width:100%;
+  }
+  table.price-table thead th{
+    background:var(--gris-fondo);
+    font-size:9.5px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    color:var(--negro);
+    font-weight:700;
+    padding:10px 10px;
+    text-align:center;
+    border-bottom:2px solid var(--gris-claro);
+    white-space:nowrap;
+  }
+  table.price-table tbody td{
+    padding:14px 10px;
+    text-align:right;
+    border-bottom:1px solid var(--gris-claro);
+    font-size:14px;
+    font-weight:700;
+    color:var(--carbon);
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+  }
+  table.price-table tbody tr:last-child td{ border-bottom:none; }
+
+  table.price-table thead th.col-nombre,
+  table.price-table tbody td.col-nombre{
+    text-align:left;
+    position:-webkit-sticky;
+    position:sticky;
+    left:0;
+    z-index:2;
+    width:210px;
+    min-width:210px;
+    max-width:210px;
+  }
+  table.price-table thead th.col-nombre{ background:var(--gris-fondo); color:var(--negro); }
+  table.price-table tbody td.col-nombre{ background:#FAFAFA; }
+  table.price-table tbody tr.ev td.col-nombre{ border-left:4px solid var(--azul-ev); }
+  table.price-table tbody tr.dm td.col-nombre{ border-left:4px solid var(--verde-dm); }
+  table.price-table tbody td.col-nombre .model-name{ display:block; font-size:15px; font-weight:800; color:var(--negro); line-height:1.25; white-space:normal; }
+  table.price-table tbody td.col-nombre .model-tag{ display:block; margin-top:4px; font-size:10px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; }
+  table.price-table tbody tr.ev td.col-nombre .model-tag{ color:var(--azul-ev); }
+  table.price-table tbody tr.dm td.col-nombre .model-tag{ color:var(--verde-dm); }
+
+  table.price-table thead th.col-lista,
+  table.price-table tbody td.col-lista{
+    position:-webkit-sticky;
+    position:sticky;
+    left:210px;
+    z-index:2;
+    box-shadow:2px 0 4px rgba(0,0,0,0.08);
+  }
+  table.price-table thead th.col-lista{ background:var(--gris-fondo); }
+  table.price-table tbody td.col-lista{ background:#FAFAFA; font-size:15px; color:var(--negro); }
+
+  table.price-table thead th.web-cell{ background:var(--amarillo-fondo); color:var(--amarillo-web); }
+  table.price-table tbody td.web-cell{ background:var(--amarillo-fondo); color:var(--amarillo-web); font-size:15px; }
+  table.price-table thead th.lleno-cell{ background:var(--verde-lleno-fondo); color:var(--verde-lleno); }
+  table.price-table tbody td.lleno-cell{ background:var(--verde-lleno-fondo); color:var(--verde-lleno); font-size:15px; }
+  table.price-table tbody td.flete-cell,
+  table.price-table tbody td.patentam-cell{ color:var(--gris-medio); }
+  table.price-table thead th.piso-cell{ background:var(--rojo-fondo); color:var(--rojo-piso); }
+  table.price-table tbody td.piso-cell{ background:var(--rojo-fondo); color:var(--rojo-piso); font-size:15px; }
+  table.price-table tbody td.gerencia-cell{ background:var(--carbon); color:var(--blanco); font-size:15px; }
+  table.price-table thead th.gerencia-head{ background:var(--carbon); color:#B0B0B0; }
+  .accesorios{ padding:8px 40px 36px; }
+  .accesorios-card{ border:1px solid var(--gris-claro); border-radius:10px; overflow:hidden; }
+  .accesorios-card table{ width:100%; border-collapse:collapse; }
+  .accesorios-card th{
+    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.8px; color:var(--blanco);
+    background:var(--negro); padding:10px 18px; font-weight:700;
+  }
+  .accesorios-card th.right, .accesorios-card td.right{ text-align:right; }
+  .accesorios-card td{ padding:11px 18px; font-size:13.5px; border-bottom:1px solid var(--gris-claro); color:var(--carbon); }
+  .accesorios-card tr:last-child td{ border-bottom:none; }
+  .accesorios-card td.precio{ font-weight:700; color:var(--negro); }
+  .incluido-badge{ display:inline-block; background:#E8F5E9; color:var(--verde-dm); font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; border:1px solid #C8E6C9; }
+  .footer{ padding:22px 40px 30px; border-top:1px solid var(--gris-claro); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+  .footer .footer-note{ font-size:11.5px; color:var(--gris-medio); max-width:560px; line-height:1.5; }
+  .footer .footer-brand{ font-size:11.5px; font-weight:700; color:var(--negro); text-align:right; }
+  .section-title-accesorios{ font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--negro); margin:0 0 14px; }
+  @media print{
+    @page{ size: A4 portrait; margin: 8mm; }
+    body{ background:var(--blanco); }
+    .page{ box-shadow:none; max-width:100%; }
+
+    /* Header compacto */
+    .header{ padding:8px 12px 8px; }
+    .header h1{ font-size:15px; margin:8px 0 2px; }
+    .header p.lead{ font-size:7.5px; }
+    .header-date .vig-value{ font-size:9px; }
+    .header-date .vig-label{ font-size:7px; }
+    .brand-logo{ height:22px; }
+    .legend-bar{ padding:4px 12px; font-size:7.5px; gap:8px; }
+    .banner-gerencia{ padding:5px 12px; font-size:8px; letter-spacing:0.3px; }
+
+    /* Sin scroll, layout normal */
+    .price-table-wrap{
+      overflow-x:visible;
+      border:1px solid var(--gris-claro);
+      display:block;
+      border-radius:6px;
+    }
+
+    /* Categorías apiladas: sin page-break, márgenes reducidos */
+    .category{
+      page-break-inside:avoid;
+      page-break-before:auto;
+      padding:6px 0 6px;
+    }
+    .category-head{ margin-bottom:6px; }
+    .category-head hr{ display:none; }
+
+    /* EV y DM: tablas con fuente grande porque tienen pocas filas */
+    table.price-table{
+      width:100%;
+      table-layout:fixed;
+      border-collapse:separate;
+      border-spacing:0;
+    }
+    table.price-table thead th{
+      font-size:8px;
+      padding:7px 4px;
+      letter-spacing:0;
+      text-align:center;
+    }
+    table.price-table tbody td{
+      font-size:10px;
+      padding:9px 4px;
+    }
+    table.price-table tbody td.col-nombre{
+      min-width:0; width:19%; max-width:19%;
+      position:static; box-shadow:none;
+    }
+    table.price-table thead th.col-nombre{
+      min-width:0; width:19%; max-width:19%;
+      position:static; box-shadow:none; text-align:left;
+    }
+    table.price-table tbody td.col-lista,
+    table.price-table thead th.col-lista{
+      width:9.5%;
+      position:static; box-shadow:none;
+    }
+    table.price-table tbody td.col-nombre .model-name{ font-size:11px; }
+    table.price-table tbody td.col-nombre .model-tag{ font-size:7.5px; }
+    table.price-table tbody td.web-cell{ font-size:11px; }
+    table.price-table tbody td.piso-cell{ font-size:11px; }
+    table.price-table tbody td.lleno-cell{ font-size:11px; }
+    table.price-table tbody td.gerencia-cell{ font-size:11px; }
+    table.price-table thead{ display:table-header-group; }
+    table.price-table tr{ page-break-inside:avoid; }
+
+    /* Accesorios: tabla compacta pero legible */
+    .accesorios{
+      page-break-inside:avoid;
+      padding:6px 0 6px;
+    }
+    .section-title-accesorios{ font-size:9px; margin-bottom:5px; }
+    .accesorios-card{ border-radius:6px; }
+    .accesorios-card th{ font-size:8.5px; padding:6px 12px; }
+    .accesorios-card td{ font-size:9.5px; padding:5px 12px; }
+    .incluido-badge{ font-size:7.5px; padding:2px 5px; }
+
+    /* Footer */
+    .footer{ padding:6px 0 0; font-size:8px; }
+    .footer .footer-note{ font-size:7.5px; }
+    .footer .footer-brand{ font-size:8px; }
+  }
+  @media (max-width:720px){
+    .header{ padding:26px 20px 22px; }
+    .category{ padding:24px 20px 6px; }
+    .accesorios{ padding:8px 20px 28px; }
+    .footer{ padding:18px 20px 24px; }
+    .legend-bar{ padding:12px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-top">
+      <img class="brand-logo" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iQ2FwYV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDU1MCAyMzkuMTkiPgogIDwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyOS41LjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiAyLjEuMCBCdWlsZCAxNDEpICAtLT4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLnN0MCB7CiAgICAgICAgZmlsbDogI0ZGRkZGRjsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPHJlY3QgY2xhc3M9InN0MCIgeD0iNDc1LjEzIiB5PSIyMTIuNTEiIHdpZHRoPSI0Ljk4IiBoZWlnaHQ9IjIyLjExIi8+CiAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTQ4OS45OCwyMzQuNjJsNi45Mi0yMi4xMWg2bDYuOTIsMjIuMTFoLTUuMjlsLTEuMzYtNS4yNmgtNi43NWwtMS4zNiw1LjI2aC01LjA5Wk00OTcuOTgsMjIzLjQzbC0uNTQsMi4wM2g0LjcxbC0uNTEtMi4wM2MtLjMyLTEuMTEtLjYyLTIuMjgtLjkxLTMuNTMtLjMtMS4yNC0uNTktMi40NC0uODgtMy41OWgtLjE0Yy0uMjcsMS4xOC0uNTUsMi4zOC0uODMsMy42MS0uMjksMS4yMy0uNTgsMi40LS45LDMuNTEiLz4KICA8cG9seWdvbiBjbGFzcz0ic3QwIiBwb2ludHM9IjUxOS42OCAyMzQuNjIgNTE5LjY4IDIxMi41MSA1MjQuNjcgMjEyLjUxIDUyNC42NyAyMzAuNDEgNTMzLjQyIDIzMC40MSA1MzMuNDIgMjM0LjYyIDUxOS42OCAyMzQuNjIiLz4KICA8cmVjdCBjbGFzcz0ic3QwIiB4PSI1MTkuNSIgeT0iMTM3LjYzIiB3aWR0aD0iMTEuMyIgaGVpZ2h0PSI0My4zMSIvPgogIDxnPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTE2Mi45MywxOS4xOGMtOC4wNi0xMi4xNi0yMS44OC0xNC41My0zMS4yMy0xNC43NS04LjIzLS4xOS00My45LS4yMy02NC42Ny0uMjQtNDAuOTEtLjAzLTE3LjUxLS4wMS01NC4zNi0uMDF2MTkuNTRjNDMuNzUsMCw5NS42OC0uMSwxMTguNDEuMjUsNC4wNi4wNiw4LjA4LjQ3LDExLjI3LDMuMywyLjk3LDIuNjQsNC4wMiw2Ljc5LDIuNjksMTAuNC0yLjE0LDUuODMtOC4wNyw3LjI4LTEzLjk2LDcuMzctOS4wMS4xNC0zMy43Ny4xOS01Mi4yNC4yMi00NS4zLjA2LTI1LjY4LjAzLTY2LjE2LjAzdjE5LjQ5YzQzLjcyLDAsOTUuNzYtLjA5LDExOC40MS4yNSw3LjA2LjEsMTQuNTMsMi41NiwxNC41MywxMC40M3MtNy40NiwxMC40NS0xNC41MywxMC41NmMtMjIuNTkuMzMtNzQuNjYuMjQtMTE4LjQxLjI0djE5LjUzYzQzLjg4LDAsMTAxLjMyLjE2LDExOS4wMy0uMjUsOS4zNS0uMjIsMjMuMTgtMi41OSwzMS4yMy0xNC43NSw3LjU2LTExLjQxLDUuNzEtMjYuMjctNC4yMi0zNS44LDkuOTMtOS41NCwxMS43OC0yNC4zOSw0LjIxLTM1LjgiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik01MjAuMDgsMTUuOTNjLTEzLjM1LTkuNTgtMjcuODUtMTAuOTQtMzkuNjEtMTEuMjEtMTEuNTgtLjI3LTI5LjA1LS4zOS00NC41LS40NS0zNy42Ny0uMTUtMTUuMDItLjA4LTUwLjkxLS4wOHYxOS42YzM4LjE5LDAsNjQuOTctLjMyLDk0LjQ2LjUyLDguNjYuMjQsMTcuOTUsMS4xNiwyNi4zMSw2Ljk2LDcuOTIsNS41LDEyLjYyLDE0LjI2LDEyLjYyLDIzLjcycy00LjU3LDE4LjI0LTEyLjQ5LDIzLjc0Yy04LjM2LDUuODEtMTcuNjUsNi43Mi0yNi4zMSw2Ljk2LTI5LjQ5LjgzLTU2LjI3LjUxLTk0LjQ2LjUxbC0uMTMsMTkuNTljMzguNDEsMCw2Ni4wMy4xNCw5NS40MS0uNTQsMTEuNzYtLjI3LDI2LjI2LTEuNjMsMzkuNjEtMTEuMjEsMTIuNjctOS4wOSwyMC4zMy0yMy4zNiwyMC4zMy0zOS4wNXMtNy42Ny0yOS45Ny0yMC4zMy0zOS4wNSIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTIyNy4yMiw0OC4wNmMtMTAuMjMtLjItMTMuNDktMy41NC0xMy41Ni0xMy43My0uMDctOS40Mi0uMDItMjAuNTgtLjAyLTMwLjE0aC0yMi41NmMwLDkuNjctLjE5LDI5LjI0LjE5LDM4LjcuNzQsMTguMzgsNi43NywyNC4xMSwyNS41NSwyNC43NSwxMy4wMi40NCwyMy4zNi4yOSw0MS4zNi4yOHYtMTkuNjljLTE0LjQzLDAtMjAuMzEuMDQtMzAuOTYtLjE2Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMzM5LjA0LDM0LjY4Yy0uMDcsOS45Mi0zLjMsMTMuMTgtMTMuNTYsMTMuMzgtNC44OS4wOS0xNy43NS4xNC0yOC4zMy4xNmgwcy0uMS4wMS0uMS4wMWMtMTAuODEsMC0yMi4zNC0uMDItMjkuMS0uMDJ2NTcuNTdoMjYuNTJ2LTM3Ljg4Yy44MSwwLDEuNjgsMCwyLjU4LDBoMHMuMSwwLC4xLDB2LjAyYzEzLjgsMCwzMS4wNC0uMDYsMzcuNTUtLjI2LDE5LjkzLS42MSwyNi02LjIzLDI2LjczLTI0Ljc4LjEtMi40OC4xNi01LjYyLjE5LTkuMDZWNC4xOGgtMjIuNTZjMCw5LjguMDQsMjAuODEtLjAzLDMwLjUiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0yMS40MiwyMzUuMDJjLTEuNCwwLTIuNzItLjI1LTMuOTctLjczLTEuMjQtLjQ4LTIuMzMtMS4yLTMuMjctMi4xNS0uOTQtLjk1LTEuNjgtMi4xMy0yLjIyLTMuNTQtLjU0LTEuNDEtLjgxLTMuMDUtLjgxLTQuOXMuMjgtMy40Ni44NS00LjljLjU3LTEuNDMsMS4zMi0yLjY1LDIuMjctMy42NC45NS0xLDIuMDYtMS43NSwzLjMyLTIuMjcsMS4yNy0uNTIsMi42LS43OCw0LS43OHMyLjcuMjksMy44My44N2MxLjEzLjU3LDIuMDcsMS4yNSwyLjgxLDIuMDJsLTIuNjUsMy4xOWMtLjU3LS41Mi0xLjE2LS45NC0xLjc4LTEuMjctLjYyLS4zMy0xLjMzLS40OS0yLjEyLS40OS0uNzUsMC0xLjQ1LjE2LTIuMTIuNDktLjY3LjMzLTEuMjQuOC0xLjczLDEuNDEtLjQ5LjYxLS44NywxLjM2LTEuMTUsMi4yNHMtLjQyLDEuODgtLjQyLDIuOThjMCwyLjI4LjQ5LDQuMDUsMS40Niw1LjMxLjk3LDEuMjUsMi4yNywxLjg4LDMuOSwxLjg4LjksMCwxLjcxLS4yLDIuNDMtLjU5LjcxLS40LDEuMzQtLjg5LDEuODgtMS40OGwyLjY1LDMuMTJjLTEuODUsMi4xNy00LjI0LDMuMjYtNy4xNSwzLjI2Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNDcuMTIsMjM1LjAzYy0xLjQ5LDAtMi44NS0uMjctNC4wOS0uOC0xLjIzLS41My0yLjI5LTEuMjktMy4xNy0yLjI5LS44OC0uOTktMS41Ni0yLjItMi4wNS0zLjYzLS40OC0xLjQyLS43My0zLjA0LS43My00Ljg1cy4yNC0zLjQyLjczLTQuODNjLjQ5LTEuNDEsMS4xNy0yLjYsMi4wNS0zLjU2Ljg4LS45NiwxLjk0LTEuNywzLjE3LTIuMiwxLjIzLS41MSwyLjU5LS43Niw0LjA5LS43NnMyLjg1LjI1LDQuMDkuNzZjMS4yMy41MSwyLjI5LDEuMjUsMy4xNywyLjIyLjg4Ljk3LDEuNTYsMi4xNiwyLjA1LDMuNTguNDgsMS40MS43MywzLjAxLjczLDQuOHMtLjI0LDMuNDItLjczLDQuODVjLS40OSwxLjQyLTEuMTcsMi42My0yLjA1LDMuNjMtLjg4LDEtMS45NCwxLjc2LTMuMTcsMi4yOS0xLjIzLjUzLTIuNTkuOC00LjA5LjhNNDcuMTIsMjMwLjcyYzEuNTEsMCwyLjcxLS42NSwzLjU5LTEuOTUuODgtMS4zLDEuMzItMy4wNywxLjMyLTUuMzFzLS40NC0zLjk0LTEuMzItNS4xOWMtLjg4LTEuMjQtMi4wOC0xLjg3LTMuNTktMS44N3MtMi43MS42Mi0zLjU5LDEuODdjLS44OCwxLjI0LTEuMzIsMi45Ny0xLjMyLDUuMTlzLjQ0LDQuMDEsMS4zMiw1LjMxYy44OCwxLjMsMi4wOCwxLjk1LDMuNTksMS45NSIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTY4Ljc5LDIzNC42MnYtMjIuMTFoNS4xMmw1Ljc2LDEwLjk5LDIuMTcsNC44OGguMTRjLS4xMi0xLjE4LS4yNC0yLjQ5LS4zOS0zLjkzLS4xNS0xLjQ1LS4yMi0yLjgzLS4yMi00LjE0di03LjhoNC43NXYyMi4xMWgtNS4xMmwtNS43Ni0xMS4wMi0yLjE3LTQuODFoLS4xNGMuMTEsMS4yMi4yNCwyLjUzLjM5LDMuOTMuMTUsMS40LjIyLDIuNzYuMjIsNC4wN3Y3LjgzaC00Ljc1WiIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTEwOC4wMiwyMzUuMDJjLTEuNCwwLTIuNzItLjI1LTMuOTctLjczcy0yLjMzLTEuMi0zLjI3LTIuMTVjLS45NC0uOTUtMS42OC0yLjEzLTIuMjItMy41NC0uNTQtMS40MS0uODEtMy4wNS0uODEtNC45cy4yOC0zLjQ2Ljg1LTQuOWMuNTYtMS40MywxLjMyLTIuNjUsMi4yNy0zLjY0Ljk1LTEsMi4wNi0xLjc1LDMuMzItMi4yNywxLjI2LS41MiwyLjYtLjc4LDQtLjc4czIuNy4yOSwzLjgzLjg3YzEuMTMuNTcsMi4wNywxLjI1LDIuODEsMi4wMmwtMi42NCwzLjE5Yy0uNTctLjUyLTEuMTYtLjk0LTEuNzgtMS4yNy0uNjItLjMzLTEuMzMtLjQ5LTIuMTItLjQ5LS43NSwwLTEuNDUuMTYtMi4xMi40OS0uNjcuMzMtMS4yNC44LTEuNzMsMS40MS0uNDkuNjEtLjg3LDEuMzYtMS4xNSwyLjI0LS4yOC44OC0uNDIsMS44OC0uNDIsMi45OCwwLDIuMjguNDgsNC4wNSwxLjQ2LDUuMzEuOTcsMS4yNSwyLjI3LDEuODgsMy45LDEuODguOSwwLDEuNzEtLjIsMi40Mi0uNTkuNzEtLjQsMS4zNC0uODksMS44OC0xLjQ4bDIuNjQsMy4xMmMtMS44NSwyLjE3LTQuMjQsMy4yNi03LjE1LDMuMjYiLz4KICAgIDxwb2x5Z29uIGNsYXNzPSJzdDAiIHBvaW50cz0iMTI1Ljk5IDIzNC42MiAxMjUuOTkgMjEyLjUxIDEzOS44MyAyMTIuNTEgMTM5LjgzIDIxNi43MSAxMzAuOTggMjE2LjcxIDEzMC45OCAyMjEuMTUgMTM4LjUxIDIyMS4xNSAxMzguNTEgMjI1LjMzIDEzMC45OCAyMjUuMzMgMTMwLjk4IDIzMC40MSAxNDAuMTcgMjMwLjQxIDE0MC4xNyAyMzQuNjIgMTI1Ljk5IDIzNC42MiIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTE1OC43OCwyMzUuMDJjLTEuNDUsMC0yLjg5LS4yNy00LjMyLS44LTEuNDQtLjUzLTIuNzItMS4zMy0zLjg1LTIuMzlsMi44NS0zLjQyYy43OS42OCwxLjY3LDEuMjMsMi42MywxLjY2Ljk2LjQzLDEuOS42NSwyLjgzLjY1LDEuMDQsMCwxLjgyLS4xOSwyLjMyLS41OC41MS0uMzguNzYtLjkuNzYtMS41NiwwLS4zNC0uMDctLjYzLS4yMi0uODgtLjE1LS4yNS0uMzYtLjQ3LS42NC0uNjYtLjI4LS4xOS0uNjItLjM3LTEuMDItLjU0LS40LS4xNy0uODMtLjM2LTEuMy0uNTZsLTIuODgtMS4yMmMtLjU3LS4yMy0xLjEyLS41Mi0xLjY1LS44OC0uNTMtLjM2LTEuMDEtLjc5LTEuNDItMS4yNy0uNDItLjQ4LS43NS0xLjA1LTEtMS42OS0uMjUtLjY1LS4zNy0xLjM3LS4zNy0yLjE5LDAtLjkuMTktMS43Ni41OC0yLjU2LjM5LS44LjkzLTEuNSwxLjYzLTIuMS43LS42LDEuNTMtMS4wNywyLjQ5LTEuNDEuOTYtLjM0LDIuMDItLjUxLDMuMTctLjUxLDEuMjksMCwyLjU2LjI1LDMuODEuNzUsMS4yNS41LDIuMzYsMS4yMiwzLjMxLDIuMTdsLTIuNTQsMy4xNWMtLjcyLS41Ni0xLjQ1LTEtMi4xNy0xLjMtLjcyLS4zMS0xLjUyLS40Ni0yLjQxLS40NnMtMS41NC4xOC0yLjA1LjUyYy0uNTEuMzUtLjc2Ljg0LS43NiwxLjQ4LDAsLjM0LjA4LjYzLjI2Ljg3LjE3LjI0LjQxLjQ1LjcxLjY0LjMxLjE5LjY2LjM3LDEuMDcuNTQuNDEuMTcuODUuMzYsMS4zMi41NmwyLjg1LDEuMTVjMS4zNi41NCwyLjQyLDEuMjksMy4yLDIuMjRzMS4xNywyLjIsMS4xNywzLjc2YzAsLjkzLS4xOSwxLjgtLjU2LDIuNjMtLjM3LjgyLS45MiwxLjU1LTEuNjMsMi4xNy0uNzEuNjItMS41OSwxLjEyLTIuNjMsMS40OS0xLjA0LjM3LTIuMjIuNTYtMy41My41NiIvPgogICAgPHJlY3QgY2xhc3M9InN0MCIgeD0iMTc4LjM1IiB5PSIyMTIuNTEiIHdpZHRoPSI0Ljk4IiBoZWlnaHQ9IjIyLjExIi8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjA1LDIzNS4wM2MtMS40OSwwLTIuODUtLjI3LTQuMDktLjgtMS4yMy0uNTMtMi4yOS0xLjI5LTMuMTctMi4yOS0uODgtLjk5LTEuNTYtMi4yLTIuMDUtMy42My0uNDgtMS40Mi0uNzMtMy4wNC0uNzMtNC44NXMuMjQtMy40Mi43My00LjgzYy40OS0xLjQxLDEuMTctMi42LDIuMDUtMy41Ni44OC0uOTYsMS45NC0xLjcsMy4xNy0yLjIsMS4yMy0uNTEsMi41OS0uNzYsNC4wOS0uNzZzMi44NS4yNSw0LjA5Ljc2YzEuMjMuNTEsMi4yOSwxLjI1LDMuMTcsMi4yMi44OC45NywxLjU2LDIuMTYsMi4wNSwzLjU4LjQ4LDEuNDEuNzMsMy4wMS43Myw0LjhzLS4yNCwzLjQyLS43Myw0Ljg1Yy0uNDksMS40Mi0xLjE3LDIuNjMtMi4wNSwzLjYzLS44OCwxLTEuOTQsMS43Ni0zLjE3LDIuMjktMS4yMy41My0yLjU5LjgtNC4wOS44TTIwNSwyMzAuNzJjMS41MSwwLDIuNzEtLjY1LDMuNTktMS45NS44OC0xLjMsMS4zMi0zLjA3LDEuMzItNS4zMXMtLjQ0LTMuOTQtMS4zMi01LjE5Yy0uODgtMS4yNC0yLjA4LTEuODctMy41OS0xLjg3cy0yLjcxLjYyLTMuNTksMS44N2MtLjg4LDEuMjQtMS4zMiwyLjk3LTEuMzIsNS4xOXMuNDQsNC4wMSwxLjMyLDUuMzFjLjg4LDEuMywyLjA4LDEuOTUsMy41OSwxLjk1Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjI2LjY3LDIzNC42MnYtMjIuMTFoNS4xMmw1Ljc2LDEwLjk5LDIuMTcsNC44OGguMTRjLS4xMi0xLjE4LS4yNC0yLjQ5LS4zOS0zLjkzLS4xNS0xLjQ1LS4yMi0yLjgzLS4yMi00LjE0di03LjhoNC43NXYyMi4xMWgtNS4xMmwtNS43Ni0xMS4wMi0yLjE3LTQuODFoLS4xNGMuMTEsMS4yMi4yNCwyLjUzLjM5LDMuOTMuMTUsMS40LjIyLDIuNzYuMjIsNC4wN3Y3LjgzaC00Ljc1WiIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTI1My44NywyMzQuNjJsNi45Mi0yMi4xMWg2bDYuOTIsMjIuMTFoLTUuMjlsLTEuMzUtNS4yNmgtNi43NWwtMS4zNiw1LjI2aC01LjA5Wk0yNjEuODcsMjIzLjQzbC0uNTQsMi4wM2g0LjcxbC0uNTEtMi4wM2MtLjMyLTEuMTEtLjYyLTIuMjgtLjkyLTMuNTMtLjI5LTEuMjQtLjU5LTIuNDQtLjg4LTMuNTloLS4xNGMtLjI3LDEuMTgtLjU1LDIuMzgtLjgzLDMuNjEtLjI4LDEuMjMtLjU4LDIuNC0uOSwzLjUxIi8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjgzLjU3LDIzNC42MnYtMjIuMTFoNy45N2MxLjE4LDAsMi4yOC4xMSwzLjMxLjM0LDEuMDMuMjMsMS45My42MSwyLjcsMS4xNC43Ny41MywxLjM4LDEuMjQsMS44MywyLjEyLjQ1Ljg4LjY4LDEuOTguNjgsMy4yOSwwLDEuNjMtLjM2LDIuOTctMS4wNyw0LjAyLS43MSwxLjA1LTEuNjcsMS44NC0yLjg3LDIuMzZsNS4wMiw4Ljg1aC01LjU5bC00LjI0LTcuOTdoLTIuNzV2Ny45N2gtNC45OFpNMjg4LjU2LDIyMi42OGgyLjU4YzEuMzEsMCwyLjMxLS4yOCwzLS44My42OS0uNTUsMS4wMy0xLjM3LDEuMDMtMi40NnMtLjM1LTEuODQtMS4wMy0yLjI3Yy0uNjktLjQzLTEuNjktLjY0LTMtLjY0aC0yLjU4djYuMjFaIi8+CiAgICA8cmVjdCBjbGFzcz0ic3QwIiB4PSIzMTEuODIiIHk9IjIxMi41MSIgd2lkdGg9IjQuOTgiIGhlaWdodD0iMjIuMTEiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0zMzguNDcsMjM1LjAzYy0xLjQ5LDAtMi44NS0uMjctNC4wOS0uOC0xLjIzLS41My0yLjI5LTEuMjktMy4xNy0yLjI5LS44OC0uOTktMS41Ny0yLjItMi4wNS0zLjYzLS40OS0xLjQyLS43My0zLjA0LS43My00Ljg1cy4yNC0zLjQyLjczLTQuODNjLjQ4LTEuNDEsMS4xNy0yLjYsMi4wNS0zLjU2Ljg4LS45NiwxLjk0LTEuNywzLjE3LTIuMiwxLjIzLS41MSwyLjYtLjc2LDQuMDktLjc2czIuODUuMjUsNC4wOS43NmMxLjIzLjUxLDIuMjksMS4yNSwzLjE3LDIuMjIuODguOTcsMS41NywyLjE2LDIuMDUsMy41OC40OCwxLjQxLjczLDMuMDEuNzMsNC44cy0uMjUsMy40Mi0uNzMsNC44NWMtLjQ5LDEuNDItMS4xNywyLjYzLTIuMDUsMy42My0uODgsMS0xLjk0LDEuNzYtMy4xNywyLjI5LTEuMjMuNTMtMi42LjgtNC4wOS44TTMzOC40NywyMzAuNzJjMS41MSwwLDIuNzEtLjY1LDMuNTktMS45NS44OC0xLjMsMS4zMi0zLjA3LDEuMzItNS4zMXMtLjQ0LTMuOTQtMS4zMi01LjE5Yy0uODgtMS4yNC0yLjA4LTEuODctMy41OS0xLjg3cy0yLjcxLjYyLTMuNTksMS44N2MtLjg4LDEuMjQtMS4zMiwyLjk3LTEuMzIsNS4xOXMuNDQsNC4wMSwxLjMyLDUuMzFjLjg4LDEuMywyLjA4LDEuOTUsMy41OSwxLjk1Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMzgzLjM3LDIzNS4wM2MtMS40OSwwLTIuODUtLjI3LTQuMDktLjgtMS4yMy0uNTMtMi4yOS0xLjI5LTMuMTctMi4yOS0uODgtLjk5LTEuNTctMi4yLTIuMDUtMy42My0uNDktMS40Mi0uNzMtMy4wNC0uNzMtNC44NXMuMjQtMy40Mi43My00LjgzYy40OC0xLjQxLDEuMTctMi42LDIuMDUtMy41Ni44OC0uOTYsMS45NC0xLjcsMy4xNy0yLjIsMS4yMy0uNTEsMi42LS43Niw0LjA5LS43NnMyLjg1LjI1LDQuMDkuNzZjMS4yMy41MSwyLjI5LDEuMjUsMy4xNywyLjIyLjg4Ljk3LDEuNTcsMi4xNiwyLjA1LDMuNTguNDgsMS40MS43MywzLjAxLjczLDQuOHMtLjI1LDMuNDItLjczLDQuODVjLS40OSwxLjQyLTEuMTcsMi42My0yLjA1LDMuNjMtLjg4LDEtMS45NCwxLjc2LTMuMTcsMi4yOS0xLjIzLjUzLTIuNi44LTQuMDkuOE0zODMuMzcsMjMwLjcyYzEuNTEsMCwyLjcxLS42NSwzLjU5LTEuOTUuODgtMS4zLDEuMzItMy4wNywxLjMyLTUuMzFzLS40NC0zLjk0LTEuMzItNS4xOWMtLjg4LTEuMjQtMi4wOC0xLjg3LTMuNTktMS44N3MtMi43MS42Mi0zLjU5LDEuODdjLS44OCwxLjI0LTEuMzIsMi45Ny0xLjMyLDUuMTlzLjQ0LDQuMDEsMS4zMiw1LjMxYy44OCwxLjMsMi4wOCwxLjk1LDMuNTksMS45NSIvPgogICAgPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSI0MDUuMDQgMjM0LjYyIDQwNS4wNCAyMTIuNTEgNDE4Ljk3IDIxMi41MSA0MTguOTcgMjE2LjcxIDQxMC4wMiAyMTYuNzEgNDEwLjAyIDIyMS44MyA0MTcuNjkgMjIxLjgzIDQxNy42OSAyMjYuMDQgNDEwLjAyIDIyNi4wNCA0MTAuMDIgMjM0LjYyIDQwNS4wNCAyMzQuNjIiLz4KICAgIDxyZWN0IGNsYXNzPSJzdDAiIHg9IjQzMC4yNiIgeT0iMjEyLjUxIiB3aWR0aD0iNC45OSIgaGVpZ2h0PSIyMi4xMSIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTQ1Ny4xNSwyMzUuMDJjLTEuNCwwLTIuNzItLjI1LTMuOTctLjczcy0yLjMzLTEuMi0zLjI3LTIuMTVjLS45NC0uOTUtMS42OC0yLjEzLTIuMjItMy41NC0uNTQtMS40MS0uODEtMy4wNS0uODEtNC45cy4yOC0zLjQ2Ljg1LTQuOWMuNTYtMS40MywxLjMyLTIuNjUsMi4yNy0zLjY0Ljk1LTEsMi4wNi0xLjc1LDMuMzItMi4yNywxLjI2LS41MiwyLjYtLjc4LDQtLjc4czIuNy4yOSwzLjgzLjg3YzEuMTMuNTcsMi4wNywxLjI1LDIuODEsMi4wMmwtMi42NCwzLjE5Yy0uNTctLjUyLTEuMTYtLjk0LTEuNzgtMS4yNy0uNjItLjMzLTEuMzMtLjQ5LTIuMTItLjQ5LS43NSwwLTEuNDUuMTYtMi4xMi40OS0uNjcuMzMtMS4yNC44LTEuNzMsMS40MS0uNDkuNjEtLjg3LDEuMzYtMS4xNSwyLjI0LS4yOC44OC0uNDIsMS44OC0uNDIsMi45OCwwLDIuMjguNDgsNC4wNSwxLjQ2LDUuMzEuOTcsMS4yNSwyLjI3LDEuODgsMy45LDEuODguOSwwLDEuNzEtLjIsMi40Mi0uNTkuNzEtLjQsMS4zNC0uODksMS44OC0xLjQ4bDIuNjQsMy4xMmMtMS44NSwyLjE3LTQuMjQsMy4yNi03LjE1LDMuMjYiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0zMjIuMTgsMTQyLjY0Yy01LjY5LTQuMDgtMTEuODctNC42Ni0xNi44OC00Ljc4LTQtLjA5LTI2LjkyLS4xMi0zMS45NywwLTUuMDEuMTItMTEuMTkuNjktMTYuODgsNC43OC01LjQsMy44Ny04LjY3LDkuOTYtOC42NywxNi42NHMzLjI3LDEyLjc3LDguNjcsMTYuNjRjNS42OSw0LjA4LDExLjg3LDQuNjYsMTYuODgsNC43OCw0LC4wOSwyNi45Mi4xMiwzMS45NywwLDUuMDEtLjEyLDExLjE5LS42OSwxNi44OC00Ljc4LDUuNC0zLjg3LDguNjctOS45Niw4LjY3LTE2LjY0cy0zLjI3LTEyLjc3LTguNjctMTYuNjRNMzE2LjE2LDE2OS40Yy0zLjU2LDIuNDctNy41MiwyLjg2LTExLjIxLDIuOTctNC45OS4xNC0yNi4yMi4xMy0zMS4yMSwwLTMuNjktLjEtNy42NS0uNDktMTEuMjEtMi45Ny0zLjM4LTIuMzQtNS4zOC02LjA4LTUuMzgtMTAuMTFzMS45NS03Ljc3LDUuMzMtMTAuMTJjMy41Ny0yLjQ3LDcuNTItMi44NiwxMS4yMS0yLjk3LDQuOTktLjE0LDI2LjIyLS4xMywzMS4yMSwwLDMuNjkuMSw3LjY1LjQ5LDExLjIxLDIuOTcsMy4zOCwyLjM0LDUuMzgsNi4wOCw1LjM4LDEwLjExcy0xLjk1LDcuNzctNS4zMywxMC4xMiIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTE4My4yMSwxNzUuOTNjNS42OSw0LjA4LDExLjg3LDQuNjYsMTYuODgsNC43OCw0Ljk0LjExLDEyLjM4LjE3LDE4Ljk3LjE5LDE2LjA2LjA2LDYuNC4wNCwyMS43LjA0di04LjM1Yy0xNi4yNywwLTI3LjY5LjE0LTQwLjI2LS4yMi0zLjY5LS4xLTcuNjUtLjQ5LTExLjIxLTIuOTctMy4zOC0yLjM0LTUuMzgtNi4wOC01LjM4LTEwLjExczEuOTUtNy43Nyw1LjMzLTEwLjEyYzMuNTctMi40Nyw3LjUyLTIuODYsMTEuMjEtMi45NywxMi41Ny0uMzUsMjMuOTgtLjIyLDQwLjI2LS4yMmwuMDUtOC4zNWMtMTYuMzcsMC0yOC4xNC0uMDYtNDAuNjYuMjMtNS4wMS4xMi0xMS4xOS42OS0xNi44OCw0Ljc4LTUuNCwzLjg3LTguNjcsOS45Ni04LjY3LDE2LjY0czMuMjcsMTIuNzcsOC42NywxNi42NCIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTI1LjAxLDE1Ni4zM2MtNC4zNi0uMDgtNS43NS0xLjUxLTUuNzgtNS44NS0uMDMtNC4wMSwwLTguNzcsMC0xMi44NWgtOS42MWMwLDQuMTItLjA4LDEyLjQ2LjA4LDE2LjQ5LjMxLDcuODQsMi44OSwxMC4yOCwxMC44OSwxMC41NSw1LjU1LjE5LDkuOTYuMTIsMTcuNjMuMTJ2LTguMzljLTYuMTUsMC04LjY1LjAyLTEzLjItLjA3Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNzIuNjYsMTUwLjYzYy0uMDMsNC4yMy0xLjQxLDUuNjItNS43OCw1LjctMi4wOS4wNC03LjU2LjA2LTEyLjA3LjA3aDBzLS4wNCwwLS4wNCwwaDBjLTQuNjEsMC05LjUyLDAtMTIuNCwwdjI0LjUzaDExLjN2LTE2LjE0Yy4zNSwwLC43MiwwLDEuMSwwaC4wNGM1Ljg4LDAsMTMuMjMtLjAyLDE2LS4xLDguNDktLjI2LDExLjA4LTIuNjUsMTEuMzktMTAuNTYuMDQtMS4wNi4wNy0yLjM5LjA4LTMuODZ2LTEyLjYzaC05LjYxYzAsNC4xOC4wMiw4Ljg3LS4wMSwxMyIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTEwNy43MSwxNDYuMTFjLTQuMzcuMDgtNS43NSwxLjQ3LTUuNzgsNS43LS4wMyw0LjEzLS4wMSwyNC45NS0uMDEsMjkuMTNoLTkuNjF2LTI4Ljc2Yy4wMi0xLjQ3LjA0LTIuOC4wOC0zLjg2LjMxLTcuOTEsMi45LTEwLjMsMTEuMzktMTAuNTYsMi43OC0uMDgsNDQuNjktLjE3LDUwLjI0LjAyLDgsLjI3LDEwLjU3LDIuNzEsMTAuODksMTAuNTUuMTYsNC4wMy4wOCwyOC41MS4wOCwzMi42M2gtOS42MWMwLTQuMDguMDItMjQuOTcsMC0yOC45OC0uMDMtNC4zNS0xLjQyLTUuNzctNS43OC01Ljg1LTQuNTQtLjA4LTM5Ljc5LS4wNC00MS44OCwwIi8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNDU0LjM0LDE0Ni4xMWMtNC4zNy4wOC01Ljc1LDEuNDctNS43OCw1LjctLjAzLDQuMTMtLjAxLDI0Ljk1LS4wMSwyOS4xM2gtOS42MXYtMjguNzZjLjAyLTEuNDcuMDQtMi44LjA4LTMuODYuMzEtNy45MSwyLjktMTAuMywxMS4zOS0xMC41NiwyLjc4LS4wOCw0NC42OS0uMTcsNTAuMjQuMDIsOCwuMjcsMTAuNTcsMi43MSwxMC44OSwxMC41NS4xNiw0LjAzLjA4LDI4LjUxLjA4LDMyLjYzaC05LjYxYzAtNC4wOC4wMi0yNC45Ny0uMDEtMjguOTgtLjAzLTQuMzUtMS40Mi01Ljc3LTUuNzgtNS44NS00LjU0LS4wOC0zOS43OS0uMDQtNDEuODgsMCIvPgogICAgPHJlY3QgY2xhc3M9InN0MCIgeD0iNDE5Ljc4IiB5PSIxMzcuNjMiIHdpZHRoPSIxMS4zIiBoZWlnaHQ9IjQzLjMxIi8+CiAgICA8cmVjdCBjbGFzcz0ic3QwIiB4PSI5NS4zNyIgeT0iMTU2LjUiIHdpZHRoPSI2NS41OCIgaGVpZ2h0PSI4LjM4Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMzk4LjM5LDEzNy43NGgtNDguMnYtLjExaC0xMS4zdjQzLjMxaDExLjN2LTE2LjE1aDQ4LjJjNy40NiwwLDEzLjUzLTYuMDcsMTMuNTMtMTMuNTNzLTYuMDctMTMuNTMtMTMuNTMtMTMuNTNNMzk4LjM5LDE1NS45aC00OC4ydi05LjI4aDQ4LjJjMi41NiwwLDQuNjQsMi4wOCw0LjY0LDQuNjRzLTIuMDgsNC42NC00LjY0LDQuNjQiLz4KICA8L2c+Cjwvc3ZnPg==" alt="BYD Yacopini">
+      <div class="header-date">
+        <div class="vig-label">Vigencia</div>
+        <div class="vig-value">${fecha}</div>
+      </div>
+    </div>
+    <h1>Lista de Precios</h1>
+    <p class="lead">${leadText}</p>
+  </div>
+${bannerHtml}
+  <div class="legend-bar">
+    <div class="item"><span class="dot" style="background:var(--azul-ev)"></span> EV — 100% eléctrico</div>
+    <div class="item"><span class="dot" style="background:var(--verde-dm)"></span> DM — Híbrido enchufable</div>
+    <div class="item"><span class="dot" style="background:var(--verde-lleno-fondo);border:1px solid var(--verde-lleno)"></span> Precio Lleno</div>
+    <div class="item"><span class="dot" style="background:var(--amarillo-fondo);border:1px solid var(--amarillo-web)"></span> Precio Web</div>
+    <div class="item"><span class="dot" style="background:var(--rojo-fondo);border:1px solid var(--rojo-piso)"></span> Piso de Venta</div>${legendGerenciaItem}
+  </div>
+${construirTarjetasModelos(esGerencia)}
+  <div class="accesorios">
+    <p class="section-title-accesorios">Accesorios</p>
+    <div class="accesorios-card">
+      <table>
+        <thead>
+          <tr><th>Accesorio</th><th class="right">Precio</th></tr>
+        </thead>
+        <tbody>${construirAccesorios()}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-note">${footerNote}</div>
+    <div class="footer-brand">${footerBrand}</div>
+  </div>
+
+</div>
+</body>
+</html>`;
+}
+
+// ============ DESCARGA DIRECTA ============
+function descargarHtml(contenido, nombreArchivo){
+  const blob = new Blob([contenido], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = nombreArchivo;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function generarPdfDesdeHtml(contenido, nombreArchivo){
+  mostrarToast('Generando PDF...');
+
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:1123px;height:auto;border:none;';
+  document.body.appendChild(iframe);
+
+  iframe.onload = async () => {
+    try {
+      const doc = iframe.contentDocument;
+
+      // Inyectar CSS de layout compacto (equivalente al @media print pero siempre activo)
+      const styleOverride = doc.createElement('style');
+      styleOverride.textContent = `
+        body { background:#fff !important; }
+        .page { box-shadow:none !important; max-width:100% !important; }
+        .header { padding:8px 12px 8px !important; }
+        .header h1 { font-size:15px !important; margin:8px 0 2px !important; }
+        .header p.lead { font-size:7.5px !important; }
+        .header-date .vig-value { font-size:9px !important; }
+        .brand-logo { height:22px !important; }
+        .legend-bar { padding:4px 12px !important; font-size:7.5px !important; }
+        .banner-gerencia { padding:5px 12px !important; font-size:8px !important; }
+        .price-table-wrap { overflow:visible !important; border:1px solid #D4D4D4 !important; display:block !important; border-radius:6px !important; }
+        .category { padding:6px 0 6px !important; }
+        .category-head hr { display:none !important; }
+        .category-head { margin-bottom:6px !important; }
+        table.price-table { width:100% !important; table-layout:fixed !important; }
+        table.price-table thead th { font-size:8px !important; padding:7px 4px !important; letter-spacing:0 !important; }
+        table.price-table tbody td { font-size:10px !important; padding:9px 4px !important; }
+        table.price-table tbody td.col-nombre { min-width:0 !important; width:19% !important; max-width:19% !important; position:static !important; box-shadow:none !important; }
+        table.price-table thead th.col-nombre { min-width:0 !important; width:19% !important; max-width:19% !important; position:static !important; box-shadow:none !important; }
+        table.price-table tbody td.col-lista, table.price-table thead th.col-lista { width:9.5% !important; position:static !important; box-shadow:none !important; }
+        table.price-table tbody td.col-nombre .model-name { font-size:11px !important; }
+        table.price-table tbody td.col-nombre .model-tag { font-size:7.5px !important; }
+        table.price-table tbody td.web-cell, table.price-table tbody td.piso-cell,
+        table.price-table tbody td.lleno-cell, table.price-table tbody td.gerencia-cell { font-size:11px !important; }
+        .accesorios { padding:6px 0 6px !important; }
+        .accesorios-card th { font-size:8.5px !important; padding:6px 12px !important; }
+        .accesorios-card td { font-size:9.5px !important; padding:5px 12px !important; }
+        .incluido-badge { font-size:7.5px !important; padding:2px 5px !important; }
+        .footer { padding:6px 0 0 !important; font-size:8px !important; }
+      `;
+      doc.head.appendChild(styleOverride);
+
+      await new Promise(r => setTimeout(r, 600));
+
+      const body = doc.body;
+      const canvas = await html2canvas(body, {
+        scale: 1.5,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        width: 1123,
+        height: body.scrollHeight,
+        scrollX: 0,
+        scrollY: 0,
+        logging: false
+      });
+
+      const A4_W = 595;
+      const A4_H = 842;
+      const imgHeight = (canvas.height * A4_W) / canvas.width;
+
+      let finalW = A4_W;
+      let finalH = imgHeight;
+      if(imgHeight > A4_H){
+        const scale = A4_H / imgHeight;
+        finalW = A4_W * scale;
+        finalH = A4_H;
+      }
+
+      const offsetX = (A4_W - finalW) / 2;
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ orientation:'portrait', unit:'pt', format:'a4' });
+      const imgData = canvas.toDataURL('image/jpeg', 0.92);
+      pdf.addImage(imgData, 'JPEG', offsetX, 0, finalW, finalH);
+      pdf.save(nombreArchivo);
+      mostrarToast('PDF descargado correctamente');
+    } catch(e) {
+      mostrarToast('Error al generar PDF. Intentá con el botón de impresión.');
+      console.error(e);
+    } finally {
+      document.body.removeChild(iframe);
+    }
+  };
+
+  const blob = new Blob([contenido], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  iframe.src = url;
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+}
+
+function generarPdfVendedores(){
+  htmlVendedores = generarHtmlCompleto('vendedores');
+  const fecha = new Date().toISOString().slice(0,10);
+  generarPdfDesdeHtml(htmlVendedores, `lista_precios_vendedores_${fecha}.pdf`);
+}
+
+function generarPdfGerencia(){
+  htmlGerencia = generarHtmlCompleto('gerencia');
+  const fecha = new Date().toISOString().slice(0,10);
+  generarPdfDesdeHtml(htmlGerencia, `lista_precios_gerencia_${fecha}.pdf`);
+}
+
+function generarListas(){
+  htmlVendedores = generarHtmlCompleto('vendedores');
+  htmlGerencia = generarHtmlCompleto('gerencia');
+  const fecha = new Date().toISOString().slice(0,10);
+  descargarHtml(htmlVendedores, `lista_precios_vendedores_${fecha}.html`);
+  setTimeout(() => {
+    descargarHtml(htmlGerencia, `lista_precios_gerencia_${fecha}.html`);
+  }, 300);
+  mostrarToast('Descargando las dos listas (vendedores y gerencia)');
+}
+
+function mostrarToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ============ INIT ============
+cargarDatos();
+renderModelos();
+renderAccesorios();
+</script>
+
+<a id="hubBackBtn" href="./index.html" style="position:fixed;bottom:18px;left:18px;z-index:999999;
+  width:44px;height:44px;border-radius:50%;background:#0A0A0A;color:#fff;display:flex;
+  align-items:center;justify-content:center;text-decoration:none;font-family:Arial,sans-serif;
+  font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,0.35);" aria-label="Volver al inicio">&#8592;</a>
+</body>
+</html>
