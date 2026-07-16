@@ -1,7 +1,7 @@
 // Service worker mínimo: cachea el shell para que el hub abra rápido
 // y funcione (parcialmente) sin conexión. No cachea las herramientas
 // completas para evitar mostrar datos de precios/créditos desactualizados.
-const CACHE_NAME = 'byd-hub-shell-v1';
+const CACHE_NAME = 'byd-hub-shell-v2';
 const SHELL_FILES = [
   './index.html',
   './manifest.json',
@@ -27,13 +27,21 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
-  // Solo servimos desde caché el shell del hub (index/manifest/icons).
+  // Solo interceptamos el shell del hub (index/manifest/icons).
   // El resto (gestor_precios.html, calculadora_creditos.html, links externos)
   // siempre va a la red para asegurar datos actualizados.
   const isShellFile = SHELL_FILES.some((f) => url.pathname.endsWith(f.replace('./', '')));
   if (isShellFile) {
+    // Network-first: siempre intenta traer la versión más nueva.
+    // Si no hay conexión, recién ahí usa lo cacheado.
     event.respondWith(
-      caches.match(event.request).then((cached) => cached || fetch(event.request))
+      fetch(event.request)
+        .then((res) => {
+          const clone = res.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          return res;
+        })
+        .catch(() => caches.match(event.request))
     );
   }
 });
