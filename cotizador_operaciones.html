@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Cotizador de Operaciones · BYD Yacopini</title>
+<meta name="theme-color" content="#0A0A0A">
+<style>
+  :root{
+    --negro:#0A0A0A;
+    --carbon:#2A2A2A;
+    --gris-oscuro:#4A4A4A;
+    --gris-medio:#8C8C8C;
+    --gris-claro:#D4D4D4;
+    --gris-fondo:#F2F2F2;
+    --blanco:#FFFFFF;
+    --azul-ev:#1565D8;
+    --verde-dm:#388E3C;
+    --rojo:#C0392B;
+    --ambar:#D89614;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    background:var(--gris-fondo);
+    color:var(--carbon);
+    font-family:'Segoe UI', Arial, Helvetica, sans-serif;
+    padding-bottom: calc(env(safe-area-inset-bottom) + 30px);
+  }
+  .topbar{
+    background:var(--negro);
+    padding: calc(env(safe-area-inset-top) + 18px) 20px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .topbar h1{
+    color:#fff;
+    font-size:17px;
+    font-weight:800;
+    margin:0;
+  }
+  .topbar .sub{
+    color:var(--gris-claro);
+    font-size:11px;
+    margin-top:2px;
+  }
+  .fx-pill{
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.18);
+    border-radius:20px;
+    padding:6px 12px;
+    text-align:right;
+    min-width:118px;
+  }
+  .fx-pill .lbl{
+    color:var(--gris-medio);
+    font-size:9px;
+    text-transform:uppercase;
+    letter-spacing:0.4px;
+    font-weight:700;
+  }
+  .fx-pill .val{
+    color:#fff;
+    font-size:14px;
+    font-weight:800;
+  }
+  .fx-pill .upd{
+    color:var(--gris-medio);
+    font-size:9px;
+  }
+  .wrap{
+    max-width:640px;
+    margin:0 auto;
+    padding:20px 16px 40px;
+  }
+  .card{
+    background:var(--blanco);
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:14px;
+    border:1px solid var(--gris-claro);
+    box-shadow:0 1px 3px rgba(0,0,0,0.06);
+  }
+  .card h2{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    color:var(--gris-medio);
+    font-weight:700;
+    margin:0 0 12px;
+  }
+  .unidad-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .unidad-row .prefix{
+    font-size:20px;
+    font-weight:800;
+    color:var(--azul-ev);
+  }
+  .unidad-row input{
+    flex:1;
+    font-size:22px;
+    font-weight:800;
+    color:var(--negro);
+    border:none;
+    border-bottom:2px solid var(--gris-claro);
+    padding:6px 2px;
+    background:transparent;
+    outline:none;
+  }
+  .unidad-row input:focus{ border-bottom-color:var(--azul-ev); }
+  .items{ margin-top:4px; }
+  .item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 0;
+    border-bottom:1px solid var(--gris-fondo);
+  }
+  .item input.concepto{
+    flex:1.3;
+    font-size:13.5px;
+    border:none;
+    border-bottom:1px solid var(--gris-claro);
+    padding:6px 2px;
+    background:transparent;
+    outline:none;
+    min-width:0;
+  }
+  .item .monto-wrap{
+    flex:1;
+    display:flex;
+    align-items:center;
+    gap:4px;
+    border-bottom:1px solid var(--gris-claro);
+  }
+  .item .monto-wrap span{
+    font-size:12px;
+    color:var(--gris-medio);
+    font-weight:700;
+  }
+  .item input.monto{
+    flex:1;
+    font-size:14px;
+    font-weight:700;
+    border:none;
+    padding:6px 2px;
+    background:transparent;
+    outline:none;
+    min-width:0;
+    text-align:right;
+  }
+  .item .eq-usd{
+    flex:0 0 auto;
+    font-size:11px;
+    color:var(--gris-medio);
+    min-width:70px;
+    text-align:right;
+  }
+  .item .del{
+    flex:0 0 auto;
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    border:none;
+    background:var(--gris-fondo);
+    color:var(--rojo);
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:0;
+  }
+  .add-btn{
+    margin-top:10px;
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1.5px dashed var(--gris-medio);
+    background:transparent;
+    color:var(--gris-oscuro);
+    font-weight:700;
+    font-size:13.5px;
+    cursor:pointer;
+  }
+  .add-btn:active{ background:var(--gris-fondo); }
+  .empty-hint{
+    font-size:12.5px;
+    color:var(--gris-medio);
+    padding:8px 0 2px;
+  }
+  .saldo-card{
+    background:var(--negro);
+    border-radius:14px;
+    padding:20px;
+    text-align:center;
+  }
+  .saldo-card .lbl{
+    color:var(--gris-claro);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+    font-weight:700;
+  }
+  .saldo-card .val{
+    font-size:32px;
+    font-weight:800;
+    margin:6px 0 2px;
+  }
+  .saldo-card .val.pos{ color:#FF8A65; }
+  .saldo-card .val.zero{ color:#7FD98A; }
+  .saldo-card .val.neg{ color:#7FD98A; }
+  .saldo-card .sub{
+    font-size:12px;
+    color:var(--gris-medio);
+  }
+  .saldo-card .estado{
+    display:inline-block;
+    margin-top:10px;
+    padding:5px 12px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:700;
+  }
+  .estado.falta{ background:rgba(255,138,101,.15); color:#FF8A65; }
+  .estado.ok{ background:rgba(127,217,138,.15); color:#7FD98A; }
+  .breakdown{
+    display:flex;
+    justify-content:space-between;
+    font-size:12px;
+    color:var(--gris-medio);
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px solid rgba(255,255,255,0.12);
+  }
+  .breakdown b{ color:#fff; font-size:13px; }
+  .reset-row{
+    text-align:center;
+    margin-top:16px;
+  }
+  .reset-row button{
+    background:none;
+    border:none;
+    color:var(--gris-medio);
+    font-size:12px;
+    text-decoration:underline;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body class="gate-locked">
+<div id="bydGate" style="position:fixed;inset:0;z-index:999999;background:#0A0A0A;display:flex;align-items:center;justify-content:center;padding:24px;opacity:1;">
+  <form id="bydGateForm" style="width:100%;max-width:300px;text-align:center;font-family:Arial,sans-serif;">
+    <div style="color:#fff;font-weight:800;font-size:16px;margin-bottom:4px;">BYD Yacopini</div>
+    <div style="color:#8C8C8C;font-size:12px;margin-bottom:18px;">Acceso interno &middot; Gerencia</div>
+    <input id="bydGatePass" type="password" inputmode="numeric" placeholder="Clave" autocomplete="off" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #4A4A4A;background:#2A2A2A;color:#fff;font-size:16px;text-align:center;box-sizing:border-box;">
+    <button type="submit" style="width:100%;margin-top:10px;padding:12px;border-radius:10px;border:none;background:#1565D8;color:#fff;font-weight:700;font-size:14px;">Entrar</button>
+    <div id="bydGateError" style="color:#E85555;font-size:12px;margin-top:10px;display:none;">Clave incorrecta</div>
+  </form>
+</div>
+<style>
+  body.gate-locked > *:not(#bydGate){display:none !important;}
+  #bydGate{ transition:opacity .25s ease; }
+  #bydGate.fadeOut{ opacity:0; }
+</style>
+<script>
+(function(){
+  var HASH = "a734aecec77bc8826bec68f0264b70228ab419e52a8fcdf05016ebee0465f257";
+  var body = document.body;
+  function unlock(){ var g=document.getElementById('bydGate'); if(g){ g.classList.add('fadeOut'); setTimeout(function(){ body.classList.remove('gate-locked'); g.remove(); }, 220); } else { body.classList.remove('gate-locked'); } }
+  if (sessionStorage.getItem('bydGateOk') === '1') { unlock(); }
+  else {
+    document.getElementById('bydGateForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      var val = document.getElementById('bydGatePass').value;
+      crypto.subtle.digest('SHA-256', new TextEncoder().encode(val)).then(function(buf){
+        var hex = Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+        if (hex === HASH) {
+          sessionStorage.setItem('bydGateOk','1');
+          unlock();
+        } else {
+          document.getElementById('bydGateError').style.display = 'block';
+          document.getElementById('bydGatePass').value = '';
+          document.getElementById('bydGatePass').focus();
+        }
+      });
+    });
+  }
+})();
+</script>
+
+<div class="topbar">
+  <div>
+    <h1>Cotizador de Operaciones</h1>
+    <div class="sub">0km en USD · Toma y pagos en $</div>
+  </div>
+  <div class="fx-pill">
+    <div class="lbl">Dólar MEP venta</div>
+    <div class="val" id="fxVal">—</div>
+    <div class="upd" id="fxUpd">actualizando…</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="card">
+    <h2>Unidad 0km (USD)</h2>
+    <div class="unidad-row">
+      <span class="prefix">USD</span>
+      <input type="number" inputmode="decimal" id="precioUsd" placeholder="0" min="0" step="1">
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Forma de pago (en $)</h2>
+    <div class="items" id="itemsList"></div>
+    <p class="empty-hint" id="emptyHint">Todavía no agregaste ítems de pago.</p>
+    <button class="add-btn" id="addItemBtn" type="button">+ Agregar ítem de pago</button>
+  </div>
+
+  <div class="saldo-card">
+    <div class="lbl">Saldo restante</div>
+    <div class="val" id="saldoVal">USD 0</div>
+    <div class="sub" id="saldoSub">≈ $ 0</div>
+    <div class="estado ok" id="estadoPill">Operación cerrada</div>
+    <div class="breakdown">
+      <div>Unidad<br><b id="bkUnidad">USD 0</b></div>
+      <div>Pagado<br><b id="bkPagado">USD 0</b></div>
+      <div>Diferencia<br><b id="bkDif">USD 0</b></div>
+    </div>
+  </div>
+
+  <div class="reset-row">
+    <button id="resetBtn" type="button">Vaciar cotización</button>
+  </div>
+</div>
+
+<a id="hubBackBtn" href="./index.html" style="position:fixed;bottom:18px;left:18px;z-index:999999;
+  width:44px;height:44px;border-radius:50%;background:#0A0A0A;color:#fff;display:flex;
+  align-items:center;justify-content:center;text-decoration:none;font-family:Arial,sans-serif;
+  font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,0.35);" aria-label="Volver al inicio">&#8592;</a>
+
+<script>
+(function(){
+  var STORAGE_KEY = 'bydCotizadorState';
+  var fxRate = null;
+  var items = [];
+  var precioUsd = 0;
+
+  var els = {
+    fxVal: document.getElementById('fxVal'),
+    fxUpd: document.getElementById('fxUpd'),
+    precioUsd: document.getElementById('precioUsd'),
+    itemsList: document.getElementById('itemsList'),
+    emptyHint: document.getElementById('emptyHint'),
+    addItemBtn: document.getElementById('addItemBtn'),
+    saldoVal: document.getElementById('saldoVal'),
+    saldoSub: document.getElementById('saldoSub'),
+    estadoPill: document.getElementById('estadoPill'),
+    bkUnidad: document.getElementById('bkUnidad'),
+    bkPagado: document.getElementById('bkPagado'),
+    bkDif: document.getElementById('bkDif'),
+    resetBtn: document.getElementById('resetBtn')
+  };
+
+  function fmtUsd(n){
+    var sign = n < 0 ? '-' : '';
+    return sign + 'USD ' + Math.abs(n).toLocaleString('es-AR', {maximumFractionDigits:0});
+  }
+  function fmtArs(n){
+    var sign = n < 0 ? '-' : '';
+    return sign + '$ ' + Math.abs(n).toLocaleString('es-AR', {maximumFractionDigits:0});
+  }
+
+  function loadState(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return;
+      var st = JSON.parse(raw);
+      precioUsd = st.precioUsd || 0;
+      items = Array.isArray(st.items) ? st.items : [];
+      els.precioUsd.value = precioUsd || '';
+    }catch(e){}
+  }
+  function saveState(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({precioUsd: precioUsd, items: items}));
+    }catch(e){}
+  }
+
+  function renderItems(){
+    els.itemsList.innerHTML = '';
+    els.emptyHint.style.display = items.length ? 'none' : 'block';
+    items.forEach(function(it, idx){
+      var row = document.createElement('div');
+      row.className = 'item';
+
+      var concepto = document.createElement('input');
+      concepto.className = 'concepto';
+      concepto.placeholder = 'Concepto (ej: Toma usado, Efectivo)';
+      concepto.value = it.concepto || '';
+      concepto.addEventListener('input', function(){ items[idx].concepto = concepto.value; saveState(); });
+
+      var montoWrap = document.createElement('div');
+      montoWrap.className = 'monto-wrap';
+      var pesoSign = document.createElement('span');
+      pesoSign.textContent = '$';
+      var monto = document.createElement('input');
+      monto.className = 'monto';
+      monto.type = 'number';
+      monto.inputMode = 'decimal';
+      monto.placeholder = '0';
+      monto.value = it.monto || '';
+      monto.addEventListener('input', function(){
+        items[idx].monto = parseFloat(monto.value) || 0;
+        saveState();
+        recalc();
+      });
+      montoWrap.appendChild(pesoSign);
+      montoWrap.appendChild(monto);
+
+      var eq = document.createElement('div');
+      eq.className = 'eq-usd';
+      var usdEq = fxRate ? (it.monto || 0) / fxRate : 0;
+      eq.textContent = fxRate ? ('≈ USD ' + usdEq.toLocaleString('es-AR', {maximumFractionDigits:0})) : '—';
+
+      var del = document.createElement('button');
+      del.className = 'del';
+      del.type = 'button';
+      del.textContent = '×';
+      del.addEventListener('click', function(){
+        items.splice(idx, 1);
+        saveState();
+        renderItems();
+        recalc();
+      });
+
+      row.appendChild(concepto);
+      row.appendChild(montoWrap);
+      row.appendChild(eq);
+      row.appendChild(del);
+      els.itemsList.appendChild(row);
+    });
+  }
+
+  function recalc(){
+    var totalPesos = items.reduce(function(sum, it){ return sum + (it.monto || 0); }, 0);
+    var totalUsd = fxRate ? totalPesos / fxRate : 0;
+    var saldo = precioUsd - totalUsd;
+
+    els.bkUnidad.textContent = fmtUsd(precioUsd);
+    els.bkPagado.textContent = fmtUsd(totalUsd);
+    els.bkDif.textContent = fmtUsd(saldo);
+
+    els.saldoVal.textContent = fmtUsd(saldo);
+    els.saldoVal.className = 'val ' + (saldo > 0.5 ? 'pos' : 'zero');
+    els.saldoSub.textContent = fxRate ? ('≈ ' + fmtArs(saldo * fxRate)) : 'Esperando cotización…';
+
+    if (saldo > 0.5) {
+      els.estadoPill.textContent = 'Falta cubrir';
+      els.estadoPill.className = 'estado falta';
+    } else if (saldo < -0.5) {
+      els.estadoPill.textContent = 'Sobra saldo';
+      els.estadoPill.className = 'estado ok';
+    } else {
+      els.estadoPill.textContent = 'Operación cerrada';
+      els.estadoPill.className = 'estado ok';
+    }
+    renderEqColumns();
+  }
+
+  function renderEqColumns(){
+    var rows = els.itemsList.querySelectorAll('.item');
+    rows.forEach(function(row, idx){
+      var eq = row.querySelector('.eq-usd');
+      if(!eq) return;
+      var usdEq = fxRate ? (items[idx].monto || 0) / fxRate : 0;
+      eq.textContent = fxRate ? ('≈ USD ' + usdEq.toLocaleString('es-AR', {maximumFractionDigits:0})) : '—';
+    });
+  }
+
+  els.precioUsd.addEventListener('input', function(){
+    precioUsd = parseFloat(els.precioUsd.value) || 0;
+    saveState();
+    recalc();
+  });
+
+  els.addItemBtn.addEventListener('click', function(){
+    items.push({concepto:'', monto:0});
+    saveState();
+    renderItems();
+    recalc();
+  });
+
+  els.resetBtn.addEventListener('click', function(){
+    if(!confirm('¿Vaciar toda la cotización actual?')) return;
+    precioUsd = 0;
+    items = [];
+    els.precioUsd.value = '';
+    saveState();
+    renderItems();
+    recalc();
+  });
+
+  // --- Cotización dólar MEP (venta) vía DolarAPI ---
+  // Nota: dolarhoy.com no permite lectura desde otras webs (CORS). Se usa
+  // DolarAPI (dolarapi.com), fuente pública y gratuita que publica el mismo
+  // valor bajo el nombre "Bolsa" (Dólar MEP = Dólar Bolsa, mismo instrumento).
+  function fetchFx(){
+    fetch('https://dolarapi.com/v1/dolares/bolsa')
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        fxRate = data.venta;
+        els.fxVal.textContent = '$' + fxRate.toLocaleString('es-AR', {maximumFractionDigits:0});
+        var now = new Date();
+        els.fxUpd.textContent = 'act. ' + now.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
+        recalc();
+      })
+      .catch(function(){
+        els.fxUpd.textContent = 'sin conexión — reintentando';
+      });
+  }
+
+  loadState();
+  renderItems();
+  recalc();
+  fetchFx();
+  setInterval(fetchFx, 5 * 60 * 1000);
+})();
+</script>
+</body>
+</html>
