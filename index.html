@@ -83,11 +83,12 @@
     transform:translateY(10px);
     animation:cardIn .45s cubic-bezier(.2,.8,.2,1) forwards;
   }
-  .card:nth-of-type(1){ animation-delay:.05s; }
-  .card:nth-of-type(2){ animation-delay:.10s; }
-  .card:nth-of-type(3){ animation-delay:.15s; }
-  .card:nth-of-type(4){ animation-delay:.20s; }
-  .card:nth-of-type(5){ animation-delay:.25s; }
+  .card:nth-of-type(1){ animation-delay:.04s; }
+  .card:nth-of-type(2){ animation-delay:.08s; }
+  .card:nth-of-type(3){ animation-delay:.12s; }
+  .card:nth-of-type(4){ animation-delay:.16s; }
+  .card:nth-of-type(5){ animation-delay:.20s; }
+  .card:nth-of-type(6){ animation-delay:.24s; }
   @keyframes cardIn{
     to{ opacity:1; transform:translateY(0); }
   }
@@ -113,6 +114,7 @@
   .icon.creditos{ background:linear-gradient(135deg,#388E3C,#256B29); }
   .icon.comisiones{ background:linear-gradient(135deg,#D89614,#A66E0A); }
   .icon.cotizador{ background:linear-gradient(135deg,#6A3FA0,#4A2670); }
+  .icon.tablero{ background:linear-gradient(135deg,#0E7C8C,#0A5560); }
   .icon.reporte{ background:linear-gradient(135deg,#2A2A2A,#0A0A0A); }
   .card-body{ flex:1; min-width:0; }
   .card-body .t{
@@ -286,6 +288,15 @@
       <div class="card-body">
         <p class="t">Cotizador de Operaciones</p>
         <p class="d">Armá la operación: 0km, usado y saldo en vivo</p>
+      </div>
+      <div class="chev">›</div>
+    </a>
+
+    <a class="card" href="./tablero_control.html">
+      <div class="icon tablero"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="8" height="8" rx="1.5" stroke="#fff" stroke-width="2"/><rect x="13" y="3" width="8" height="5" rx="1.5" stroke="#fff" stroke-width="2"/><rect x="13" y="10" width="8" height="11" rx="1.5" stroke="#fff" stroke-width="2"/><rect x="3" y="13" width="8" height="8" rx="1.5" stroke="#fff" stroke-width="2"/></svg></div>
+      <div class="card-body">
+        <p class="t">Tablero de Control</p>
+        <p class="d">General, leads, solicitudes y stock</p>
       </div>
       <div class="chev">›</div>
     </a>
