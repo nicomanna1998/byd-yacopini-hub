@@ -678,6 +678,26 @@
   function fmtUSD_M(n){
     return 'USD ' + (n / 1e6).toFixed(2).replace('.', ',') + 'M';
   }
+  // El backend normaliza nombres a Title Case, lo que arruina siglas de
+  // modelos (EV, GS, ADAS, etc.) y algunas abreviaturas de empresas.
+  // Las recomponemos acá del lado del hub.
+  function fixCaps(s){
+    if (!s) return s;
+    return s
+      .replace(/\bev\b/gi, 'EV')
+      .replace(/\bgs\b/gi, 'GS')
+      .replace(/\bgl\b/gi, 'GL')
+      .replace(/\badas\b/gi, 'ADAS')
+      .replace(/\bdmo\b/gi, 'DMO')
+      .replace(/\bdm-i\b/gi, 'DM-i')
+      .replace(/\bfwd\b/gi, 'FWD')
+      .replace(/\bs\.a\.u\b/gi, 'S.A.U')
+      .replace(/\bsrl\b/gi, 'SRL')
+      .replace(/\bs\.\s*r\.\s*l\.?\b/gi, 'S.R.L.');
+  }
+  function fixModelArr(arr){
+    return (arr||[]).map(function(x){ return { n: fixCaps(x.n), c: x.c }; });
+  }
   var MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
   // ---- Snapshot de referencia (se usa si todavía no está conectado el Apps Script,
@@ -794,25 +814,25 @@
     document.getElementById('kpiSolicitudesTotal2').textContent = d.solicitudesTotal;
     document.getElementById('kpiFacturado').textContent = fmtUSD_M(d.facturadoTotal || 0);
     document.getElementById('solicitudesVendedor').innerHTML = barList(d.solicitudesVendedor);
-    document.getElementById('solicitudesModelo').innerHTML = barList(d.solicitudesModelo, 'morado');
+    document.getElementById('solicitudesModelo').innerHTML = barList(fixModelArr(d.solicitudesModelo), 'morado');
 
     // Stock
     document.getElementById('kpiStockTotal2').textContent = d.stockTotal;
     document.getElementById('kpiDeudasCount').textContent = d.deudasCount;
-    document.getElementById('stockModelo').innerHTML = barList(d.stockModelo, 'ambar');
+    document.getElementById('stockModelo').innerHTML = barList(fixModelArr(d.stockModelo), 'ambar');
     document.getElementById('stockNote').innerHTML =
       'Días en stock — promedio ' + d.stockDiasProm + ' días · mínimo ' + d.stockDiasMin + ' · máximo ' + d.stockDiasMax +
       '<span class="badge-aging">+90 días: revisar (' + d.stockMas90 + ' unidades)</span>';
 
     var tbody = document.querySelector('#deudasTable tbody');
     tbody.innerHTML = (d.deudas||[]).map(function(x){
-      return '<tr><td>' + x.f + '</td><td>' + x.m + '</td><td>' + x.v + '</td><td>' + x.cl + '</td><td>' + x.e + '</td><td class="num">' + Number(x.usd).toLocaleString('es-AR') + '</td></tr>';
+      return '<tr><td>' + x.f + '</td><td>' + fixCaps(x.m) + '</td><td>' + x.v + '</td><td>' + fixCaps(x.cl) + '</td><td>' + x.e + '</td><td class="num">' + Number(x.usd).toLocaleString('es-AR') + '</td></tr>';
     }).join('');
   }
 
   // ---- Conexión con Apps Script (datos en vivo) ----
   // Cuando despliegues el Apps Script, pegá acá la URL que termina en /exec.
-  var TABLERO_API_URL = '';
+  var TABLERO_API_URL = 'https://script.google.com/macros/s/AKfycbzTYBoM56BBMj2B-8hUG_MIuOh7r5qG4qq2sGlTRM-y6QyFm0XHqgE6XUG5OQB022iy/exec';
   var TABLERO_API_KEY = 'i4uH92SO1sFyNYi8PJ2dsGb9LDM-Xoq3';
 
   function setBanner(mode, text){
