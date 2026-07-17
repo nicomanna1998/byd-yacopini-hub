@@ -323,6 +323,69 @@
     margin-bottom:2px;
   }
 
+  .filter-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .filter-row label{
+    font-size:11px;
+    color:var(--gris-medio);
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.3px;
+    white-space:nowrap;
+  }
+  .filter-select{
+    flex:1;
+    min-width:0;
+    font-size:13px;
+    font-weight:600;
+    padding:9px 10px;
+    border:1px solid var(--gris-claro);
+    border-radius:8px;
+    background:var(--gris-fondo);
+    color:var(--negro);
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .pie-wrap{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    flex-wrap:wrap;
+  }
+  .pie-chart{
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    flex:0 0 auto;
+    background:var(--gris-fondo);
+  }
+  .pie-legend{
+    flex:1;
+    min-width:150px;
+  }
+  .pie-legend .item{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:12px;
+    padding:5px 0;
+    border-bottom:1px solid var(--gris-fondo);
+  }
+  .pie-legend .item:last-child{ border-bottom:none; }
+  .pie-legend .dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    flex:0 0 auto;
+  }
+  .pie-legend .name{ flex:1; color:var(--carbon); font-weight:600; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pie-legend .pct{ color:var(--gris-oscuro); font-weight:700; font-size:11.5px; white-space:nowrap; }
+  .pie-legend .cnt{ color:var(--gris-medio); font-size:10.5px; margin-left:3px; white-space:nowrap; }
+
   table.data-table{
     width:100%;
     border-collapse:collapse;
@@ -524,17 +587,23 @@
         </div>
 
         <div class="tcard">
-          <h2>Por origen (canal)</h2>
-          <div id="leadsCanal"></div>
+          <div class="filter-row">
+            <label for="leadsVendedorFilter">Vendedor</label>
+            <select class="filter-select" id="leadsVendedorFilter"><option value="">Todos</option></select>
+          </div>
+          <h2>Leads recibidos</h2>
+          <div class="pie-wrap">
+            <div class="pie-chart" id="leadsPieChart"></div>
+            <div class="pie-legend" id="leadsPieLegend"></div>
+          </div>
+          <p class="note">Los vendedores de San Juan y San Rafael se agrupan por sucursal; el resto se muestra por nombre.</p>
         </div>
 
         <div class="tcard">
-          <h2>Por vendedor</h2>
-          <div id="leadsVendedor"></div>
-          <p class="note">"Otros" agrupa a los vendedores que quedan fuera del top 10 para que la lista no sea eterna.</p>
-        </div>
-
-        <div class="tcard">
+          <div class="filter-row">
+            <label for="leadsOrigenFilter">Origen</label>
+            <select class="filter-select" id="leadsOrigenFilter"><option value="">Todos</option></select>
+          </div>
           <h2>Histórico diario del mes</h2>
           <div class="chart-daily" id="leadsDaily"></div>
         </div>
@@ -714,6 +783,98 @@
   }
   var MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
+  // ---- Leads: filtro por vendedor + torta + histórico diario por origen ----
+  var currentLeadsDetalle = [];
+  var PIE_COLORS = ['#1565D8','#388E3C','#D89614','#6A3FA0','#C0392B','#0E7C86','#B8860B','#5B7F9E','#8C8C8C','#D46A6A','#3E8E7E','#9B59B6'];
+
+  function buildPieSlices(map){
+    return Object.keys(map).map(function(k){ return { n:k, c:map[k] }; })
+      .sort(function(a,b){ return b.c - a.c; });
+  }
+
+  function renderPie(items){
+    var chartEl = document.getElementById('leadsPieChart');
+    var legendEl = document.getElementById('leadsPieLegend');
+    var total = items.reduce(function(a,x){ return a + x.c; }, 0);
+    if (!total){
+      chartEl.style.background = 'var(--gris-fondo)';
+      legendEl.innerHTML = '<p class="note">Sin datos para este filtro.</p>';
+      return;
+    }
+    var acc = 0;
+    var stops = items.map(function(x, i){
+      var start = (acc / total) * 360;
+      acc += x.c;
+      var end = (acc / total) * 360;
+      var color = PIE_COLORS[i % PIE_COLORS.length];
+      return color + ' ' + start.toFixed(2) + 'deg ' + end.toFixed(2) + 'deg';
+    });
+    chartEl.style.background = 'conic-gradient(' + stops.join(', ') + ')';
+    legendEl.innerHTML = items.map(function(x, i){
+      var pct = Math.round((x.c / total) * 100);
+      var color = PIE_COLORS[i % PIE_COLORS.length];
+      return '<div class="item"><span class="dot" style="background:' + color + '"></span>' +
+        '<span class="name">' + x.n + '</span>' +
+        '<span class="pct">' + pct + '%</span><span class="cnt">(' + x.c + ')</span></div>';
+    }).join('');
+  }
+
+  function renderLeadsDaily(rows){
+    var dailyMap = {};
+    rows.forEach(function(r){ dailyMap[r.d] = (dailyMap[r.d] || 0) + 1; });
+    var days = Object.keys(dailyMap).sort();
+    var el = document.getElementById('leadsDaily');
+    if (!days.length){ el.innerHTML = '<p class="note">Sin datos para este filtro.</p>'; return; }
+    var maxD = Math.max.apply(null, days.map(function(k){ return dailyMap[k]; }));
+    el.innerHTML = days.map(function(k){
+      var c = dailyMap[k];
+      var h = Math.max(6, Math.round((c / maxD) * 90));
+      return '<div class="col"><div class="v">' + c + '</div><div class="b" style="height:' + h + 'px"></div><div class="lbl">' + k + '</div></div>';
+    }).join('');
+  }
+
+  function updateLeadsView(){
+    var vSel = document.getElementById('leadsVendedorFilter').value;
+    var oSel = document.getElementById('leadsOrigenFilter').value;
+    var byVendor = vSel ? currentLeadsDetalle.filter(function(r){ return r.v === vSel; }) : currentLeadsDetalle;
+
+    var pieMap = {};
+    byVendor.forEach(function(r){ pieMap[r.v] = (pieMap[r.v] || 0) + 1; });
+    renderPie(buildPieSlices(pieMap));
+
+    var byOrigen = oSel ? byVendor.filter(function(r){ return r.o === oSel; }) : byVendor;
+    renderLeadsDaily(byOrigen);
+  }
+
+  function populateLeadsFilters(rows){
+    var vendSel = document.getElementById('leadsVendedorFilter');
+    var origSel = document.getElementById('leadsOrigenFilter');
+    var prevV = vendSel.value, prevO = origSel.value;
+
+    var vendores = {}, origenes = {};
+    rows.forEach(function(r){ vendores[r.v] = true; origenes[r.o] = true; });
+
+    var vendList = Object.keys(vendores).sort(function(a,b){
+      var aG = (a === 'San Juan' || a === 'San Rafael') ? 1 : 0;
+      var bG = (b === 'San Juan' || b === 'San Rafael') ? 1 : 0;
+      if (aG !== bG) return aG - bG;
+      return a.localeCompare(b, 'es');
+    });
+    vendSel.innerHTML = '<option value="">Todos</option>' + vendList.map(function(v){
+      return '<option value="' + v.replace(/"/g,'&quot;') + '">' + v + '</option>';
+    }).join('');
+    vendSel.value = vendList.indexOf(prevV) !== -1 ? prevV : '';
+
+    var origList = Object.keys(origenes).sort(function(a,b){ return a.localeCompare(b, 'es'); });
+    origSel.innerHTML = '<option value="">Todos</option>' + origList.map(function(o){
+      return '<option value="' + o.replace(/"/g,'&quot;') + '">' + o + '</option>';
+    }).join('');
+    origSel.value = origList.indexOf(prevO) !== -1 ? prevO : '';
+  }
+
+  document.getElementById('leadsVendedorFilter').addEventListener('change', updateLeadsView);
+  document.getElementById('leadsOrigenFilter').addEventListener('change', updateLeadsView);
+
   // ---- Snapshot de referencia (se usa si todavía no está conectado el Apps Script,
   // o si por algún motivo falla la conexión en vivo) ----
   var FALLBACK_DATA = {
@@ -821,16 +982,9 @@
     // Leads
     document.getElementById('kpiLeadsTotal2').textContent = d.leadsTotal;
     document.getElementById('kpiVendidos').textContent = d.leadsVendidos;
-    document.getElementById('leadsCanal').innerHTML = barList(d.leadsCanal);
-    document.getElementById('leadsVendedor').innerHTML = barList(d.leadsVendedor, function(x){
-      return x.n.indexOf('Otros') === 0 ? 'gris' : 'verde';
-    });
-    var daily = d.leadsDaily || [];
-    var maxD = daily.length ? Math.max.apply(null, daily.map(function(x){return x.c;})) : 1;
-    document.getElementById('leadsDaily').innerHTML = daily.map(function(x){
-      var h = Math.max(6, Math.round((x.c / maxD) * 90));
-      return '<div class="col"><div class="v">' + x.c + '</div><div class="b" style="height:' + h + 'px"></div><div class="lbl">' + x.d + '</div></div>';
-    }).join('');
+    currentLeadsDetalle = Array.isArray(d.leadsDetalle) ? d.leadsDetalle : [];
+    populateLeadsFilters(currentLeadsDetalle);
+    updateLeadsView();
 
     // Solicitudes
     document.getElementById('kpiSolicitudesTotal2').textContent = d.solicitudesTotal;
