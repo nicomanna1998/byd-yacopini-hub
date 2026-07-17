@@ -1,7 +1,7 @@
 {
   "name": "BYD Yacopini · Herramientas Gerencia",
   "short_name": "BYD Tools",
-  "description": "Lista de precios, calculadora de créditos y reporte diario en un solo lugar.",
+  "description": "Tablero de control, lista de precios, créditos y comisiones en un solo lugar.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

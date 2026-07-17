@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>BYD Yacopini · Herramientas</title>
+<title>BYD Yacopini · Tablero</title>
 <meta name="theme-color" content="#0A0A0A">
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -21,6 +21,9 @@
     --blanco:#FFFFFF;
     --azul-ev:#1565D8;
     --verde-dm:#388E3C;
+    --ambar:#D89614;
+    --morado:#6A3FA0;
+    --rojo:#C0392B;
   }
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html,body{ height:100%; }
@@ -29,16 +32,16 @@
     background:var(--gris-fondo);
     color:var(--carbon);
     font-family:'Segoe UI', Arial, Helvetica, sans-serif;
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: calc(env(safe-area-inset-bottom) + 30px);
   }
   .topbar{
     background:var(--negro);
-    padding: calc(env(safe-area-inset-top) + 18px) 20px 18px;
+    padding: calc(env(safe-area-inset-top) + 18px) 20px 14px;
     display:flex;
     align-items:center;
     gap:12px;
   }
-  .topbar svg{ height:26px; width:auto; display:block; }
+  .topbar svg{ height:24px; width:auto; display:block; }
   .topbar .greeting{
     color:var(--blanco);
     font-size:13px;
@@ -50,11 +53,40 @@
     font-size:11px;
     letter-spacing:0.4px;
   }
-  .wrap{
-    max-width:640px;
-    margin:0 auto;
-    padding:20px 16px 40px;
+
+  .tabs{
+    display:flex;
+    gap:0;
+    background:var(--negro);
+    padding:0 12px 12px;
+    overflow-x:auto;
   }
+  .tabs.main-tabs{ padding-top:2px; }
+  .tabs.sub-tabs{ padding-top:0; padding-bottom:10px; }
+  .tabs.sub-tabs.hidden{ display:none; }
+  .tabs button{
+    flex:0 0 auto;
+    background:rgba(255,255,255,0.08);
+    color:var(--gris-claro);
+    border:none;
+    padding:8px 14px;
+    font-size:12.5px;
+    font-weight:700;
+    border-radius:20px;
+    margin-right:6px;
+    white-space:nowrap;
+  }
+  .tabs button.active{ background:var(--azul-ev); color:#fff; }
+  .tabs.sub-tabs button{ padding:6px 12px; font-size:11.5px; background:rgba(255,255,255,0.05); }
+  .tabs.sub-tabs button.active{ background:rgba(255,255,255,0.22); color:#fff; }
+
+  .wrap{ max-width:680px; margin:0 auto; padding:16px; }
+
+  .mainview{ display:none; }
+  .mainview.active{ display:block; }
+  .section{ display:none; }
+  .section.active{ display:block; }
+
   h1{
     font-size:19px;
     font-weight:800;
@@ -88,7 +120,6 @@
   .card:nth-of-type(3){ animation-delay:.12s; }
   .card:nth-of-type(4){ animation-delay:.16s; }
   .card:nth-of-type(5){ animation-delay:.20s; }
-  .card:nth-of-type(6){ animation-delay:.24s; }
   @keyframes cardIn{
     to{ opacity:1; transform:translateY(0); }
   }
@@ -114,7 +145,6 @@
   .icon.creditos{ background:linear-gradient(135deg,#388E3C,#256B29); }
   .icon.comisiones{ background:linear-gradient(135deg,#D89614,#A66E0A); }
   .icon.cotizador{ background:linear-gradient(135deg,#6A3FA0,#4A2670); }
-  .icon.tablero{ background:linear-gradient(135deg,#0E7C8C,#0A5560); }
   .icon.reporte{ background:linear-gradient(135deg,#2A2A2A,#0A0A0A); }
   .card-body{ flex:1; min-width:0; }
   .card-body .t{
@@ -183,6 +213,181 @@
     display:none;
   }
   .install-hint.show{ display:block; }
+
+  /* ---- Tablero ---- */
+  .kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .kpi{
+    background:var(--blanco);
+    border:1px solid var(--gris-claro);
+    border-radius:12px;
+    padding:14px;
+  }
+  .kpi .n{ font-size:24px; font-weight:800; color:var(--negro); }
+  .kpi .l{ font-size:11px; color:var(--gris-medio); font-weight:600; margin-top:2px; }
+
+  .tcard{
+    background:var(--blanco);
+    border-radius:14px;
+    padding:16px 18px;
+    margin-bottom:14px;
+    border:1px solid var(--gris-claro);
+  }
+  .tcard h2{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    color:var(--gris-medio);
+    font-weight:700;
+    margin:0 0 14px;
+  }
+
+  .bar-row{ margin-bottom:10px; }
+  .bar-row:last-child{ margin-bottom:0; }
+  .bar-row .top{
+    display:flex;
+    justify-content:space-between;
+    font-size:12.5px;
+    margin-bottom:4px;
+  }
+  .bar-row .top .name{ color:var(--carbon); font-weight:600; }
+  .bar-row .top .count{ color:var(--gris-oscuro); font-weight:700; }
+  .bar-track{
+    height:7px;
+    background:var(--gris-fondo);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .bar-fill{
+    height:100%;
+    border-radius:6px;
+    background:var(--azul-ev);
+  }
+  .bar-fill.verde{ background:var(--verde-dm); }
+  .bar-fill.ambar{ background:var(--ambar); }
+  .bar-fill.morado{ background:var(--morado); }
+  .bar-fill.gris{ background:var(--gris-medio); }
+
+  .chart-daily{
+    display:flex;
+    align-items:flex-end;
+    gap:4px;
+    height:120px;
+    overflow-x:auto;
+    padding-top:6px;
+  }
+  .chart-daily .col{
+    flex:0 0 auto;
+    width:22px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    height:100%;
+  }
+  .chart-daily .col .b{
+    width:14px;
+    background:var(--azul-ev);
+    border-radius:3px 3px 0 0;
+  }
+  .chart-daily .col .lbl{
+    font-size:8.5px;
+    color:var(--gris-medio);
+    margin-top:4px;
+    writing-mode:vertical-rl;
+    transform:rotate(180deg);
+    height:26px;
+  }
+  .chart-daily .col .v{
+    font-size:8.5px;
+    color:var(--gris-oscuro);
+    font-weight:700;
+    margin-bottom:2px;
+  }
+
+  table.data-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:12px;
+  }
+  table.data-table th{
+    text-align:left;
+    color:var(--gris-medio);
+    font-weight:700;
+    font-size:10.5px;
+    text-transform:uppercase;
+    padding:0 6px 8px 0;
+    border-bottom:1px solid var(--gris-claro);
+  }
+  table.data-table td{
+    padding:8px 6px 8px 0;
+    border-bottom:1px solid var(--gris-fondo);
+    vertical-align:top;
+  }
+  table.data-table td.num{ text-align:right; font-weight:700; }
+
+  .progress-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 0;
+    border-bottom:1px solid var(--gris-fondo);
+  }
+  .progress-row:last-child{ border-bottom:none; }
+  .progress-row .pname{
+    flex:0 0 128px;
+    font-size:12px;
+    font-weight:600;
+    color:var(--carbon);
+  }
+  .progress-row .ptrack{
+    flex:1;
+    height:9px;
+    background:var(--gris-fondo);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .progress-row .pfill{ height:100%; border-radius:6px; background:var(--azul-ev); }
+  .progress-row .pval{
+    flex:0 0 52px;
+    text-align:right;
+    font-size:11.5px;
+    font-weight:700;
+    color:var(--gris-oscuro);
+  }
+
+  .badge-aging{
+    display:inline-block;
+    font-size:10px;
+    font-weight:700;
+    padding:2px 7px;
+    border-radius:10px;
+    background:rgba(192,57,43,.1);
+    color:var(--rojo);
+    margin-left:6px;
+  }
+
+  .note{
+    font-size:11.5px;
+    color:var(--gris-medio);
+    margin-top:10px;
+    line-height:1.5;
+  }
+
+  .snapshot-banner{
+    background:#FFF7E6;
+    border:1px solid #F0D48A;
+    color:#7A5A00;
+    font-size:11.5px;
+    border-radius:10px;
+    padding:10px 12px;
+    margin-bottom:16px;
+    line-height:1.5;
+  }
 </style>
 </head>
 <body class="gate-locked">
@@ -227,7 +432,7 @@
 </script>
 
   <div class="topbar">
-    <svg viewBox="0 0 550 239.19" xmlns="http://www.w3.org/2000/svg" style="height:26px;">
+    <svg viewBox="0 0 550 239.19" xmlns="http://www.w3.org/2000/svg" style="height:24px;">
       <defs><style>.st0{fill:#FFFFFF;}</style></defs>
       <rect class="st0" x="475.13" y="212.51" width="4.98" height="22.11"/>
       <path class="st0" d="M489.98,234.62l6.92-22.11h6l6.92,22.11h-5.29l-1.36-5.26h-6.75l-1.36,5.26h-5.09ZM497.98,223.43l-.54,2.03h4.71l-.51-2.03c-.32-1.11-.62-2.28-.91-3.53-.3-1.24-.59-2.44-.88-3.59h-.14c-.27,1.18-.55,2.38-.83,3.61-.29,1.23-.58,2.4-.9,3.51"/>
@@ -246,96 +451,346 @@
     </div>
   </div>
 
+  <div class="tabs main-tabs" id="mainTabs">
+    <button class="main-tab-btn active" data-view="tablero">Tablero de Control</button>
+    <button class="main-tab-btn" data-view="herramientas">Herramientas</button>
+  </div>
+  <div class="tabs sub-tabs" id="subTabs">
+    <button class="tab-btn active" data-tab="general">General</button>
+    <button class="tab-btn" data-tab="leads">Leads</button>
+    <button class="tab-btn" data-tab="solicitudes">Solicitudes</button>
+    <button class="tab-btn" data-tab="stock">Stock</button>
+  </div>
+
   <div class="wrap">
-    <h1>Herramientas de Gerencia</h1>
-    <p class="lead">Todo en un solo lugar: precios, créditos y el reporte del día.</p>
 
     <div id="installHint" class="install-hint">
       Instalá esto como app: tocá el botón de compartir/menú del navegador y elegí
       <strong>"Agregar a pantalla de inicio"</strong>. Después vas a tener un único ícono, sin barra de navegador.
     </div>
 
-    <a class="card" href="./gestor_precios.html">
-      <div class="icon precios"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v20M17 5.5c0-1.93-2.24-3.5-5-3.5s-5 1.57-5 3.5S9.24 9 12 9s5 1.57 5 3.5-2.24 3.5-5 3.5-5-1.57-5-3.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="card-body">
-        <p class="t">Lista de Precios</p>
-        <p class="d">Editor y vistas para vendedores / gerencia</p>
-        <p class="u" id="preciosUpdated">Actualizado: 15 jul 2026</p>
-      </div>
-      <div class="chev">›</div>
-    </a>
+    <!-- ============ VISTA: TABLERO ============ -->
+    <div class="mainview active" id="view-tablero">
 
-    <a class="card" href="./calculadora_creditos.html">
-      <div class="icon creditos"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="3" stroke="#fff" stroke-width="2"/><circle cx="17" cy="17" r="3" stroke="#fff" stroke-width="2"/><path d="M18 6L6 18" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></div>
-      <div class="card-body">
-        <p class="t">Calculadora de Créditos</p>
-        <p class="d">Entidad, línea, plazo y datero para el cliente</p>
+      <div class="snapshot-banner">
+        <strong>Foto de datos:</strong> vista armada con los números reales de tu planilla al 16/07/2026. La actualización automática es el próximo paso que vemos juntos.
       </div>
-      <div class="chev">›</div>
-    </a>
 
-    <a class="card" href="./calculadora_comisiones.html">
-      <div class="icon comisiones"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="2"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="card-body">
-        <p class="t">Calculadora de Comisiones</p>
-        <p class="d">Liquidación por vendedor y por operación</p>
-      </div>
-      <div class="chev">›</div>
-    </a>
+      <!-- ---- GENERAL ---- -->
+      <div class="section active" id="tab-general">
+        <div class="kpi-grid">
+          <div class="kpi"><div class="n">524</div><div class="l">Leads BYD (mes)</div></div>
+          <div class="kpi"><div class="n">35</div><div class="l">Solicitudes (mes)</div></div>
+          <div class="kpi"><div class="n">57</div><div class="l">Entregas (mes)</div></div>
+          <div class="kpi"><div class="n">89</div><div class="l">Stock físico</div></div>
+        </div>
 
-    <a class="card" href="./cotizador_operaciones.html">
-      <div class="icon cotizador"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="16" rx="2" stroke="#fff" stroke-width="2"/><path d="M7 9h10M7 13h6M7 17h4" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></div>
-      <div class="card-body">
-        <p class="t">Cotizador de Operaciones</p>
-        <p class="d">Armá la operación: 0km, usado y saldo en vivo</p>
-      </div>
-      <div class="chev">›</div>
-    </a>
+        <div class="tcard">
+          <h2>Avance vs. objetivo · Julio 2026</h2>
+          <div id="objetivosList"></div>
+          <p class="note" id="objetivosNote">Meta mensual: 18 unidades por vendedor. Barra = entregas confirmadas del mes / meta.</p>
+        </div>
 
-    <a class="card" href="./tablero_control.html">
-      <div class="icon tablero"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="8" height="8" rx="1.5" stroke="#fff" stroke-width="2"/><rect x="13" y="3" width="8" height="5" rx="1.5" stroke="#fff" stroke-width="2"/><rect x="13" y="10" width="8" height="11" rx="1.5" stroke="#fff" stroke-width="2"/><rect x="3" y="13" width="8" height="8" rx="1.5" stroke="#fff" stroke-width="2"/></svg></div>
-      <div class="card-body">
-        <p class="t">Tablero de Control</p>
-        <p class="d">General, leads, solicitudes y stock</p>
+        <div class="tcard">
+          <h2>Por sucursal (solicitudes del mes)</h2>
+          <div class="bar-row">
+            <div class="top"><span class="name">Mendoza</span><span class="count">34</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:97%"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="top"><span class="name">San Juan</span><span class="count">1</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:3%"></div></div>
+          </div>
+        </div>
       </div>
-      <div class="chev">›</div>
-    </a>
 
-    <div class="group-label">Reporte diario</div>
-    <a class="card" href="https://docs.google.com/spreadsheets/d/1ObY4iqlgQa48qHcnxHpifKCvxDMrKqfFuM-QCc11eZ4/edit" target="_blank" rel="noopener">
-      <div class="icon reporte"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 20V10M12 20V4M20 20v-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="card-body">
-        <p class="t">Ver planilla en vivo</p>
-        <p class="d">Números del día antes de que llegue el mail de las 20hs</p>
+      <!-- ---- LEADS ---- -->
+      <div class="section" id="tab-leads">
+        <div class="kpi-grid">
+          <div class="kpi"><div class="n">524</div><div class="l">Leads BYD (mes)</div></div>
+          <div class="kpi"><div class="n">27</div><div class="l">Vendidos (estado)</div></div>
+        </div>
+
+        <div class="tcard">
+          <h2>Por origen (canal)</h2>
+          <div id="leadsCanal"></div>
+        </div>
+
+        <div class="tcard">
+          <h2>Por vendedor</h2>
+          <div id="leadsVendedor"></div>
+          <p class="note">"Otros" agrupa a vendedores con menos de 9 leads en el mes para que la lista no sea eterna.</p>
+        </div>
+
+        <div class="tcard">
+          <h2>Histórico diario — Julio</h2>
+          <div class="chart-daily" id="leadsDaily"></div>
+        </div>
       </div>
-      <div class="chev">›</div>
-    </a>
-    <div class="sublinks">
-      <a href="https://mail.google.com/mail/u/0/#search/resumen+diario" target="_blank" rel="noopener">Buscar en Gmail</a>
+
+      <!-- ---- SOLICITUDES ---- -->
+      <div class="section" id="tab-solicitudes">
+        <div class="kpi-grid">
+          <div class="kpi"><div class="n">35</div><div class="l">Solicitudes (mes)</div></div>
+          <div class="kpi"><div class="n">USD 1,23M</div><div class="l">Facturado (mes)</div></div>
+        </div>
+
+        <div class="tcard">
+          <h2>Por vendedor</h2>
+          <div id="solicitudesVendedor"></div>
+        </div>
+
+        <div class="tcard">
+          <h2>Por modelo</h2>
+          <div id="solicitudesModelo"></div>
+        </div>
+      </div>
+
+      <!-- ---- STOCK ---- -->
+      <div class="section" id="tab-stock">
+        <div class="kpi-grid">
+          <div class="kpi"><div class="n">89</div><div class="l">Unidades en stock</div></div>
+          <div class="kpi"><div class="n">10</div><div class="l">Deudas (sin VIN)</div></div>
+        </div>
+
+        <div class="tcard">
+          <h2>Stock por modelo</h2>
+          <div id="stockModelo"></div>
+          <p class="note">Días en stock — promedio 59 días · mínimo 20 · máximo 136<span class="badge-aging">+90 días: revisar (3 unidades)</span></p>
+        </div>
+
+        <div class="tcard">
+          <h2>Deudas — solicitudes sin unidad asignada</h2>
+          <table class="data-table" id="deudasTable">
+            <thead><tr><th>Fecha</th><th>Modelo</th><th>Vendedor</th><th>Cliente</th><th>Entrega est.</th><th class="num">USD</th></tr></thead>
+            <tbody></tbody>
+          </table>
+          <p class="note">Son operaciones ya cerradas que todavía no tienen VIN asignado del stock físico.</p>
+        </div>
+      </div>
+
     </div>
 
-    <p class="footer-note">
-      Uso interno · BYD Yacopini<br>
-      Los precios y cálculos se actualizan desde este mismo hub — no hace falta reinstalar nada.
-    </p>
+    <!-- ============ VISTA: HERRAMIENTAS ============ -->
+    <div class="mainview" id="view-herramientas">
+      <h1>Herramientas de Gerencia</h1>
+      <p class="lead">Todo en un solo lugar: precios, créditos y el reporte del día.</p>
+
+      <a class="card" href="./gestor_precios.html">
+        <div class="icon precios"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2v20M17 5.5c0-1.93-2.24-3.5-5-3.5s-5 1.57-5 3.5S9.24 9 12 9s5 1.57 5 3.5-2.24 3.5-5 3.5-5-1.57-5-3.5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="card-body">
+          <p class="t">Lista de Precios</p>
+          <p class="d">Editor y vistas para vendedores / gerencia</p>
+          <p class="u" id="preciosUpdated">Actualizado: 15 jul 2026</p>
+        </div>
+        <div class="chev">›</div>
+      </a>
+
+      <a class="card" href="./calculadora_creditos.html">
+        <div class="icon creditos"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="3" stroke="#fff" stroke-width="2"/><circle cx="17" cy="17" r="3" stroke="#fff" stroke-width="2"/><path d="M18 6L6 18" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <div class="card-body">
+          <p class="t">Calculadora de Créditos</p>
+          <p class="d">Entidad, línea, plazo y datero para el cliente</p>
+        </div>
+        <div class="chev">›</div>
+      </a>
+
+      <a class="card" href="./calculadora_comisiones.html">
+        <div class="icon comisiones"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="2"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="card-body">
+          <p class="t">Calculadora de Comisiones</p>
+          <p class="d">Liquidación por vendedor y por operación</p>
+        </div>
+        <div class="chev">›</div>
+      </a>
+
+      <a class="card" href="./cotizador_operaciones.html">
+        <div class="icon cotizador"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="4" width="18" height="16" rx="2" stroke="#fff" stroke-width="2"/><path d="M7 9h10M7 13h6M7 17h4" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <div class="card-body">
+          <p class="t">Cotizador de Operaciones</p>
+          <p class="d">Armá la operación: 0km, usado y saldo en vivo</p>
+        </div>
+        <div class="chev">›</div>
+      </a>
+
+      <div class="group-label">Reporte diario</div>
+      <a class="card" href="https://docs.google.com/spreadsheets/d/1ObY4iqlgQa48qHcnxHpifKCvxDMrKqfFuM-QCc11eZ4/edit" target="_blank" rel="noopener">
+        <div class="icon reporte"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 20V10M12 20V4M20 20v-7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="card-body">
+          <p class="t">Ver planilla en vivo</p>
+          <p class="d">Números del día antes de que llegue el mail de las 20hs</p>
+        </div>
+        <div class="chev">›</div>
+      </a>
+      <div class="sublinks">
+        <a href="https://mail.google.com/mail/u/0/#search/resumen+diario" target="_blank" rel="noopener">Buscar en Gmail</a>
+      </div>
+
+      <p class="footer-note">
+        Uso interno · BYD Yacopini<br>
+        Los precios y cálculos se actualizan desde este mismo hub — no hace falta reinstalar nada.
+      </p>
+    </div>
+
   </div>
 
 <script>
+(function(){
+  // ---- Vista principal: Tablero / Herramientas ----
+  var mainBtns = document.querySelectorAll('.main-tab-btn');
+  var mainViews = document.querySelectorAll('.mainview');
+  var subTabs = document.getElementById('subTabs');
+  function setMainView(view){
+    mainBtns.forEach(function(b){ b.classList.toggle('active', b.dataset.view === view); });
+    mainViews.forEach(function(v){ v.classList.toggle('active', v.id === 'view-' + view); });
+    subTabs.classList.toggle('hidden', view !== 'tablero');
+    try{ sessionStorage.setItem('bydMainView', view); }catch(e){}
+  }
+  mainBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){ setMainView(btn.dataset.view); });
+  });
+  var savedView = null;
+  try{ savedView = sessionStorage.getItem('bydMainView'); }catch(e){}
+  if (savedView === 'herramientas') { setMainView('herramientas'); }
+
+  // ---- Sub-tabs del Tablero ----
+  var subBtns = document.querySelectorAll('.tab-btn');
+  var sections = document.querySelectorAll('.section');
+  subBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      subBtns.forEach(function(b){ b.classList.remove('active'); });
+      sections.forEach(function(s){ s.classList.remove('active'); });
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  function barRow(name, count, max, colorClass){
+    var pct = Math.max(4, Math.round((count / max) * 100));
+    return '<div class="bar-row"><div class="top"><span class="name">' + name + '</span><span class="count">' + count + '</span></div>' +
+      '<div class="bar-track"><div class="bar-fill ' + (colorClass||'') + '" style="width:' + pct + '%"></div></div></div>';
+  }
+
+  // ---- Objetivos vs entregas ----
+  // Nota: la planilla de Objetivos sólo asigna meta mensual a estos 8 vendedores.
+  // Otros 20 entregas del mes (gerencia y soporte) no tienen meta asignada — ver nota abajo.
+  var objetivos = [
+    {v:'Diaz Nicolás', meta:18, real:8},
+    {v:'Lucas Manuel Borrego', meta:18, real:8},
+    {v:'Mateo Petry', meta:18, real:6},
+    {v:'Altamirano Perrone Gabriel', meta:18, real:6},
+    {v:'Agustin Esnaola', meta:18, real:6},
+    {v:'Paula Gisel Garcia Ferrer', meta:18, real:2},
+    {v:'Guadalupe Berger', meta:18, real:1},
+    {v:'Federico Clarotti', meta:18, real:0}
+  ];
+  var objHtml = objetivos.map(function(o){
+    var pct = Math.min(100, Math.round((o.real / o.meta) * 100));
+    var color = pct >= 80 ? 'verde' : (pct >= 40 ? 'ambar' : '');
+    return '<div class="progress-row"><div class="pname">' + o.v + '</div>' +
+      '<div class="ptrack"><div class="pfill ' + color + '" style="width:' + pct + '%"></div></div>' +
+      '<div class="pval">' + o.real + ' / ' + o.meta + '</div></div>';
+  }).join('');
+  document.getElementById('objetivosList').innerHTML = objHtml;
+  var sumConMeta = objetivos.reduce(function(a,o){ return a + o.real; }, 0);
+  document.getElementById('objetivosNote').innerHTML =
+    'Meta mensual: 18 unidades por vendedor. Estos 8 suman ' + sumConMeta + ' entregas. ' +
+    'Las ' + (57 - sumConMeta) + ' entregas restantes (total del mes: 57) son de personal sin meta asignada en la planilla (gerencia y soporte de sucursal).';
+
+  // ---- Leads por canal ----
+  var canal = [
+    {n:'Web', c:268}, {n:'Presencial', c:151}, {n:'Whatsapp', c:56},
+    {n:'Dato interno', c:21}, {n:'Base de datos externa', c:18},
+    {n:'Por Teléfono', c:7}, {n:'Facebook', c:3}
+  ];
+  var maxCanal = Math.max.apply(null, canal.map(function(x){return x.c;}));
+  document.getElementById('leadsCanal').innerHTML = canal.map(function(x){ return barRow(x.n, x.c, maxCanal); }).join('');
+
+  // ---- Leads por vendedor (top 10 + Otros, suma total = 524) ----
+  var leadsVend = [
+    {n:'Agustin Esnaola', c:80}, {n:'Mateo Petry', c:80}, {n:'Lucas Manuel Borrego', c:77},
+    {n:'Paula Gisel Garcia Ferrer', c:75}, {n:'Altamirano Perrone Gabriel', c:70},
+    {n:'Florencia Luana Benabentos', c:48}, {n:'Guadalupe Berger', c:42},
+    {n:'Diaz Nicolás', c:13}, {n:'Federico Clarotti', c:11}, {n:'Mauricio Caillet', c:9},
+    {n:'Otros (9 vendedores)', c:19}
+  ];
+  var maxLV = Math.max.apply(null, leadsVend.map(function(x){return x.c;}));
+  document.getElementById('leadsVendedor').innerHTML = leadsVend.map(function(x){
+    return barRow(x.n, x.c, maxLV, x.n.indexOf('Otros') === 0 ? 'gris' : 'verde');
+  }).join('');
+
+  // ---- Histórico diario leads ----
+  var daily = [
+    {d:'01/07',c:30},{d:'02/07',c:46},{d:'03/07',c:15},{d:'04/07',c:14},{d:'05/07',c:5},
+    {d:'06/07',c:76},{d:'07/07',c:36},{d:'08/07',c:34},{d:'09/07',c:2},{d:'10/07',c:69},
+    {d:'11/07',c:10},{d:'12/07',c:1},{d:'13/07',c:68},{d:'14/07',c:63},{d:'15/07',c:25},{d:'16/07',c:30}
+  ];
+  var maxD = Math.max.apply(null, daily.map(function(x){return x.c;}));
+  document.getElementById('leadsDaily').innerHTML = daily.map(function(x){
+    var h = Math.max(6, Math.round((x.c / maxD) * 90));
+    return '<div class="col"><div class="v">' + x.c + '</div><div class="b" style="height:' + h + 'px"></div><div class="lbl">' + x.d + '</div></div>';
+  }).join('');
+
+  // ---- Solicitudes por vendedor ----
+  var solVend = [
+    {n:'Montanaro Sergio', c:7}, {n:'Mateo Petry', c:6}, {n:'Agustin Esnaola', c:6},
+    {n:'Altamirano Perrone Gabriel', c:5}, {n:'Mariano Civit', c:3}, {n:'Guadalupe Berger', c:2},
+    {n:'Borlenghi Romina', c:2}, {n:'Florencia Luana Benabentos', c:1}, {n:'Diaz Nicolás', c:1},
+    {n:'Paula Gisel Garcia Ferrer', c:1}, {n:'Lucas Manuel Borrego', c:1}
+  ];
+  var maxSV = Math.max.apply(null, solVend.map(function(x){return x.c;}));
+  document.getElementById('solicitudesVendedor').innerHTML = solVend.map(function(x){ return barRow(x.n, x.c, maxSV); }).join('');
+
+  // ---- Solicitudes por modelo ----
+  var solModelo = [
+    {n:'Dolphin Mini EV GS', c:16}, {n:'Shark DMO GS', c:6}, {n:'Song Pro DM-i 1.5L FWD 100km', c:5},
+    {n:'Seal U DM-i 1.5T GS', c:3}, {n:'Atto 2 DM-i', c:3}, {n:'Song Pro DM-i 1.5L FWD 71km', c:2}
+  ];
+  var maxSM = Math.max.apply(null, solModelo.map(function(x){return x.c;}));
+  document.getElementById('solicitudesModelo').innerHTML = solModelo.map(function(x){ return barRow(x.n, x.c, maxSM, 'morado'); }).join('');
+
+  // ---- Stock por modelo ----
+  var stockModelo = [
+    {n:'Yuan Pro EV 380km (ADAS)', c:27}, {n:'Song Pro DM-i 1.5L FWD 71km', c:24},
+    {n:'Dolphin Mini EV GS', c:11}, {n:'Shark DMO GS', c:9}, {n:'Song Pro DM-i 1.5L FWD 100km', c:8},
+    {n:'Dolphin Mini EV GL', c:7}, {n:'Seal U DM-i 1.5T GS', c:3}
+  ];
+  var maxStM = Math.max.apply(null, stockModelo.map(function(x){return x.c;}));
+  document.getElementById('stockModelo').innerHTML = stockModelo.map(function(x){ return barRow(x.n, x.c, maxStM, 'ambar'); }).join('');
+
+  // ---- Deudas (solicitudes sin VIN) ----
+  var deudas = [
+    {f:'16/07', m:'Dolphin Mini EV GS', v:'Altamirano Perrone Gabriel', cl:'Diego Gabriel Mari', e:'24/08', usd:25090},
+    {f:'15/07', m:'Seal U DM-i 1.5T GS', v:'Mateo Petry', cl:'Jorge Sanchez Sanchez Littau', e:'31/07', usd:47200},
+    {f:'15/07', m:'Seal U DM-i 1.5T GS', v:'Diaz Nicolás', cl:'Bodegas y Viñedos Benedetti SRL', e:'31/08', usd:47500},
+    {f:'14/07', m:'Shark DMO GS', v:'Mateo Petry', cl:'S.A.U Banco de Servicios y Tra…', e:'31/07', usd:58000},
+    {f:'13/07', m:'Atto 2 DM-i', v:'Montanaro Sergio', cl:'Rubia Automotores S.R.L.', e:'19/08', usd:31300},
+    {f:'11/07', m:'Seal U DM-i 1.5T GS', v:'Agustin Esnaola', cl:'Gabriel Santiago Luque', e:'12/08', usd:48000},
+    {f:'10/07', m:'Atto 2 DM-i', v:'Agustin Esnaola', cl:'Maria Delfina De Paolis', e:'17/08', usd:34567},
+    {f:'08/07', m:'Atto 2 DM-i', v:'Agustin Esnaola', cl:'Daniel Hector Achen', e:'31/08', usd:34536},
+    {f:'02/07', m:'Dolphin Mini EV GS', v:'Guadalupe Berger', cl:'Rosa Elba Riva', e:'31/08', usd:25165},
+    {f:'01/07', m:'Song Pro DM-i 1.5L FWD 100km', v:'Mateo Petry', cl:'Oscar Mario Martinez', e:'31/07', usd:37200}
+  ];
+  var tbody = document.querySelector('#deudasTable tbody');
+  tbody.innerHTML = deudas.map(function(d){
+    return '<tr><td>' + d.f + '</td><td>' + d.m + '</td><td>' + d.v + '</td><td>' + d.cl + '</td><td>' + d.e + '</td><td class="num">' + d.usd.toLocaleString('es-AR') + '</td></tr>';
+  }).join('');
+
+  // ---- PWA misc ----
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('./sw.js').catch(function(){});
     });
   }
-  // Mostrar el tip de instalación solo si todavía no está instalado como PWA
-  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches
     || window.navigator.standalone === true;
   if (!isStandalone) {
     document.getElementById('installHint').classList.add('show');
   }
-  // Saludo dinámico según la hora
-  const h = new Date().getHours();
-  const g = h < 6 ? 'Buenas noches' : h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
+  var h = new Date().getHours();
+  var g = h < 6 ? 'Buenas noches' : h < 12 ? 'Buenos días' : h < 20 ? 'Buenas tardes' : 'Buenas noches';
   document.getElementById('greeting').textContent = g;
+})();
 </script>
 </body>
 </html>
