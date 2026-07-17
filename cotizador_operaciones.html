@@ -458,10 +458,13 @@
 (function(){
   var STORAGE_KEY = 'bydCotizadorState';
   var PRECIOS_KEY = 'byd_yacopini_lista_precios_v1';
+  var TABLERO_API_URL = 'https://script.google.com/macros/s/AKfycbzTYBoM56BBMj2B-8hUG_MIuOh7r5qG4qq2sGlTRM-y6QyFm0XHqgE6XUG5OQB022iy/exec';
+  var TABLERO_API_KEY = 'i4uH92SO1sFyNYi8PJ2dsGb9LDM-Xoq3';
   var fxRate = null;
   var items = [];
   var precioUsd = 0;
   var modeloNombre = '';
+  var modelosApi = null;
   var cliente = { nombre:'', dni:'', telefono:'', email:'' };
 
   var els = {
@@ -501,21 +504,41 @@
     return { efectivo:'Efectivo', credito:'Crédito', usado:'Usado' }[t] || t;
   }
 
-  // --- Modelos (lista de precios cargada desde gestor_precios.html) ---
-  function cargarModelos(){
+  // --- Modelos: primero intenta traerlos en vivo desde el Sheet (hoja
+  // "Lista de Precio", vía el mismo Apps Script del Tablero), y si no está
+  // disponible cae a la lista guardada localmente por gestor_precios.html
+  // en este mismo dispositivo (localStorage no viaja entre dispositivos,
+  // por eso el Sheet es la fuente confiable). ---
+  function cargarModelosLocalStorage(){
     try{
       var raw = localStorage.getItem(PRECIOS_KEY);
       if(!raw) return [];
       var data = JSON.parse(raw);
-      return Array.isArray(data.modelos) ? data.modelos : [];
+      return Array.isArray(data.modelos) ? data.modelos.map(function(m){ return { nombre: m.nombre, lista: m.lista }; }) : [];
     }catch(e){ return []; }
   }
+  function modelosFuente(){
+    if (modelosApi && modelosApi.length) return modelosApi;
+    return cargarModelosLocalStorage();
+  }
+  function fetchModelosApi(){
+    if (!TABLERO_API_URL) return;
+    fetch(TABLERO_API_URL + '?key=' + encodeURIComponent(TABLERO_API_KEY))
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d.error || !Array.isArray(d.listaPrecios)) return;
+        modelosApi = d.listaPrecios.map(function(m){ return { nombre: m.modelo, lista: m.precioLista }; })
+          .filter(function(m){ return m.nombre; });
+        renderModeloSelect();
+      })
+      .catch(function(){ /* se queda con localStorage / manual */ });
+  }
   function renderModeloSelect(){
-    var modelos = cargarModelos();
+    var modelos = modelosFuente();
     els.modeloSelect.innerHTML = '';
     var optManual = document.createElement('option');
     optManual.value = '';
-    optManual.textContent = modelos.length ? 'Manual / otro modelo' : 'Sin lista de precios cargada — cargá el precio manual';
+    optManual.textContent = modelos.length ? 'Manual / otro modelo' : 'Sin lista de precios disponible — cargá el precio manual';
     els.modeloSelect.appendChild(optManual);
     modelos.forEach(function(m){
       var opt = document.createElement('option');
@@ -906,6 +929,7 @@
   renderItems();
   recalc();
   fetchFx();
+  fetchModelosApi();
   setInterval(fetchFx, 5 * 60 * 1000);
 })();
 </script>
