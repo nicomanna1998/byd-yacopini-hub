@@ -495,9 +495,9 @@
         </div>
 
         <div class="tcard">
-          <h2>Entregas por grupo (sin meta individual)</h2>
+          <h2>Solicitudes por grupo (sin meta individual)</h2>
           <div id="objetivosGrupos"></div>
-          <p class="note">Gerencia agrupa a Sergio Montanaro, Gonzalo Sotomayor, Nicolás Manna y Romina Borlenghi. San Juan y San Rafael agrupan todas las entregas de esas sucursales.</p>
+          <p class="note">Gerencia agrupa a Sergio Montanaro, Gonzalo Sotomayor, Nicolás Manna y Romina Borlenghi. San Juan y San Rafael agrupan todas las solicitudes de esas sucursales.</p>
         </div>
 
         <div class="tcard">
@@ -731,19 +731,19 @@
     ],
     entregasTotal: 57,
     objetivos: [
-      {v:'Diaz Nicolás', meta:18, real:8},
-      {v:'Lucas Manuel Borrego', meta:18, real:8},
+      {v:'Altamirano Perrone Gabriel', meta:18, real:5},
       {v:'Mateo Petry', meta:18, real:6},
-      {v:'Altamirano Perrone Gabriel', meta:18, real:6},
       {v:'Agustin Esnaola', meta:18, real:6},
-      {v:'Paula Gisel Garcia Ferrer', meta:18, real:2},
-      {v:'Guadalupe Berger', meta:18, real:1},
+      {v:'Diaz Nicolás', meta:18, real:1},
+      {v:'Guadalupe Berger', meta:18, real:2},
+      {v:'Paula Gisel Garcia Ferrer', meta:18, real:1},
+      {v:'Lucas Manuel Borrego', meta:18, real:1},
       {v:'Federico Clarotti', meta:18, real:0}
     ],
-    objetivosGerencia: 10,
-    objetivosSanJuan: 6,
-    objetivosSanRafael: 2,
-    objetivosOtros: 2,
+    objetivosGerencia: 9,
+    objetivosSanJuan: 1,
+    objetivosSanRafael: 0,
+    objetivosOtros: 3,
     solicitudesTotal: 35,
     facturadoTotal: 1226198,
     solicitudesVendedor: [
@@ -799,7 +799,7 @@
     var sumConMeta = (d.objetivos||[]).reduce(function(a,o){ return a + o.real; }, 0);
     var sumGrupos = (d.objetivosGerencia||0) + (d.objetivosSanJuan||0) + (d.objetivosSanRafael||0) + (d.objetivosOtros||0);
     document.getElementById('objetivosNote').innerHTML =
-      'Meta mensual por vendedor de Mendoza. Estos ' + (d.objetivos||[]).length + ' suman ' + sumConMeta + ' entregas; el resto (' + sumGrupos + ') se agrupa abajo por sucursal / gerencia — entre ambos dan el total del mes (' + d.entregasTotal + ').';
+      'Meta mensual de solicitudes por vendedor de Mendoza. Estos ' + (d.objetivos||[]).length + ' suman ' + sumConMeta + ' solicitudes; el resto (' + sumGrupos + ') se agrupa abajo por sucursal / gerencia — entre ambos dan el total del mes (' + d.solicitudesTotal + ').';
 
     var grupos = [];
     if (d.objetivosGerencia) grupos.push({ n: 'Gerencia', c: d.objetivosGerencia });
