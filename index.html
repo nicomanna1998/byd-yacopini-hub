@@ -495,6 +495,12 @@
         </div>
 
         <div class="tcard">
+          <h2>Entregas por grupo (sin meta individual)</h2>
+          <div id="objetivosGrupos"></div>
+          <p class="note">Gerencia agrupa a Sergio Montanaro, Gonzalo Sotomayor, Nicolás Manna y Romina Borlenghi. San Juan y San Rafael agrupan todas las entregas de esas sucursales.</p>
+        </div>
+
+        <div class="tcard">
           <h2>Por sucursal (solicitudes del mes)</h2>
           <div id="sucursalBars"></div>
         </div>
@@ -734,7 +740,10 @@
       {v:'Guadalupe Berger', meta:18, real:1},
       {v:'Federico Clarotti', meta:18, real:0}
     ],
-    objetivosOtros: 20,
+    objetivosGerencia: 10,
+    objetivosSanJuan: 6,
+    objetivosSanRafael: 2,
+    objetivosOtros: 2,
     solicitudesTotal: 35,
     facturadoTotal: 1226198,
     solicitudesVendedor: [
@@ -788,11 +797,16 @@
     }).join('');
     document.getElementById('objetivosList').innerHTML = objHtml;
     var sumConMeta = (d.objetivos||[]).reduce(function(a,o){ return a + o.real; }, 0);
-    var notaOtros = d.objetivosOtros > 0
-      ? ' Las ' + d.objetivosOtros + ' entregas restantes (total del mes: ' + d.entregasTotal + ') son de personal sin meta asignada en la planilla (gerencia y soporte de sucursal).'
-      : '';
+    var sumGrupos = (d.objetivosGerencia||0) + (d.objetivosSanJuan||0) + (d.objetivosSanRafael||0) + (d.objetivosOtros||0);
     document.getElementById('objetivosNote').innerHTML =
-      'Meta mensual por vendedor. Estos ' + (d.objetivos||[]).length + ' suman ' + sumConMeta + ' entregas.' + notaOtros;
+      'Meta mensual por vendedor de Mendoza. Estos ' + (d.objetivos||[]).length + ' suman ' + sumConMeta + ' entregas; el resto (' + sumGrupos + ') se agrupa abajo por sucursal / gerencia — entre ambos dan el total del mes (' + d.entregasTotal + ').';
+
+    var grupos = [];
+    if (d.objetivosGerencia) grupos.push({ n: 'Gerencia', c: d.objetivosGerencia });
+    if (d.objetivosSanJuan) grupos.push({ n: 'San Juan', c: d.objetivosSanJuan });
+    if (d.objetivosSanRafael) grupos.push({ n: 'San Rafael', c: d.objetivosSanRafael });
+    if (d.objetivosOtros) grupos.push({ n: 'Otros (sin categorizar)', c: d.objetivosOtros });
+    document.getElementById('objetivosGrupos').innerHTML = grupos.length ? barList(grupos, 'morado') : '<p class="note">Sin entregas fuera del listado de Mendoza este mes.</p>';
 
     document.getElementById('sucursalBars').innerHTML = barList(d.solicitudesSucursal);
 
