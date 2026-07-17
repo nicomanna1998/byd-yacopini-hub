@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Cotizador de Operaciones · BYD Yacopini</title>
 <meta name="theme-color" content="#0A0A0A">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root{
     --negro:#0A0A0A;
@@ -92,6 +94,19 @@
     font-weight:700;
     margin:0 0 12px;
   }
+  .select-field{
+    width:100%;
+    font-size:13.5px;
+    font-weight:600;
+    padding:10px 10px;
+    border:1px solid var(--gris-claro);
+    border-radius:8px;
+    background:var(--gris-fondo);
+    color:var(--negro);
+    margin-bottom:12px;
+    -webkit-appearance:none;
+    appearance:none;
+  }
   .unidad-row{
     display:flex;
     align-items:center;
@@ -116,14 +131,22 @@
   .unidad-row input:focus{ border-bottom-color:var(--azul-ev); }
   .items{ margin-top:4px; }
   .item{
-    display:flex;
-    align-items:center;
-    gap:8px;
     padding:10px 0;
     border-bottom:1px solid var(--gris-fondo);
   }
+  .item .item-row1{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .item .item-row2{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-top:8px;
+  }
   .item input.concepto{
-    flex:1.3;
+    flex:1;
     font-size:13.5px;
     border:none;
     border-bottom:1px solid var(--gris-claro);
@@ -132,12 +155,37 @@
     outline:none;
     min-width:0;
   }
+  .item select.tipo{
+    flex:0 0 auto;
+    font-size:11.5px;
+    font-weight:700;
+    padding:6px 4px;
+    border:1px solid var(--gris-claro);
+    border-radius:6px;
+    background:var(--gris-fondo);
+    color:var(--carbon);
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .item select.moneda{
+    flex:0 0 auto;
+    font-size:11.5px;
+    font-weight:700;
+    padding:6px 4px;
+    border:1px solid var(--gris-claro);
+    border-radius:6px;
+    background:var(--gris-fondo);
+    color:var(--carbon);
+    -webkit-appearance:none;
+    appearance:none;
+  }
   .item .monto-wrap{
     flex:1;
     display:flex;
     align-items:center;
     gap:4px;
     border-bottom:1px solid var(--gris-claro);
+    min-width:0;
   }
   .item .monto-wrap span{
     font-size:12px;
@@ -196,6 +244,28 @@
     color:var(--gris-medio);
     padding:8px 0 2px;
   }
+  .cliente-field{ margin-bottom:12px; }
+  .cliente-field:last-child{ margin-bottom:0; }
+  .cliente-field label{
+    display:block;
+    font-size:10.5px;
+    color:var(--gris-medio);
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.3px;
+    margin-bottom:4px;
+  }
+  .cliente-field input{
+    width:100%;
+    font-size:14px;
+    padding:9px 10px;
+    border:1px solid var(--gris-claro);
+    border-radius:8px;
+    background:var(--gris-fondo);
+    color:var(--negro);
+    outline:none;
+  }
+  .cliente-field input:focus{ border-color:var(--azul-ev); }
   .saldo-card{
     background:var(--negro);
     border-radius:14px;
@@ -241,6 +311,20 @@
     border-top:1px solid rgba(255,255,255,0.12);
   }
   .breakdown b{ color:#fff; font-size:13px; }
+  .pdf-btn{
+    width:100%;
+    padding:14px;
+    border-radius:10px;
+    border:none;
+    background:var(--azul-ev);
+    color:#fff;
+    font-weight:800;
+    font-size:14px;
+    cursor:pointer;
+    margin-top:14px;
+  }
+  .pdf-btn:active{ opacity:0.85; }
+  .pdf-btn:disabled{ opacity:0.6; }
   .reset-row{
     text-align:center;
     margin-top:16px;
@@ -299,7 +383,7 @@
 <div class="topbar">
   <div>
     <h1>Cotizador de Operaciones</h1>
-    <div class="sub">0km en USD · Toma y pagos en $</div>
+    <div class="sub">0km en USD · Toma y pagos en $ o USD</div>
   </div>
   <div class="fx-pill">
     <div class="lbl">Dólar MEP venta</div>
@@ -312,6 +396,7 @@
 
   <div class="card">
     <h2>Unidad 0km (USD)</h2>
+    <select class="select-field" id="modeloSelect"></select>
     <div class="unidad-row">
       <span class="prefix">USD</span>
       <input type="number" inputmode="decimal" id="precioUsd" placeholder="0" min="0" step="1">
@@ -319,10 +404,30 @@
   </div>
 
   <div class="card">
-    <h2>Forma de pago (en $)</h2>
+    <h2>Forma de pago</h2>
     <div class="items" id="itemsList"></div>
     <p class="empty-hint" id="emptyHint">Todavía no agregaste ítems de pago.</p>
     <button class="add-btn" id="addItemBtn" type="button">+ Agregar ítem de pago</button>
+  </div>
+
+  <div class="card">
+    <h2>Datos del cliente</h2>
+    <div class="cliente-field">
+      <label>Nombre y apellido</label>
+      <input type="text" id="clienteNombre" placeholder="Nombre completo">
+    </div>
+    <div class="cliente-field">
+      <label>DNI / CUIT</label>
+      <input type="text" id="clienteDni" placeholder="00.000.000">
+    </div>
+    <div class="cliente-field">
+      <label>Teléfono</label>
+      <input type="tel" id="clienteTelefono" placeholder="+54 9 261...">
+    </div>
+    <div class="cliente-field">
+      <label>Email</label>
+      <input type="email" id="clienteEmail" placeholder="cliente@mail.com">
+    </div>
   </div>
 
   <div class="saldo-card">
@@ -337,6 +442,8 @@
     </div>
   </div>
 
+  <button class="pdf-btn" id="pdfBtn" type="button">📄 Generar PDF de presupuesto</button>
+
   <div class="reset-row">
     <button id="resetBtn" type="button">Vaciar cotización</button>
   </div>
@@ -350,23 +457,32 @@
 <script>
 (function(){
   var STORAGE_KEY = 'bydCotizadorState';
+  var PRECIOS_KEY = 'byd_yacopini_lista_precios_v1';
   var fxRate = null;
   var items = [];
   var precioUsd = 0;
+  var modeloNombre = '';
+  var cliente = { nombre:'', dni:'', telefono:'', email:'' };
 
   var els = {
     fxVal: document.getElementById('fxVal'),
     fxUpd: document.getElementById('fxUpd'),
+    modeloSelect: document.getElementById('modeloSelect'),
     precioUsd: document.getElementById('precioUsd'),
     itemsList: document.getElementById('itemsList'),
     emptyHint: document.getElementById('emptyHint'),
     addItemBtn: document.getElementById('addItemBtn'),
+    clienteNombre: document.getElementById('clienteNombre'),
+    clienteDni: document.getElementById('clienteDni'),
+    clienteTelefono: document.getElementById('clienteTelefono'),
+    clienteEmail: document.getElementById('clienteEmail'),
     saldoVal: document.getElementById('saldoVal'),
     saldoSub: document.getElementById('saldoSub'),
     estadoPill: document.getElementById('estadoPill'),
     bkUnidad: document.getElementById('bkUnidad'),
     bkPagado: document.getElementById('bkPagado'),
     bkDif: document.getElementById('bkDif'),
+    pdfBtn: document.getElementById('pdfBtn'),
     resetBtn: document.getElementById('resetBtn')
   };
 
@@ -378,6 +494,49 @@
     var sign = n < 0 ? '-' : '';
     return sign + '$ ' + Math.abs(n).toLocaleString('es-AR', {maximumFractionDigits:0});
   }
+  function escapeHtml(str){
+    return String(str == null ? '' : str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function tipoLabel(t){
+    return { efectivo:'Efectivo', credito:'Crédito', usado:'Usado' }[t] || t;
+  }
+
+  // --- Modelos (lista de precios cargada desde gestor_precios.html) ---
+  function cargarModelos(){
+    try{
+      var raw = localStorage.getItem(PRECIOS_KEY);
+      if(!raw) return [];
+      var data = JSON.parse(raw);
+      return Array.isArray(data.modelos) ? data.modelos : [];
+    }catch(e){ return []; }
+  }
+  function renderModeloSelect(){
+    var modelos = cargarModelos();
+    els.modeloSelect.innerHTML = '';
+    var optManual = document.createElement('option');
+    optManual.value = '';
+    optManual.textContent = modelos.length ? 'Manual / otro modelo' : 'Sin lista de precios cargada — cargá el precio manual';
+    els.modeloSelect.appendChild(optManual);
+    modelos.forEach(function(m){
+      var opt = document.createElement('option');
+      opt.value = m.nombre;
+      opt.setAttribute('data-lista', m.lista != null ? m.lista : 0);
+      opt.textContent = m.nombre + ' — USD ' + (Number(m.lista) || 0).toLocaleString('es-AR');
+      els.modeloSelect.appendChild(opt);
+    });
+    els.modeloSelect.value = modeloNombre || '';
+  }
+  els.modeloSelect.addEventListener('change', function(){
+    modeloNombre = els.modeloSelect.value;
+    if (modeloNombre) {
+      var opt = els.modeloSelect.selectedOptions[0];
+      var lista = Number(opt.getAttribute('data-lista')) || 0;
+      precioUsd = lista;
+      els.precioUsd.value = lista || '';
+    }
+    saveState();
+    recalc();
+  });
 
   function loadState(){
     try{
@@ -385,14 +544,35 @@
       if(!raw) return;
       var st = JSON.parse(raw);
       precioUsd = st.precioUsd || 0;
+      modeloNombre = st.modeloNombre || '';
       items = Array.isArray(st.items) ? st.items : [];
+      items.forEach(function(it){
+        if (!it.tipo) it.tipo = 'efectivo';
+        if (!it.moneda) it.moneda = 'ARS';
+      });
+      cliente = st.cliente || { nombre:'', dni:'', telefono:'', email:'' };
       els.precioUsd.value = precioUsd || '';
+      els.clienteNombre.value = cliente.nombre || '';
+      els.clienteDni.value = cliente.dni || '';
+      els.clienteTelefono.value = cliente.telefono || '';
+      els.clienteEmail.value = cliente.email || '';
     }catch(e){}
   }
   function saveState(){
     try{
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({precioUsd: precioUsd, items: items}));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        precioUsd: precioUsd,
+        modeloNombre: modeloNombre,
+        items: items,
+        cliente: cliente
+      }));
     }catch(e){}
+  }
+
+  function itemUsd(it){
+    if (!it) return 0;
+    if (it.moneda === 'USD') return it.monto || 0;
+    return fxRate ? (it.monto || 0) / fxRate : 0;
   }
 
   function renderItems(){
@@ -402,16 +582,57 @@
       var row = document.createElement('div');
       row.className = 'item';
 
+      // Fila 1: concepto + eliminar
+      var row1 = document.createElement('div');
+      row1.className = 'item-row1';
+
       var concepto = document.createElement('input');
       concepto.className = 'concepto';
       concepto.placeholder = 'Concepto (ej: Toma usado, Efectivo)';
       concepto.value = it.concepto || '';
       concepto.addEventListener('input', function(){ items[idx].concepto = concepto.value; saveState(); });
 
+      var del = document.createElement('button');
+      del.className = 'del';
+      del.type = 'button';
+      del.textContent = '×';
+      del.addEventListener('click', function(){
+        items.splice(idx, 1);
+        saveState();
+        renderItems();
+        recalc();
+      });
+
+      row1.appendChild(concepto);
+      row1.appendChild(del);
+
+      // Fila 2: tipo de pago + moneda + monto + equivalente
+      var row2 = document.createElement('div');
+      row2.className = 'item-row2';
+
+      var tipoSel = document.createElement('select');
+      tipoSel.className = 'tipo';
+      [['efectivo','Efectivo'], ['credito','Crédito'], ['usado','Usado']].forEach(function(p){
+        var o = document.createElement('option');
+        o.value = p[0]; o.textContent = p[1];
+        tipoSel.appendChild(o);
+      });
+      tipoSel.value = it.tipo || 'efectivo';
+      tipoSel.addEventListener('change', function(){ items[idx].tipo = tipoSel.value; saveState(); });
+
+      var monedaSel = document.createElement('select');
+      monedaSel.className = 'moneda';
+      [['ARS','$'], ['USD','USD']].forEach(function(p){
+        var o = document.createElement('option');
+        o.value = p[0]; o.textContent = p[1];
+        monedaSel.appendChild(o);
+      });
+      monedaSel.value = it.moneda || 'ARS';
+
       var montoWrap = document.createElement('div');
       montoWrap.className = 'monto-wrap';
       var pesoSign = document.createElement('span');
-      pesoSign.textContent = '$';
+      pesoSign.textContent = (it.moneda === 'USD') ? 'USD' : '$';
       var monto = document.createElement('input');
       monto.className = 'monto';
       monto.type = 'number';
@@ -426,33 +647,30 @@
       montoWrap.appendChild(pesoSign);
       montoWrap.appendChild(monto);
 
-      var eq = document.createElement('div');
-      eq.className = 'eq-usd';
-      var usdEq = fxRate ? (it.monto || 0) / fxRate : 0;
-      eq.textContent = fxRate ? ('≈ USD ' + usdEq.toLocaleString('es-AR', {maximumFractionDigits:0})) : '—';
-
-      var del = document.createElement('button');
-      del.className = 'del';
-      del.type = 'button';
-      del.textContent = '×';
-      del.addEventListener('click', function(){
-        items.splice(idx, 1);
+      monedaSel.addEventListener('change', function(){
+        items[idx].moneda = monedaSel.value;
+        pesoSign.textContent = (monedaSel.value === 'USD') ? 'USD' : '$';
         saveState();
-        renderItems();
         recalc();
       });
 
-      row.appendChild(concepto);
-      row.appendChild(montoWrap);
-      row.appendChild(eq);
-      row.appendChild(del);
+      var eq = document.createElement('div');
+      eq.className = 'eq-usd';
+      eq.textContent = fxRate ? ('≈ ' + fmtUsd(itemUsd(it))) : '—';
+
+      row2.appendChild(tipoSel);
+      row2.appendChild(monedaSel);
+      row2.appendChild(montoWrap);
+      row2.appendChild(eq);
+
+      row.appendChild(row1);
+      row.appendChild(row2);
       els.itemsList.appendChild(row);
     });
   }
 
   function recalc(){
-    var totalPesos = items.reduce(function(sum, it){ return sum + (it.monto || 0); }, 0);
-    var totalUsd = fxRate ? totalPesos / fxRate : 0;
+    var totalUsd = items.reduce(function(sum, it){ return sum + itemUsd(it); }, 0);
     var saldo = precioUsd - totalUsd;
 
     els.bkUnidad.textContent = fmtUsd(precioUsd);
@@ -480,9 +698,8 @@
     var rows = els.itemsList.querySelectorAll('.item');
     rows.forEach(function(row, idx){
       var eq = row.querySelector('.eq-usd');
-      if(!eq) return;
-      var usdEq = fxRate ? (items[idx].monto || 0) / fxRate : 0;
-      eq.textContent = fxRate ? ('≈ USD ' + usdEq.toLocaleString('es-AR', {maximumFractionDigits:0})) : '—';
+      if (!eq) return;
+      eq.textContent = fxRate ? ('≈ ' + fmtUsd(itemUsd(items[idx]))) : '—';
     });
   }
 
@@ -493,17 +710,31 @@
   });
 
   els.addItemBtn.addEventListener('click', function(){
-    items.push({concepto:'', monto:0});
+    items.push({ concepto:'', tipo:'efectivo', moneda:'ARS', monto:0 });
     saveState();
     renderItems();
     recalc();
   });
 
+  [['clienteNombre','nombre'], ['clienteDni','dni'], ['clienteTelefono','telefono'], ['clienteEmail','email']].forEach(function(p){
+    els[p[0]].addEventListener('input', function(){
+      cliente[p[1]] = els[p[0]].value;
+      saveState();
+    });
+  });
+
   els.resetBtn.addEventListener('click', function(){
     if(!confirm('¿Vaciar toda la cotización actual?')) return;
     precioUsd = 0;
+    modeloNombre = '';
     items = [];
+    cliente = { nombre:'', dni:'', telefono:'', email:'' };
     els.precioUsd.value = '';
+    els.clienteNombre.value = '';
+    els.clienteDni.value = '';
+    els.clienteTelefono.value = '';
+    els.clienteEmail.value = '';
+    renderModeloSelect();
     saveState();
     renderItems();
     recalc();
@@ -528,7 +759,150 @@
       });
   }
 
+  // --- Generación de PDF (presupuesto borrador) ---
+  function construirFilasPago(){
+    if (!items.length) {
+      return '<tr><td colspan="4" style="text-align:center;color:#8C8C8C;padding:14px;">Sin ítems de pago cargados</td></tr>';
+    }
+    return items.map(function(it){
+      var usd = itemUsd(it);
+      var montoFmt = (it.moneda === 'USD') ? fmtUsd(it.monto || 0) : fmtArs(it.monto || 0);
+      return '<tr>' +
+        '<td>' + escapeHtml(it.concepto || '—') + '</td>' +
+        '<td>' + tipoLabel(it.tipo) + '</td>' +
+        '<td style="text-align:right;">' + montoFmt + '</td>' +
+        '<td style="text-align:right;">' + fmtUsd(usd) + '</td>' +
+        '</tr>';
+    }).join('');
+  }
+
+  function generarHtmlPresupuesto(){
+    var totalUsd = items.reduce(function(s, it){ return s + itemUsd(it); }, 0);
+    var saldo = precioUsd - totalUsd;
+    var fecha = new Date().toLocaleDateString('es-AR', { day:'2-digit', month:'2-digit', year:'numeric' });
+    var fxLine = fxRate
+      ? ('Cotización dólar MEP referencial utilizada: $' + fxRate.toLocaleString('es-AR', {maximumFractionDigits:0}) + ' (' + fecha + ').')
+      : 'Cotización dólar MEP no disponible al momento de generar este documento.';
+    var modeloTxt = modeloNombre ? escapeHtml(modeloNombre) : 'A definir';
+
+    return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>' +
+      'body{font-family:Arial,Helvetica,sans-serif;color:#2A2A2A;margin:0;padding:32px;background:#fff;}' +
+      '.header{background:#0A0A0A;color:#fff;padding:20px 24px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;}' +
+      '.header h1{margin:0;font-size:18px;}' +
+      '.header .sub{font-size:11px;color:#D4D4D4;margin-top:4px;}' +
+      '.badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;white-space:nowrap;}' +
+      '.section{margin-top:22px;}' +
+      '.section h2{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:#8C8C8C;border-bottom:1px solid #D4D4D4;padding-bottom:6px;margin-bottom:10px;}' +
+      '.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px 24px;}' +
+      '.field .lbl{font-size:10px;color:#8C8C8C;text-transform:uppercase;font-weight:700;}' +
+      '.field .v{font-size:13.5px;font-weight:700;color:#0A0A0A;margin-top:2px;}' +
+      'table{width:100%;border-collapse:collapse;font-size:12.5px;}' +
+      'th{text-align:left;font-size:10px;text-transform:uppercase;color:#8C8C8C;border-bottom:2px solid #D4D4D4;padding:6px 4px;}' +
+      'td{padding:8px 4px;border-bottom:1px solid #F2F2F2;}' +
+      '.totales{margin-top:16px;background:#F2F2F2;border-radius:10px;padding:14px 18px;}' +
+      '.totales .row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;}' +
+      '.totales .row.total{font-size:16px;font-weight:800;border-top:1px solid #D4D4D4;margin-top:6px;padding-top:10px;}' +
+      '.footer{margin-top:26px;font-size:10px;color:#8C8C8C;line-height:1.6;}' +
+      '</style></head><body>' +
+      '<div class="header"><div><h1>BYD Yacopini</h1><div class="sub">Presupuesto de operación · ' + fecha + '</div></div><div class="badge">BORRADOR</div></div>' +
+      '<div class="section"><h2>Datos del cliente</h2><div class="grid2">' +
+        '<div class="field"><div class="lbl">Nombre</div><div class="v">' + (escapeHtml(cliente.nombre) || '—') + '</div></div>' +
+        '<div class="field"><div class="lbl">DNI / CUIT</div><div class="v">' + (escapeHtml(cliente.dni) || '—') + '</div></div>' +
+        '<div class="field"><div class="lbl">Teléfono</div><div class="v">' + (escapeHtml(cliente.telefono) || '—') + '</div></div>' +
+        '<div class="field"><div class="lbl">Email</div><div class="v">' + (escapeHtml(cliente.email) || '—') + '</div></div>' +
+      '</div></div>' +
+      '<div class="section"><h2>Unidad</h2><div class="grid2">' +
+        '<div class="field"><div class="lbl">Modelo</div><div class="v">' + modeloTxt + '</div></div>' +
+        '<div class="field"><div class="lbl">Precio 0km</div><div class="v">' + fmtUsd(precioUsd) + '</div></div>' +
+      '</div></div>' +
+      '<div class="section"><h2>Forma de pago</h2><table><thead><tr><th>Concepto</th><th>Tipo</th><th style="text-align:right;">Monto</th><th style="text-align:right;">Equiv. USD</th></tr></thead><tbody>' +
+        construirFilasPago() +
+      '</tbody></table></div>' +
+      '<div class="totales">' +
+        '<div class="row"><span>Unidad 0km</span><b>' + fmtUsd(precioUsd) + '</b></div>' +
+        '<div class="row"><span>Total pagado</span><b>' + fmtUsd(totalUsd) + '</b></div>' +
+        '<div class="row total"><span>Saldo restante</span><b>' + fmtUsd(saldo) + '</b></div>' +
+      '</div>' +
+      '<div class="footer">' + fxLine + '<br>Documento informativo, no vinculante. Precios y disponibilidad sujetos a confirmación por el sector comercial de BYD Yacopini.</div>' +
+      '</body></html>';
+  }
+
+  function generarPdfDesdeHtml(contenido, nombreArchivo){
+    var textoOriginal = els.pdfBtn.textContent;
+    els.pdfBtn.disabled = true;
+    els.pdfBtn.textContent = 'Generando PDF…';
+
+    var iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;height:auto;border:none;';
+    document.body.appendChild(iframe);
+
+    function limpiar(){
+      if (iframe.parentNode) document.body.removeChild(iframe);
+      els.pdfBtn.disabled = false;
+      els.pdfBtn.textContent = textoOriginal;
+    }
+
+    iframe.onload = function(){
+      setTimeout(function(){
+        try{
+          var body = iframe.contentDocument.body;
+          html2canvas(body, {
+            scale: 1.5,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            width: 800,
+            height: body.scrollHeight,
+            scrollX: 0,
+            scrollY: 0,
+            logging: false
+          }).then(function(canvas){
+            var A4_W = 595, A4_H = 842;
+            var imgHeight = (canvas.height * A4_W) / canvas.width;
+            var finalW = A4_W, finalH = imgHeight;
+            if (imgHeight > A4_H) {
+              var scale = A4_H / imgHeight;
+              finalW = A4_W * scale;
+              finalH = A4_H;
+            }
+            var offsetX = (A4_W - finalW) / 2;
+            var jsPDF = window.jspdf.jsPDF;
+            var pdf = new jsPDF({ orientation:'portrait', unit:'pt', format:'a4' });
+            var imgData = canvas.toDataURL('image/jpeg', 0.92);
+            pdf.addImage(imgData, 'JPEG', offsetX, 0, finalW, finalH);
+            pdf.save(nombreArchivo);
+            limpiar();
+          }).catch(function(e){
+            console.error(e);
+            alert('No se pudo generar el PDF. Probá de nuevo.');
+            limpiar();
+          });
+        }catch(e){
+          console.error(e);
+          alert('No se pudo generar el PDF. Probá de nuevo.');
+          limpiar();
+        }
+      }, 500);
+    };
+
+    var blob = new Blob([contenido], { type:'text/html' });
+    var url = URL.createObjectURL(blob);
+    iframe.src = url;
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 6000);
+  }
+
+  els.pdfBtn.addEventListener('click', function(){
+    if (!items.length && !precioUsd) {
+      if (!confirm('Todavía no cargaste datos de la operación. ¿Generar el PDF igual?')) return;
+    }
+    var fecha = new Date().toISOString().slice(0, 10);
+    var slugCliente = (cliente.nombre || 'presupuesto').toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'presupuesto';
+    generarPdfDesdeHtml(generarHtmlPresupuesto(), 'presupuesto_' + slugCliente + '_' + fecha + '.pdf');
+  });
+
   loadState();
+  renderModeloSelect();
   renderItems();
   recalc();
   fetchFx();
