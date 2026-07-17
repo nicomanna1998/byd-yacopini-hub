@@ -591,12 +591,12 @@
             <label for="leadsVendedorFilter">Vendedor</label>
             <select class="filter-select" id="leadsVendedorFilter"><option value="">Todos</option></select>
           </div>
-          <h2>Leads recibidos</h2>
+          <h2>Leads recibidos por origen</h2>
           <div class="pie-wrap">
             <div class="pie-chart" id="leadsPieChart"></div>
             <div class="pie-legend" id="leadsPieLegend"></div>
           </div>
-          <p class="note">Los vendedores de San Juan y San Rafael se agrupan por sucursal; el resto se muestra por nombre.</p>
+          <p class="note">Muestra cómo llegan los leads (Web, Presencial, Whatsapp, etc.) para el vendedor elegido arriba, o para todo el concesionario si dejás "Todos". Los vendedores de San Juan y San Rafael se agrupan por sucursal en el filtro; el resto aparece por nombre.</p>
         </div>
 
         <div class="tcard">
@@ -838,8 +838,11 @@
     var oSel = document.getElementById('leadsOrigenFilter').value;
     var byVendor = vSel ? currentLeadsDetalle.filter(function(r){ return r.v === vSel; }) : currentLeadsDetalle;
 
+    // La torta muestra CÓMO llegaron los leads (origen/canal), no quién los
+    // atendió — el filtro de vendedor de arriba solo acota la muestra (un
+    // vendedor puntual, o "Todos" para ver el concesionario completo).
     var pieMap = {};
-    byVendor.forEach(function(r){ pieMap[r.v] = (pieMap[r.v] || 0) + 1; });
+    byVendor.forEach(function(r){ pieMap[r.o] = (pieMap[r.o] || 0) + 1; });
     renderPie(buildPieSlices(pieMap));
 
     var byOrigen = oSel ? byVendor.filter(function(r){ return r.o === oSel; }) : byVendor;
