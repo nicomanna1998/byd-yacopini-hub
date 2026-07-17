@@ -61,8 +61,22 @@
     padding:0 12px 12px;
     overflow-x:auto;
   }
-  .tabs.main-tabs{ padding-top:2px; }
-  .tabs.sub-tabs{ padding-top:0; padding-bottom:10px; }
+  .main-select-wrap{ background:var(--negro); padding:2px 12px 14px; }
+  .main-select{
+    width:100%;
+    background:rgba(255,255,255,0.08);
+    color:#fff;
+    border:1px solid rgba(255,255,255,0.2);
+    border-radius:10px;
+    padding:12px 14px;
+    font-size:14px;
+    font-weight:700;
+    font-family:inherit;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .main-select option{ background:#1a1a1a; color:#fff; }
+  .tabs.sub-tabs{ padding-top:12px; padding-bottom:10px; }
   .tabs.sub-tabs.hidden{ display:none; }
   .tabs button{
     flex:0 0 auto;
@@ -456,9 +470,11 @@
     </div>
   </div>
 
-  <div class="tabs main-tabs" id="mainTabs">
-    <button class="main-tab-btn active" data-view="tablero">Tablero de Control</button>
-    <button class="main-tab-btn" data-view="herramientas">Herramientas</button>
+  <div class="main-select-wrap">
+    <select id="mainViewSelect" class="main-select">
+      <option value="tablero">Tablero de Control</option>
+      <option value="herramientas">Herramientas</option>
+    </select>
   </div>
   <div class="tabs sub-tabs" id="subTabs">
     <button class="tab-btn active" data-tab="general">General</button>
@@ -639,18 +655,16 @@
 <script>
 (function(){
   // ---- Vista principal: Tablero / Herramientas ----
-  var mainBtns = document.querySelectorAll('.main-tab-btn');
+  var mainSelect = document.getElementById('mainViewSelect');
   var mainViews = document.querySelectorAll('.mainview');
   var subTabs = document.getElementById('subTabs');
   function setMainView(view){
-    mainBtns.forEach(function(b){ b.classList.toggle('active', b.dataset.view === view); });
+    mainSelect.value = view;
     mainViews.forEach(function(v){ v.classList.toggle('active', v.id === 'view-' + view); });
     subTabs.classList.toggle('hidden', view !== 'tablero');
     try{ sessionStorage.setItem('bydMainView', view); }catch(e){}
   }
-  mainBtns.forEach(function(btn){
-    btn.addEventListener('click', function(){ setMainView(btn.dataset.view); });
-  });
+  mainSelect.addEventListener('change', function(){ setMainView(mainSelect.value); });
   var savedView = null;
   try{ savedView = sessionStorage.getItem('bydMainView'); }catch(e){}
   if (savedView === 'herramientas') { setMainView('herramientas'); }
