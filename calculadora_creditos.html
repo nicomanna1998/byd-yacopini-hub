@@ -120,6 +120,15 @@
             grid-column: span 2;
         }
 
+        .cuit-status {
+            display: block;
+            font-size: 10.5px;
+            margin-top: 4px;
+            color: #888;
+        }
+        .cuit-status.ok { color: #1a9c5c; }
+        .cuit-status.err { color: #c0392b; }
+
         .form-group label {
             display: block;
             font-size: 11px;
@@ -1258,6 +1267,7 @@
                 <div class="form-group">
                     <label for="dat-cuit">CUIT</label>
                     <input type="text" id="dat-cuit" class="form-control" placeholder="Ej: 20-12345678-9">
+                    <span class="cuit-status" id="dat-cuit-status"></span>
                 </div>
                 <div class="form-group">
                     <label for="dat-mail">Mail</label>
@@ -1300,6 +1310,7 @@
                     <div class="form-group">
                         <label for="dat-c-cuit">CUIT</label>
                         <input type="text" id="dat-c-cuit" class="form-control" placeholder="Ej: 27-12345678-9">
+                        <span class="cuit-status" id="dat-c-cuit-status"></span>
                     </div>
                     <div class="form-group">
                         <label for="dat-c-mail">Mail</label>
@@ -2212,6 +2223,53 @@
     checkCotitular.addEventListener('change', ()=>{
         cotitularSection.style.display = checkCotitular.checked ? 'block' : 'none';
     });
+
+    // ---------- Autocompletar por CUIT (ARCA vía Afip SDK — prueba de concepto) ----------
+    const TABLERO_API_URL = 'https://script.google.com/macros/s/AKfycbzTYBoM56BBMj2B-8hUG_MIuOh7r5qG4qq2sGlTRM-y6QyFm0XHqgE6XUG5OQB022iy/exec';
+    const TABLERO_API_KEY = 'i4uH92SO1sFyNYi8PJ2dsGb9LDM-Xoq3';
+
+    function soloDigitos(v){ return (v || '').toString().replace(/[^0-9]/g, ''); }
+
+    function wireAutocompletarCuit(prefix){
+        const cuitInput = document.getElementById(prefix + '-cuit');
+        const statusEl = document.getElementById(prefix + '-cuit-status');
+        const nombreInput = document.getElementById(prefix + '-nombre');
+        const calleInput = document.getElementById(prefix + '-calle');
+        const localidadInput = document.getElementById(prefix + '-localidad');
+        const provinciaInput = document.getElementById(prefix + '-provincia');
+        const cpInput = document.getElementById(prefix + '-cp');
+        if(!cuitInput || !statusEl) return;
+
+        cuitInput.addEventListener('blur', ()=>{
+            const digitos = soloDigitos(cuitInput.value);
+            if(digitos.length !== 11){ statusEl.textContent = ''; return; }
+            statusEl.className = 'cuit-status';
+            statusEl.textContent = 'Buscando datos por CUIT…';
+            fetch(TABLERO_API_URL + '?key=' + encodeURIComponent(TABLERO_API_KEY) + '&action=cuit&cuit=' + digitos)
+                .then(r => r.json())
+                .then(d => {
+                    if(!d || d.error){
+                        statusEl.className = 'cuit-status err';
+                        statusEl.textContent = (d && d.error) || 'No se pudo consultar el CUIT.';
+                        return;
+                    }
+                    if(d.nombre && nombreInput && !nombreInput.value.trim()) nombreInput.value = d.nombre;
+                    if(d.domicilio && calleInput && !calleInput.value.trim()) calleInput.value = d.domicilio;
+                    if(d.localidad && localidadInput && !localidadInput.value.trim()) localidadInput.value = d.localidad;
+                    if(d.provincia && provinciaInput && !provinciaInput.value.trim()) provinciaInput.value = d.provincia;
+                    if(d.codigoPostal && cpInput && !cpInput.value.trim()) cpInput.value = d.codigoPostal;
+                    statusEl.className = 'cuit-status ok';
+                    statusEl.textContent = d.nombre ? ('Encontrado: ' + d.nombre) : 'Consulta OK, sin nombre para completar.';
+                })
+                .catch(()=>{
+                    statusEl.className = 'cuit-status err';
+                    statusEl.textContent = 'Sin conexión con el servicio de CUIT.';
+                });
+        });
+    }
+
+    wireAutocompletarCuit('dat');
+    wireAutocompletarCuit('dat-c');
 
     function renderResumenCredito(){
         const s = ultimaSimulacion;

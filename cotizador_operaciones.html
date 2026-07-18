@@ -266,6 +266,14 @@
     outline:none;
   }
   .cliente-field input:focus{ border-color:var(--azul-ev); }
+  .cuit-status{
+    display:block;
+    font-size:10.5px;
+    margin-top:4px;
+    color:var(--gris-medio);
+  }
+  .cuit-status.ok{ color:var(--verde-dm, #1a9c5c); }
+  .cuit-status.err{ color:var(--rojo, #c0392b); }
   .saldo-card{
     background:var(--negro);
     border-radius:14px;
@@ -419,6 +427,7 @@
     <div class="cliente-field">
       <label>DNI / CUIT</label>
       <input type="text" id="clienteDni" placeholder="00.000.000">
+      <span class="cuit-status" id="clienteDniStatus"></span>
     </div>
     <div class="cliente-field">
       <label>Teléfono</label>
@@ -477,6 +486,7 @@
     addItemBtn: document.getElementById('addItemBtn'),
     clienteNombre: document.getElementById('clienteNombre'),
     clienteDni: document.getElementById('clienteDni'),
+    clienteDniStatus: document.getElementById('clienteDniStatus'),
     clienteTelefono: document.getElementById('clienteTelefono'),
     clienteEmail: document.getElementById('clienteEmail'),
     saldoVal: document.getElementById('saldoVal'),
@@ -732,6 +742,36 @@
     recalc();
   });
 
+  // ---------- Autocompletar por CUIT (ARCA vía Afip SDK — prueba de concepto) ----------
+  function soloDigitos(v){ return (v || '').toString().replace(/[^0-9]/g, ''); }
+
+  els.clienteDni.addEventListener('blur', function(){
+    var digitos = soloDigitos(els.clienteDni.value);
+    if (digitos.length !== 11) { els.clienteDniStatus.textContent = ''; return; }
+    els.clienteDniStatus.className = 'cuit-status';
+    els.clienteDniStatus.textContent = 'Buscando datos por CUIT…';
+    fetch(TABLERO_API_URL + '?key=' + encodeURIComponent(TABLERO_API_KEY) + '&action=cuit&cuit=' + digitos)
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if (!d || d.error) {
+          els.clienteDniStatus.className = 'cuit-status err';
+          els.clienteDniStatus.textContent = (d && d.error) || 'No se pudo consultar el CUIT.';
+          return;
+        }
+        if (d.nombre && !els.clienteNombre.value.trim()) {
+          els.clienteNombre.value = d.nombre;
+          cliente.nombre = d.nombre;
+        }
+        els.clienteDniStatus.className = 'cuit-status ok';
+        els.clienteDniStatus.textContent = d.nombre ? ('Encontrado: ' + d.nombre) : 'Consulta OK, sin nombre para completar.';
+        saveState();
+      })
+      .catch(function(){
+        els.clienteDniStatus.className = 'cuit-status err';
+        els.clienteDniStatus.textContent = 'Sin conexión con el servicio de CUIT.';
+      });
+  });
+
   els.addItemBtn.addEventListener('click', function(){
     items.push({ concepto:'', tipo:'efectivo', moneda:'ARS', monto:0 });
     saveState();
@@ -755,6 +795,7 @@
     els.precioUsd.value = '';
     els.clienteNombre.value = '';
     els.clienteDni.value = '';
+    els.clienteDniStatus.textContent = '';
     els.clienteTelefono.value = '';
     els.clienteEmail.value = '';
     renderModeloSelect();
