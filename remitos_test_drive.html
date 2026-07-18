@@ -99,6 +99,9 @@
   }
   textarea{resize:vertical;min-height:60px;}
   .row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;}
+  .row2 input[type=date],.row2 input[type=time]{
+    width:auto;max-width:100%;min-width:0;
+  }
 
   .btn{
     display:inline-flex;align-items:center;justify-content:center;gap:8px;
@@ -324,17 +327,26 @@
       <label for="inpKm">Km de salida</label>
       <input type="number" id="inpKm" placeholder="Ej: 4830" inputmode="numeric">
 
-      <label for="inpFechaSal">Fecha salida</label>
-      <input type="date" id="inpFechaSal">
-
-      <label for="inpHoraSal">Hora salida</label>
-      <input type="time" id="inpHoraSal">
-
-      <label for="inpFechaRet">Regreso estimado</label>
-      <input type="date" id="inpFechaRet">
-
-      <label for="inpHoraRet">Hora estimada</label>
-      <input type="time" id="inpHoraRet">
+      <div class="row2">
+        <div>
+          <label for="inpFechaSal">Fecha salida</label>
+          <input type="date" id="inpFechaSal">
+        </div>
+        <div>
+          <label for="inpHoraSal">Hora salida</label>
+          <input type="time" id="inpHoraSal">
+        </div>
+      </div>
+      <div class="row2">
+        <div>
+          <label for="inpFechaRet">Regreso estimado</label>
+          <input type="date" id="inpFechaRet">
+        </div>
+        <div>
+          <label for="inpHoraRet">Hora estimada</label>
+          <input type="time" id="inpHoraRet">
+        </div>
+      </div>
 
       <label for="inpNombre">Nombre y apellido del cliente</label>
       <input type="text" id="inpNombre" placeholder="Nombre completo">
