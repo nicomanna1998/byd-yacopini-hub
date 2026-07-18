@@ -285,6 +285,24 @@
   .bar-fill.ambar{ background:var(--ambar); }
   .bar-fill.morado{ background:var(--morado); }
   .bar-fill.gris{ background:var(--gris-medio); }
+  .bar-fill.rojo{ background:var(--rojo); }
+
+  .model-group{ margin-bottom:14px; }
+  .model-group:last-child{ margin-bottom:0; }
+  .stock-variantes{
+    margin:6px 0 0 4px;
+    padding-left:10px;
+    border-left:2px solid var(--gris-fondo);
+  }
+  .variant-row{
+    display:flex;
+    justify-content:space-between;
+    gap:8px;
+    font-size:11px;
+    padding:3px 0;
+  }
+  .variant-row .vname{ color:var(--gris-oscuro); }
+  .variant-row .vcount{ font-weight:700; color:var(--carbon); white-space:nowrap; }
 
   .chart-daily{
     display:flex;
@@ -545,6 +563,7 @@
     <button class="tab-btn" data-tab="leads">Leads</button>
     <button class="tab-btn" data-tab="solicitudes">Solicitudes</button>
     <button class="tab-btn" data-tab="stock">Stock</button>
+    <button class="tab-btn" data-tab="entregas">Entregas</button>
   </div>
 
   <div class="wrap">
@@ -566,6 +585,8 @@
           <div class="kpi"><div class="n" id="kpiSolicitudesTotal">–</div><div class="l">Solicitudes (mes)</div></div>
           <div class="kpi"><div class="n" id="kpiEntregasTotal">–</div><div class="l">Entregas (mes)</div></div>
           <div class="kpi"><div class="n" id="kpiStockTotal">–</div><div class="l">Stock físico</div></div>
+          <div class="kpi"><div class="n" id="kpiPruebasGeneral">–</div><div class="l">Test drives (mes)</div></div>
+          <div class="kpi"><div class="n" id="kpiTasacionesGeneral">–</div><div class="l">Tasaciones (mes)</div></div>
         </div>
 
         <div class="tcard">
@@ -575,14 +596,19 @@
         </div>
 
         <div class="tcard">
-          <h2>Solicitudes por grupo (sin meta individual)</h2>
-          <div id="objetivosGrupos"></div>
-          <p class="note">Gerencia agrupa a Sergio Montanaro, Gonzalo Sotomayor, Nicolás Manna y Romina Borlenghi. San Juan y San Rafael agrupan todas las solicitudes de esas sucursales.</p>
+          <h2>Solicitudes por sucursal (mes)</h2>
+          <div class="pie-wrap">
+            <div class="pie-chart" id="sucursalPieChart"></div>
+            <div class="pie-legend" id="sucursalPieLegend"></div>
+          </div>
         </div>
 
         <div class="tcard">
-          <h2>Por sucursal (solicitudes del mes)</h2>
-          <div id="sucursalBars"></div>
+          <h2>Solicitudes por tipo — DM / EV (mes)</h2>
+          <div class="pie-wrap">
+            <div class="pie-chart" id="tipoPieChartGeneral"></div>
+            <div class="pie-legend" id="tipoPieLegendGeneral"></div>
+          </div>
         </div>
       </div>
 
@@ -591,6 +617,8 @@
         <div class="kpi-grid">
           <div class="kpi"><div class="n" id="kpiLeadsTotal2">–</div><div class="l">Leads BYD (mes)</div></div>
           <div class="kpi"><div class="n" id="kpiVendidos">–</div><div class="l">Vendidos (estado)</div></div>
+          <div class="kpi"><div class="n" id="kpiPruebasLeads">–</div><div class="l">Test drives (mes)</div></div>
+          <div class="kpi"><div class="n" id="kpiTasacionesLeads">–</div><div class="l">Tasaciones (mes)</div></div>
         </div>
 
         <div class="tcard">
@@ -614,6 +642,12 @@
           <h2>Histórico diario del mes</h2>
           <div class="chart-daily" id="leadsDaily"></div>
         </div>
+
+        <div class="tcard">
+          <h2>Test drives por modelo</h2>
+          <div id="pruebasModeloBreakdown"></div>
+          <p class="note">Respeta el filtro de Vendedor de arriba — "Todos" muestra los test drives de todo el equipo BYD.</p>
+        </div>
       </div>
 
       <!-- ---- SOLICITUDES ---- -->
@@ -621,6 +655,16 @@
         <div class="kpi-grid">
           <div class="kpi"><div class="n" id="kpiSolicitudesTotal2">–</div><div class="l">Solicitudes (mes)</div></div>
           <div class="kpi"><div class="n" id="kpiFacturado">–</div><div class="l">Facturado (mes)</div></div>
+          <div class="kpi"><div class="n" id="kpiUtilidadMensual">–</div><div class="l">Utilidad mensual</div></div>
+        </div>
+
+        <div class="tcard">
+          <h2>Por tipo — DM / EV (mes)</h2>
+          <div class="pie-wrap">
+            <div class="pie-chart" id="tipoPieChartSol"></div>
+            <div class="pie-legend" id="tipoPieLegendSol"></div>
+          </div>
+          <p class="note" id="utilidadNote"></p>
         </div>
 
         <div class="tcard">
@@ -648,12 +692,40 @@
         </div>
 
         <div class="tcard">
-          <h2>Deudas — solicitudes sin unidad asignada</h2>
-          <table class="data-table" id="deudasTable">
-            <thead><tr><th>Fecha</th><th>Modelo</th><th>Vendedor</th><th>Cliente</th><th>Entrega est.</th><th class="num">USD</th></tr></thead>
+          <h2>Deudas — vehículos por modelo y color (mes)</h2>
+          <div id="deudasPorModeloColor"></div>
+          <p class="note">Son operaciones ya cerradas este mes que todavía no tienen VIN asignado del stock físico.</p>
+        </div>
+      </div>
+
+      <!-- ---- ENTREGAS ---- -->
+      <div class="section" id="tab-entregas">
+        <div class="kpi-grid">
+          <div class="kpi"><div class="n" id="kpiEntregasUltimoDia">–</div><div class="l" id="kpiEntregasUltimoDiaLabel">Entregas último día cargado</div></div>
+          <div class="kpi"><div class="n" id="kpiEntregasMes">–</div><div class="l">Entregas (mes)</div></div>
+        </div>
+
+        <div class="tcard">
+          <div class="filter-row">
+            <label for="entregasVendedorFilter">Vendedor</label>
+            <select class="filter-select" id="entregasVendedorFilter"><option value="">Todos</option></select>
+          </div>
+          <h2>Histórico diario del mes</h2>
+          <div class="chart-daily" id="entregasDaily"></div>
+          <p class="note">El filtro de Vendedor acota todo el panel — "Todos" muestra las entregas de todo el concesionario.</p>
+        </div>
+
+        <div class="tcard">
+          <h2>Por sucursal</h2>
+          <div id="entregasSucursalBars"></div>
+        </div>
+
+        <div class="tcard">
+          <h2>Vehículos entregados (mes)</h2>
+          <table class="data-table" id="entregasTable">
+            <thead><tr><th>Fecha</th><th>Modelo</th><th>Vendedor</th><th>Sucursal</th></tr></thead>
             <tbody></tbody>
           </table>
-          <p class="note">Son operaciones ya cerradas que todavía no tienen VIN asignado del stock físico.</p>
         </div>
       </div>
 
@@ -799,9 +871,9 @@
       .sort(function(a,b){ return b.c - a.c; });
   }
 
-  function renderPie(items){
-    var chartEl = document.getElementById('leadsPieChart');
-    var legendEl = document.getElementById('leadsPieLegend');
+  function renderPieInto(chartElId, legendElId, items){
+    var chartEl = document.getElementById(chartElId);
+    var legendEl = document.getElementById(legendElId);
     var total = items.reduce(function(a,x){ return a + x.c; }, 0);
     if (!total){
       chartEl.style.background = 'var(--gris-fondo)';
@@ -826,11 +898,11 @@
     }).join('');
   }
 
-  function renderLeadsDaily(rows){
+  function renderDailyBars(elId, rows){
     var dailyMap = {};
     rows.forEach(function(r){ dailyMap[r.d] = (dailyMap[r.d] || 0) + 1; });
     var days = Object.keys(dailyMap).sort();
-    var el = document.getElementById('leadsDaily');
+    var el = document.getElementById(elId);
     if (!days.length){ el.innerHTML = '<p class="note">Sin datos para este filtro.</p>'; return; }
     var maxD = Math.max.apply(null, days.map(function(k){ return dailyMap[k]; }));
     el.innerHTML = days.map(function(k){
@@ -839,6 +911,9 @@
       return '<div class="col"><div class="v">' + c + '</div><div class="b" style="height:' + h + 'px"></div><div class="lbl">' + k + '</div></div>';
     }).join('');
   }
+
+  var currentPruebasDetalle = [];
+  var currentTasacionesDetalle = [];
 
   function updateLeadsView(){
     var vSel = document.getElementById('leadsVendedorFilter').value;
@@ -850,10 +925,23 @@
     // vendedor puntual, o "Todos" para ver el concesionario completo).
     var pieMap = {};
     byVendor.forEach(function(r){ pieMap[r.o] = (pieMap[r.o] || 0) + 1; });
-    renderPie(buildPieSlices(pieMap));
+    renderPieInto('leadsPieChart', 'leadsPieLegend', buildPieSlices(pieMap));
 
     var byOrigen = oSel ? byVendor.filter(function(r){ return r.o === oSel; }) : byVendor;
-    renderLeadsDaily(byOrigen);
+    renderDailyBars('leadsDaily', byOrigen);
+
+    // Test drives y tasaciones respetan el mismo filtro de Vendedor.
+    var pruebasFiltradas = vSel ? currentPruebasDetalle.filter(function(r){ return r.v === vSel; }) : currentPruebasDetalle;
+    var tasacionesFiltradas = vSel ? currentTasacionesDetalle.filter(function(r){ return r.v === vSel; }) : currentTasacionesDetalle;
+    document.getElementById('kpiPruebasLeads').textContent = pruebasFiltradas.length;
+    document.getElementById('kpiTasacionesLeads').textContent = tasacionesFiltradas.length;
+
+    var modeloMap = {};
+    pruebasFiltradas.forEach(function(r){ modeloMap[r.m] = (modeloMap[r.m] || 0) + 1; });
+    var modeloArr = Object.keys(modeloMap).map(function(k){ return { n:k, c:modeloMap[k] }; })
+      .sort(function(a,b){ return b.c - a.c; });
+    document.getElementById('pruebasModeloBreakdown').innerHTML = modeloArr.length ?
+      barList(fixModelArr(modeloArr), 'verde') : '<p class="note">Sin test drives para este filtro.</p>';
   }
 
   function populateLeadsFilters(rows){
@@ -884,6 +972,68 @@
 
   document.getElementById('leadsVendedorFilter').addEventListener('change', updateLeadsView);
   document.getElementById('leadsOrigenFilter').addEventListener('change', updateLeadsView);
+
+  // ---- Stock: modelo con sub-conteo por color / interior ----
+  function renderStockModeloDetalle(arr){
+    if (!arr || !arr.length) return '<p class="note">Sin datos.</p>';
+    var max = Math.max.apply(null, arr.map(function(x){ return x.total; }));
+    return arr.map(function(m){
+      var pct = Math.max(4, Math.round((m.total / max) * 100));
+      var variantesHtml = (m.variantes || []).map(function(v){
+        return '<div class="variant-row"><span class="vname">' + fixCaps(v.color) + ' · interior ' + fixCaps(v.colorInterior) + '</span><span class="vcount">' + v.c + '</span></div>';
+      }).join('');
+      return '<div class="model-group">' +
+        '<div class="bar-row"><div class="top"><span class="name">' + fixCaps(m.modelo) + '</span><span class="count">' + m.total + '</span></div>' +
+        '<div class="bar-track"><div class="bar-fill ambar" style="width:' + pct + '%"></div></div></div>' +
+        '<div class="stock-variantes">' + variantesHtml + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  // ---- Entregas: filtro por vendedor + histórico diario + tabla ----
+  var currentEntregasDetalle = [];
+
+  function renderEntregasView(){
+    var vSel = document.getElementById('entregasVendedorFilter').value;
+    var rows = vSel ? currentEntregasDetalle.filter(function(r){ return r.v === vSel; }) : currentEntregasDetalle;
+
+    renderDailyBars('entregasDaily', rows);
+
+    var sucMap = {};
+    rows.forEach(function(r){ sucMap[r.suc] = (sucMap[r.suc] || 0) + 1; });
+    var sucArr = Object.keys(sucMap).map(function(k){ return { n:k, c:sucMap[k] }; })
+      .sort(function(a,b){ return b.c - a.c; });
+    document.getElementById('entregasSucursalBars').innerHTML = sucArr.length ?
+      barList(sucArr, 'morado') : '<p class="note">Sin entregas para este filtro.</p>';
+
+    var tbody = document.querySelector('#entregasTable tbody');
+    var ordenado = rows.slice().sort(function(a,b){
+      var pa = a.d.split('/').reverse().join(''), pb = b.d.split('/').reverse().join('');
+      return pb.localeCompare(pa);
+    });
+    tbody.innerHTML = ordenado.length ? ordenado.map(function(r){
+      return '<tr><td>' + r.d + '</td><td>' + fixCaps(r.m) + '</td><td>' + r.v + '</td><td>' + r.suc + '</td></tr>';
+    }).join('') : '<tr><td colspan="4" class="note">Sin entregas para este filtro.</td></tr>';
+  }
+
+  function populateEntregasFilter(rows){
+    var sel = document.getElementById('entregasVendedorFilter');
+    var prev = sel.value;
+    var vendores = {};
+    rows.forEach(function(r){ vendores[r.v] = true; });
+    var vendList = Object.keys(vendores).sort(function(a,b){
+      var aG = (a === 'San Juan' || a === 'San Rafael') ? 1 : 0;
+      var bG = (b === 'San Juan' || b === 'San Rafael') ? 1 : 0;
+      if (aG !== bG) return aG - bG;
+      return a.localeCompare(b, 'es');
+    });
+    sel.innerHTML = '<option value="">Todos</option>' + vendList.map(function(v){
+      return '<option value="' + v.replace(/"/g,'&quot;') + '">' + v + '</option>';
+    }).join('');
+    sel.value = vendList.indexOf(prev) !== -1 ? prev : '';
+  }
+
+  document.getElementById('entregasVendedorFilter').addEventListener('change', renderEntregasView);
 
   // ---- Snapshot de referencia (se usa si todavía no está conectado el Apps Script,
   // o si por algún motivo falla la conexión en vivo) ----
@@ -955,7 +1105,37 @@
       {n:'Dolphin Mini EV GS', c:11}, {n:'Shark DMO GS', c:9}, {n:'Song Pro DM-i 1.5L FWD 100km', c:8},
       {n:'Dolphin Mini EV GL', c:7}, {n:'Seal U DM-i 1.5T GS', c:3}
     ],
-    stockDiasProm: 59.5, stockDiasMin: 20, stockDiasMax: 136, stockMas90: 3
+    stockDiasProm: 59.5, stockDiasMin: 20, stockDiasMax: 136, stockMas90: 3,
+    stockModeloDetalle: [
+      { modelo:'Yuan Pro EV 380km (ADAS)', total:27, variantes:[{color:'Time Grey', colorInterior:'BLACK', c:20},{color:'Skiing White', colorInterior:'BLACK', c:7}] },
+      { modelo:'Song Pro DM-i 1.5L FWD 71km', total:24, variantes:[{color:'Time Grey', colorInterior:'BLACK', c:14},{color:'Snow White', colorInterior:'BLACK', c:10}] },
+      { modelo:'Dolphin Mini EV GS', total:11, variantes:[{color:'Obsidian Black', colorInterior:'Black and Gray dual color', c:6},{color:'Sprout Green', colorInterior:'Black and Gray dual color', c:5}] }
+    ],
+    deudasPorModeloColor: [
+      { n:'Dolphin Mini EV GS — Glacier Blue', c:1 }, { n:'Seal U DM-i 1.5T GS — Time Grey', c:1 },
+      { n:'Shark DMO GS — Urdu Cream Gray Green', c:1 }, { n:'Atto 2 DM-i — Time Grey', c:1 }
+    ],
+    pruebasTotal: 42,
+    pruebasDetalle: [
+      { v:'Altamirano Perrone Gabriel', m:'Dolphin Mini EV GS' }, { v:'Altamirano Perrone Gabriel', m:'Song Pro DM-i 1.5L FWD 100km' },
+      { v:'Mateo Petry', m:'Seal U DM-i 1.5T GS' }, { v:'Paula Gisel Garcia Ferrer', m:'Yuan Pro EV 380km (ADAS)' }
+    ],
+    tasacionesTotal: 18,
+    tasacionesDetalle: [
+      { v:'Mateo Petry' }, { v:'Altamirano Perrone Gabriel' }, { v:'Agustin Esnaola' }
+    ],
+    solicitudesTipoDMEV: [ { n:'DM', c:24 }, { n:'EV', c:11 } ],
+    utilidadMensual: 187500,
+    utilidadSinDatosCount: 0,
+    entregasUltimoDiaFecha: '17/07',
+    entregasUltimoDiaCount: 6,
+    entregasDetalle: [
+      { d:'17/07', v:'Borlenghi Romina', m:'Dolphin Mini EV GS', suc:'Mendoza' },
+      { d:'17/07', v:'Diaz Nicolás', m:'Shark DMO GS', suc:'Mendoza' },
+      { d:'16/07', v:'Labaronnie Guillermo Alejandro', m:'Atto 2 DM-i', suc:'San Juan' },
+      { d:'16/07', v:'Jonathan Chirione', m:'Dolphin Mini EV GS', suc:'San Juan' },
+      { d:'03/07', v:'Martinez Mario', m:'Atto 2 DM-i', suc:'San Rafael' }
+    ]
   };
 
   function renderTablero(d){
@@ -966,6 +1146,8 @@
     document.getElementById('kpiSolicitudesTotal').textContent = d.solicitudesTotal;
     document.getElementById('kpiEntregasTotal').textContent = d.entregasTotal;
     document.getElementById('kpiStockTotal').textContent = d.stockTotal;
+    document.getElementById('kpiPruebasGeneral').textContent = d.pruebasTotal;
+    document.getElementById('kpiTasacionesGeneral').textContent = d.tasacionesTotal;
 
     var objHtml = (d.objetivos||[]).map(function(o){
       var pct = o.meta ? Math.min(100, Math.round((o.real / o.meta) * 100)) : 0;
@@ -978,42 +1160,50 @@
     var sumConMeta = (d.objetivos||[]).reduce(function(a,o){ return a + o.real; }, 0);
     var sumGrupos = (d.objetivosGerencia||0) + (d.objetivosSanJuan||0) + (d.objetivosSanRafael||0) + (d.objetivosOtros||0);
     document.getElementById('objetivosNote').innerHTML =
-      'Meta mensual de solicitudes por vendedor de Mendoza. Estos ' + (d.objetivos||[]).length + ' suman ' + sumConMeta + ' solicitudes; el resto (' + sumGrupos + ') se agrupa abajo por sucursal / gerencia — entre ambos dan el total del mes (' + d.solicitudesTotal + ').';
+      'Meta mensual de solicitudes por vendedor de Mendoza. Estos ' + (d.objetivos||[]).length + ' suman ' + sumConMeta + ' solicitudes; el resto (' + sumGrupos + ') se agrupa por sucursal / gerencia — entre ambos dan el total del mes (' + d.solicitudesTotal + ').';
 
-    var grupos = [];
-    if (d.objetivosGerencia) grupos.push({ n: 'Gerencia', c: d.objetivosGerencia });
-    if (d.objetivosSanJuan) grupos.push({ n: 'San Juan', c: d.objetivosSanJuan });
-    if (d.objetivosSanRafael) grupos.push({ n: 'San Rafael', c: d.objetivosSanRafael });
-    if (d.objetivosOtros) grupos.push({ n: 'Otros (sin categorizar)', c: d.objetivosOtros });
-    document.getElementById('objetivosGrupos').innerHTML = grupos.length ? barList(grupos, 'morado') : '<p class="note">Sin entregas fuera del listado de Mendoza este mes.</p>';
-
-    document.getElementById('sucursalBars').innerHTML = barList(d.solicitudesSucursal);
+    renderPieInto('sucursalPieChart', 'sucursalPieLegend', d.solicitudesSucursal || []);
+    renderPieInto('tipoPieChartGeneral', 'tipoPieLegendGeneral', d.solicitudesTipoDMEV || []);
 
     // Leads
     document.getElementById('kpiLeadsTotal2').textContent = d.leadsTotal;
     document.getElementById('kpiVendidos').textContent = d.leadsVendidos;
     currentLeadsDetalle = Array.isArray(d.leadsDetalle) ? d.leadsDetalle : [];
+    currentPruebasDetalle = Array.isArray(d.pruebasDetalle) ? d.pruebasDetalle : [];
+    currentTasacionesDetalle = Array.isArray(d.tasacionesDetalle) ? d.tasacionesDetalle : [];
     populateLeadsFilters(currentLeadsDetalle);
     updateLeadsView();
 
     // Solicitudes
     document.getElementById('kpiSolicitudesTotal2').textContent = d.solicitudesTotal;
     document.getElementById('kpiFacturado').textContent = fmtUSD_M(d.facturadoTotal || 0);
+    document.getElementById('kpiUtilidadMensual').textContent = fmtUSD_M(d.utilidadMensual || 0);
+    renderPieInto('tipoPieChartSol', 'tipoPieLegendSol', d.solicitudesTipoDMEV || []);
+    document.getElementById('utilidadNote').innerHTML = (d.utilidadSinDatosCount ?
+      d.utilidadSinDatosCount + ' solicitud(es) de este mes no tienen el modelo cargado en Lista de Precio y no entran en el cálculo de utilidad. ' : '') +
+      'Utilidad = Facturación − Precio Compra − Gastos de entrega − Gastos de patentamiento, según Lista de Precio.';
     document.getElementById('solicitudesVendedor').innerHTML = barList(d.solicitudesVendedor);
     document.getElementById('solicitudesModelo').innerHTML = barList(fixModelArr(d.solicitudesModelo), 'morado');
 
     // Stock
     document.getElementById('kpiStockTotal2').textContent = d.stockTotal;
     document.getElementById('kpiDeudasCount').textContent = d.deudasCount;
-    document.getElementById('stockModelo').innerHTML = barList(fixModelArr(d.stockModelo), 'ambar');
+    document.getElementById('stockModelo').innerHTML = renderStockModeloDetalle(d.stockModeloDetalle || []);
     document.getElementById('stockNote').innerHTML =
       'Días en stock — promedio ' + d.stockDiasProm + ' días · mínimo ' + d.stockDiasMin + ' · máximo ' + d.stockDiasMax +
       '<span class="badge-aging">+90 días: revisar (' + d.stockMas90 + ' unidades)</span>';
+    document.getElementById('deudasPorModeloColor').innerHTML = (d.deudasPorModeloColor && d.deudasPorModeloColor.length) ?
+      barList(d.deudasPorModeloColor.map(function(x){ return { n: fixCaps(x.n), c: x.c }; }), 'rojo') :
+      '<p class="note">Sin deudas este mes.</p>';
 
-    var tbody = document.querySelector('#deudasTable tbody');
-    tbody.innerHTML = (d.deudas||[]).map(function(x){
-      return '<tr><td>' + x.f + '</td><td>' + fixCaps(x.m) + '</td><td>' + x.v + '</td><td>' + fixCaps(x.cl) + '</td><td>' + x.e + '</td><td class="num">' + Number(x.usd).toLocaleString('es-AR') + '</td></tr>';
-    }).join('');
+    // Entregas
+    document.getElementById('kpiEntregasMes').textContent = d.entregasTotal;
+    document.getElementById('kpiEntregasUltimoDia').textContent = d.entregasUltimoDiaCount != null ? d.entregasUltimoDiaCount : '–';
+    document.getElementById('kpiEntregasUltimoDiaLabel').textContent =
+      'Entregas último día cargado' + (d.entregasUltimoDiaFecha ? ' (' + d.entregasUltimoDiaFecha + ')' : '');
+    currentEntregasDetalle = Array.isArray(d.entregasDetalle) ? d.entregasDetalle : [];
+    populateEntregasFilter(currentEntregasDetalle);
+    renderEntregasView();
   }
 
   // ---- Conexión con Apps Script (datos en vivo) ----
