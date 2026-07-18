@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Remitos Test Drive · Yacopini BYD</title>
+<style>
+  :root{
+    --negro:#0A0A0A;
+    --carbon:#2A2A2A;
+    --gris-oscuro:#4A4A4A;
+    --gris-medio:#8C8C8C;
+    --gris-claro:#D4D4D4;
+    --gris-fondo:#F2F2F2;
+    --blanco:#FFFFFF;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--gris-fondo);
+    color:var(--carbon);
+    font-family:'Segoe UI', Arial, Helvetica, sans-serif;
+  }
+
+  .topbar{
+    position:sticky;top:0;z-index:20;
+    background:var(--negro);
+    color:#fff;
+    padding:16px 18px 15px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .topbar img{ height:30px; display:block; }
+  .topbar .sub{
+    font-size:11px;
+    color:#B8B8B8;
+    text-align:right;
+    line-height:1.5;
+  }
+  .topbar .sub .doctype{
+    font-size:12.5px;
+    font-weight:700;
+    color:#fff;
+    letter-spacing:.02em;
+  }
+
+  main{max-width:520px;margin:0 auto;padding:18px 16px 24px;}
+  .view{display:none;}
+  .view.active{display:block;animation:fade .18s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+  h1.section-title{
+    font-size:13.5px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--gris-oscuro);
+    margin:0 0 12px;
+  }
+
+  .card{
+    background:var(--blanco);
+    border:1px solid var(--gris-claro);
+    border-radius:var(--radius);
+    padding:18px;
+    margin-bottom:14px;
+  }
+
+  label{
+    display:block;
+    font-size:11.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    color:#8A97A3;
+    margin:13px 0 5px;
+  }
+  label:first-child{margin-top:0;}
+  input[type=text],input[type=date],input[type=time],input[type=number],select,textarea{
+    width:100%;
+    padding:10px 11px;
+    border:1px solid var(--gris-claro);
+    border-radius:8px;
+    font-size:14.5px;
+    font-family:inherit;
+    background:var(--blanco);
+    color:var(--carbon);
+  }
+  input:hover,select:hover,textarea:hover{ background:var(--gris-fondo); }
+  input:focus,select:focus,textarea:focus{
+    outline:none;border-color:var(--gris-medio);background:var(--blanco);
+  }
+  textarea{resize:vertical;min-height:60px;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:11px 16px;border-radius:8px;
+    font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;
+    width:100%;
+    border:1px solid var(--gris-claro);
+    background:var(--blanco);color:var(--carbon);
+    transition:background .15s ease;
+  }
+  .btn:hover{ background:var(--gris-fondo); }
+  .btn:active{ transform:scale(0.99); }
+  .btn-primary{background:var(--negro);color:#fff;border-color:var(--negro);}
+  .btn-primary:hover{background:var(--carbon);}
+  .btn-ghost{background:var(--blanco);color:var(--carbon);}
+  .btn-danger{background:#FCEBEB;color:#A32D2D;border-color:#F0C1C1;}
+  .btn-danger:hover{background:#F9DCDC;}
+
+  .empty{
+    text-align:center;color:var(--gris-medio);padding:36px 12px;font-size:13.5px;
+  }
+  .empty .big{font-size:30px;display:block;margin-bottom:8px;}
+
+  .vlist-item, .rlist-item{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:12px 4px;border-top:1px solid var(--gris-claro);
+  }
+  .vlist-item:first-child,.rlist-item:first-child{border-top:none;}
+  .vlist-item .info b,.rlist-item .info b{display:block;font-size:14px;color:var(--negro);}
+  .vlist-item .info span,.rlist-item .info span{font-size:12px;color:var(--gris-medio);}
+  .actions{display:flex;gap:6px;}
+  .icon-btn{
+    border:1px solid var(--gris-claro);background:var(--blanco);color:var(--carbon);
+    width:32px;height:32px;border-radius:8px;font-size:13px;cursor:pointer;
+  }
+  .icon-btn:hover{background:var(--gris-fondo);}
+  .icon-btn.danger{background:#FCEBEB;color:#A32D2D;border-color:#F0C1C1;}
+  .icon-btn.danger:hover{background:#F9DCDC;}
+
+  .badge{
+    display:inline-block;font-size:11px;font-weight:700;
+    background:var(--gris-fondo);color:var(--negro);padding:3px 9px;border-radius:20px;
+    border:1px solid var(--gris-claro);letter-spacing:.02em;
+  }
+
+  .tabbar{
+    background:var(--blanco);border-bottom:1px solid var(--gris-claro);
+    display:flex;
+  }
+  .tabbar button{
+    flex:1;border:none;background:none;padding:13px 4px 11px;
+    font-family:inherit;font-size:12.5px;font-weight:700;color:var(--gris-medio);
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    letter-spacing:.01em;
+  }
+  .tabbar button.active{color:var(--negro);border-bottom-color:var(--negro);}
+
+  .toast{
+    position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
+    background:var(--negro);color:#fff;padding:10px 18px;border-radius:10px;
+    font-size:13px;font-weight:600;z-index:60;opacity:0;pointer-events:none;transition:opacity .2s;
+    box-shadow:0 4px 14px rgba(0,0,0,.18);
+  }
+  .toast.show{ opacity:1; }
+
+  .hint{
+    font-size:12px;color:#8A97A3;line-height:1.55;margin:0 0 10px;
+  }
+  .format-sample{
+    display:block;padding:9px 10px;font-size:11.5px;line-height:1.6;
+    background:var(--gris-fondo);color:var(--carbon);border:1px solid var(--gris-claro);
+    border-radius:8px;font-family:'Courier New',monospace;white-space:normal;
+  }
+
+  /* ---- Overlay / ticket preview ---- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(10,10,10,.6);
+    display:flex;align-items:flex-end;justify-content:center;z-index:100;
+  }
+  .overlay.hidden{display:none;}
+  .sheet{
+    background:var(--gris-fondo);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;
+    border-radius:18px 18px 0 0;padding:16px 14px 22px;
+  }
+  .sheet-handle{width:36px;height:4px;background:var(--gris-claro);border-radius:2px;margin:2px auto 14px;}
+  .sheet-actions{display:flex;gap:8px;margin-top:14px;}
+
+  .ticket{
+    background:var(--blanco);
+    border:1px solid var(--gris-claro);
+    border-radius:10px;
+    overflow:hidden;
+    position:relative;
+    background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22480%22%20height%3D%22360%22%3E%3Ctext%20x%3D%22240%22%20y%3D%2280%22%20font-family%3D%22Arial%22%20font-size%3D%2216%22%20font-weight%3D%22700%22%20fill%3D%22rgba%2810%2C10%2C10%2C0.045%29%22%20transform%3D%22rotate%28-28%20240%2080%29%22%20text-anchor%3D%22middle%22%3EBYD%20YACOPINI%3C/text%3E%3Ctext%20x%3D%22240%22%20y%3D%22200%22%20font-family%3D%22Arial%22%20font-size%3D%2216%22%20font-weight%3D%22700%22%20fill%3D%22rgba%2810%2C10%2C10%2C0.045%29%22%20transform%3D%22rotate%28-28%20240%20200%29%22%20text-anchor%3D%22middle%22%3EBYD%20YACOPINI%3C/text%3E%3Ctext%20x%3D%22240%22%20y%3D%22320%22%20font-family%3D%22Arial%22%20font-size%3D%2216%22%20font-weight%3D%22700%22%20fill%3D%22rgba%2810%2C10%2C10%2C0.045%29%22%20transform%3D%22rotate%28-28%20240%20320%29%22%20text-anchor%3D%22middle%22%3EBYD%20YACOPINI%3C/text%3E%3C/svg%3E");
+    background-repeat:repeat;
+  }
+  .ticket-head{
+    background:var(--negro);
+    padding:18px 18px 15px;
+    display:flex;justify-content:space-between;align-items:flex-start;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .ticket-head img{height:24px;display:block;}
+  .ticket-head .doctype{font-size:11px;color:#B8B8B8;margin-top:8px;letter-spacing:.02em;}
+  .ticket-num{text-align:right;}
+  .ticket-num .lbl{font-size:9.5px;color:#9A9A9A;letter-spacing:.1em;text-transform:uppercase;}
+  .ticket-num .num{font-family:'Courier New',monospace;font-size:19px;font-weight:700;color:#fff;letter-spacing:.03em;}
+  .ticket-body{padding:16px 18px 6px;position:relative;}
+  .tgroup{margin-bottom:14px;}
+  .tgroup .tglabel{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#8A97A3;margin-bottom:6px;font-weight:700;}
+  .tgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;}
+  .tfield .k{font-size:10.5px;color:var(--gris-medio);}
+  .tfield .v{font-size:14px;font-weight:700;color:var(--negro);}
+  .tfield.full{grid-column:1/-1;}
+  .tnote{font-size:13px;color:var(--carbon);white-space:pre-wrap;}
+  .tperf{
+    height:0;border-top:1px dashed var(--gris-claro);margin:4px 18px 0;position:relative;
+  }
+  .tperf::before,.tperf::after{
+    content:"";position:absolute;top:-8px;width:16px;height:16px;border-radius:50%;background:var(--gris-fondo);
+  }
+  .tperf::before{left:-26px;}
+  .tperf::after{right:-26px;}
+  .tsign{padding:16px 18px 20px;display:grid;grid-template-columns:1fr 1fr;gap:16px;position:relative;}
+  .sign-line{border-top:1px solid var(--negro);margin-top:104px;padding-top:5px;font-size:10.5px;color:var(--gris-medio);text-align:center;}
+  .sign-resp{text-align:center;}
+  .sign-resp img{height:102px;object-fit:contain;display:block;margin:0 auto 2px;}
+  .sign-resp .resp-underline{border-top:1px solid var(--negro);}
+  .sign-resp .resp-name{font-size:11px;font-weight:700;color:var(--negro);margin-top:5px;}
+  .sign-resp .resp-role{font-size:9.5px;color:var(--gris-medio);margin-top:1px;}
+  .sign-resp .resp-label{font-size:10.5px;color:var(--gris-medio);margin-top:2px;}
+  .ticket-footer{
+    padding:10px 18px 16px;font-size:10px;color:var(--gris-medio);line-height:1.5;
+    border-top:1px solid var(--gris-claro);
+  }
+
+  @media(max-width:380px){
+    .tgrid{grid-template-columns:1fr 1fr;}
+  }
+
+  @media print{
+    body *{visibility:hidden;}
+    #printArea, #printArea *{visibility:visible;}
+    #printArea{position:absolute;top:0;left:0;width:100%;}
+    body{background:#fff;padding:0;}
+    .ticket{border:none;}
+    .tperf::before,.tperf::after{background:#fff;}
+  }
+</style>
+</head>
+<body class="gate-locked">
+<div id="bydGate" style="position:fixed;inset:0;z-index:999999;background:#0A0A0A;display:flex;align-items:center;justify-content:center;padding:24px;opacity:1;">
+  <form id="bydGateForm" style="width:100%;max-width:300px;text-align:center;font-family:Arial,sans-serif;">
+    <div style="color:#fff;font-weight:800;font-size:16px;margin-bottom:4px;">BYD Yacopini</div>
+    <div style="color:#8C8C8C;font-size:12px;margin-bottom:18px;">Acceso interno &middot; Gerencia</div>
+    <input id="bydGatePass" type="password" inputmode="numeric" placeholder="Clave" autocomplete="off" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #4A4A4A;background:#2A2A2A;color:#fff;font-size:16px;text-align:center;box-sizing:border-box;">
+    <button type="submit" style="width:100%;margin-top:10px;padding:12px;border-radius:10px;border:none;background:#1565D8;color:#fff;font-weight:700;font-size:14px;">Entrar</button>
+    <div id="bydGateError" style="color:#E85555;font-size:12px;margin-top:10px;display:none;">Clave incorrecta</div>
+  </form>
+</div>
+<style>
+  body.gate-locked > *:not(#bydGate){display:none !important;}
+  #bydGate{ transition:opacity .25s ease; }
+  #bydGate.fadeOut{ opacity:0; }
+</style>
+<script>
+(function(){
+  var HASH = "a734aecec77bc8826bec68f0264b70228ab419e52a8fcdf05016ebee0465f257";
+  var body = document.body;
+  function unlock(){ var g=document.getElementById('bydGate'); if(g){ g.classList.add('fadeOut'); setTimeout(function(){ body.classList.remove('gate-locked'); g.remove(); }, 220); } else { body.classList.remove('gate-locked'); } }
+  if (sessionStorage.getItem('bydGateOk') === '1') { unlock(); }
+  else {
+    document.getElementById('bydGateForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      var val = document.getElementById('bydGatePass').value;
+      crypto.subtle.digest('SHA-256', new TextEncoder().encode(val)).then(function(buf){
+        var hex = Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+        if (hex === HASH) {
+          sessionStorage.setItem('bydGateOk','1');
+          unlock();
+        } else {
+          document.getElementById('bydGateError').style.display = 'block';
+          document.getElementById('bydGatePass').value = '';
+          document.getElementById('bydGatePass').focus();
+        }
+      });
+    });
+  }
+})();
+</script>
+
+<div class="topbar">
+  <img src="./icon-512.png" alt="BYD Yacopini">
+  <div class="sub">
+    <div class="doctype">Remitos Test Drive</div>
+    Godoy Cruz · ARG092511
+  </div>
+</div>
+
+<nav class="tabbar">
+  <button data-tab="nuevo" class="active">Nuevo</button>
+  <button data-tab="vehiculos">Test Drives</button>
+  <button data-tab="historial">Historial</button>
+</nav>
+
+<main>
+  <!-- NUEVO REMITO -->
+  <section id="view-nuevo" class="view active">
+    <h1 class="section-title">Nuevo remito</h1>
+    <div class="card" id="nuevoCard">
+      <label for="selVehiculo">Vehículo de test drive</label>
+      <select id="selVehiculo"></select>
+
+      <label for="inpKm">Km de salida</label>
+      <input type="number" id="inpKm" placeholder="Ej: 4830" inputmode="numeric">
+
+      <div class="row2">
+        <div>
+          <label for="inpFechaSal">Fecha salida</label>
+          <input type="date" id="inpFechaSal">
+        </div>
+        <div>
+          <label for="inpHoraSal">Hora salida</label>
+          <input type="time" id="inpHoraSal">
+        </div>
+      </div>
+      <div class="row2">
+        <div>
+          <label for="inpFechaRet">Regreso estimado</label>
+          <input type="date" id="inpFechaRet">
+        </div>
+        <div>
+          <label for="inpHoraRet">Hora estimada</label>
+          <input type="time" id="inpHoraRet">
+        </div>
+      </div>
+
+      <label for="inpNombre">Nombre y apellido del cliente</label>
+      <input type="text" id="inpNombre" placeholder="Nombre completo">
+
+      <div class="row2">
+        <div>
+          <label for="inpDni">DNI</label>
+          <input type="text" id="inpDni" inputmode="numeric" placeholder="Sin puntos">
+        </div>
+        <div>
+          <label for="inpTel">Teléfono</label>
+          <input type="text" id="inpTel" inputmode="tel" placeholder="261...">
+        </div>
+      </div>
+
+      <label for="inpLicencia">N° de licencia de conducir (opcional)</label>
+      <input type="text" id="inpLicencia">
+
+      <label for="inpEmail">Email (opcional)</label>
+      <input type="text" id="inpEmail" inputmode="email" placeholder="cliente@mail.com">
+
+      <label for="inpResponsable">Responsable del concesionario</label>
+      <input type="text" id="inpResponsable" placeholder="Nombre de quien entrega">
+
+      <label for="inpObs">Observaciones (opcional)</label>
+      <textarea id="inpObs" placeholder="Estado del vehículo, nivel de combustible, rayones, etc."></textarea>
+
+      <div class="sheet-actions" style="margin-top:16px;">
+        <button class="btn btn-primary" id="btnGenerar">Generar remito</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- VEHICULOS -->
+  <section id="view-vehiculos" class="view">
+    <h1 class="section-title">Flota habilitada</h1>
+    <div class="card">
+      <label for="vMarca">Marca y modelo</label>
+      <input type="text" id="vMarca" placeholder="Ej: BYD Song Plus">
+      <div class="row2">
+        <div>
+          <label for="vPatente">Patente</label>
+          <input type="text" id="vPatente" placeholder="AB123CD">
+        </div>
+        <div>
+          <label for="vColor">Color</label>
+          <input type="text" id="vColor" placeholder="Blanco">
+        </div>
+      </div>
+      <div class="row2">
+        <div>
+          <label for="vChasis">N° chasis (opc.)</label>
+          <input type="text" id="vChasis">
+        </div>
+        <div>
+          <label for="vMotor">N° motor (opc.)</label>
+          <input type="text" id="vMotor">
+        </div>
+      </div>
+      <div class="sheet-actions" style="margin-top:14px;">
+        <button class="btn btn-primary" id="btnAddVehiculo">Agregar a la flota</button>
+      </div>
+    </div>
+
+    <div class="card" id="vehiculosListCard" style="padding:6px 18px;">
+      <div id="vehiculosList"></div>
+    </div>
+  </section>
+
+  <!-- HISTORIAL -->
+  <section id="view-historial" class="view">
+    <h1 class="section-title">Historial de remitos</h1>
+    <div class="card" id="historialCard" style="padding:6px 18px;">
+      <div id="historialList"></div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<!-- PRINT / PREVIEW OVERLAY -->
+<div class="overlay hidden" id="overlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div id="printArea">
+      <div class="ticket" id="ticketContent"></div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" id="btnCerrar">Cerrar</button>
+      <button class="btn btn-primary" id="btnImprimir">Imprimir / Guardar PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let state = { vehicles: [], remitos: [], counter: 0 };
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+async function loadState(){
+  try{
+    const raw = localStorage.getItem('remitos_app_state');
+    if(raw){
+      state = JSON.parse(raw);
+      state.vehicles = state.vehicles || [];
+      state.remitos = state.remitos || [];
+      state.counter = state.counter || 0;
+    }
+  }catch(e){
+    // no existing key yet, keep defaults
+  }
+  renderVehiculosSelect();
+  renderVehiculosList();
+  renderHistorial();
+}
+
+async function saveState(){
+  try{
+    localStorage.setItem('remitos_app_state', JSON.stringify(state));
+  }catch(e){
+    toast('Error al guardar');
+    console.error(e);
+  }
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+tab).classList.add('active');
+  document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+}
+document.querySelectorAll('.tabbar button').forEach(b=>{
+  b.addEventListener('click', ()=>switchTab(b.dataset.tab));
+});
+
+function fmtDate(iso){
+  if(!iso) return '—';
+  const [y,m,d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+/* ---------- VEHICULOS ---------- */
+function renderVehiculosSelect(){
+  const sel = document.getElementById('selVehiculo');
+  if(state.vehicles.length === 0){
+    sel.innerHTML = `<option value="">— Cargá vehículos en la pestaña Vehículos —</option>`;
+    return;
+  }
+  sel.innerHTML = state.vehicles.map(v=>
+    `<option value="${v.id}">${v.marca} · ${v.patente}</option>`
+  ).join('');
+}
+
+function renderVehiculosList(){
+  const el = document.getElementById('vehiculosList');
+  if(state.vehicles.length===0){
+    el.innerHTML = `<div class="empty"><span class="big">🚘</span>Todavía no cargaste vehículos habilitados para test drive.</div>`;
+    return;
+  }
+  el.innerHTML = state.vehicles.map(v=>`
+    <div class="vlist-item">
+      <div class="info">
+        <b>${v.marca}</b>
+        <span>${v.patente} · ${v.color||'—'}${v.chasis?(' · Chasis '+v.chasis):''}</span>
+      </div>
+      <div class="actions">
+        <button class="icon-btn danger" onclick="deleteVehicle('${v.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('btnAddVehiculo').addEventListener('click', async ()=>{
+  const marca = document.getElementById('vMarca').value.trim();
+  const patente = document.getElementById('vPatente').value.trim().toUpperCase();
+  const color = document.getElementById('vColor').value.trim();
+  const chasis = document.getElementById('vChasis').value.trim();
+  const motor = document.getElementById('vMotor').value.trim();
+  if(!marca || !patente){ toast('Falta marca o patente'); return; }
+  state.vehicles.push({ id: 'v'+Date.now(), marca, patente, color, chasis, motor });
+  await saveState();
+  ['vMarca','vPatente','vColor','vChasis','vMotor'].forEach(id=>document.getElementById(id).value='');
+  renderVehiculosSelect();
+  renderVehiculosList();
+  toast('Vehículo agregado');
+});
+
+async function deleteVehicle(id){
+  if(!confirm('¿Quitar este vehículo de la flota habilitada?')) return;
+  state.vehicles = state.vehicles.filter(v=>v.id!==id);
+  await saveState();
+  renderVehiculosSelect();
+  renderVehiculosList();
+}
+
+/* ---------- NUEVO REMITO ---------- */
+(function setDefaultDates(){
+  const now = new Date();
+  const iso = now.toISOString().slice(0,10);
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('inpFechaSal').value = iso;
+  document.getElementById('inpHoraSal').value = `${hh}:${mm}`;
+  document.getElementById('inpFechaRet').value = iso;
+})();
+
+document.getElementById('btnGenerar').addEventListener('click', async ()=>{
+  const vehId = document.getElementById('selVehiculo').value;
+  const vehicle = state.vehicles.find(v=>v.id===vehId);
+  const nombre = document.getElementById('inpNombre').value.trim();
+  const dni = document.getElementById('inpDni').value.trim();
+
+  if(!vehicle){ toast('Elegí un vehículo'); return; }
+  if(!nombre || !dni){ toast('Faltan datos del cliente'); return; }
+
+  state.counter += 1;
+  const numero = 'RD-' + String(state.counter).padStart(4,'0');
+
+  const remito = {
+    id: 'r'+Date.now(),
+    numero,
+    vehicle: {...vehicle},
+    km: document.getElementById('inpKm').value.trim(),
+    fechaSalida: document.getElementById('inpFechaSal').value,
+    horaSalida: document.getElementById('inpHoraSal').value,
+    fechaRegreso: document.getElementById('inpFechaRet').value,
+    horaRegreso: document.getElementById('inpHoraRet').value,
+    cliente: {
+      nombre,
+      dni,
+      telefono: document.getElementById('inpTel').value.trim(),
+      licencia: document.getElementById('inpLicencia').value.trim(),
+      email: document.getElementById('inpEmail').value.trim(),
+    },
+    responsable: document.getElementById('inpResponsable').value.trim(),
+    observaciones: document.getElementById('inpObs').value.trim(),
+    createdAt: new Date().toISOString()
+  };
+
+  state.remitos.unshift(remito);
+  await saveState();
+  renderHistorial();
+  openTicket(remito);
+
+  ['inpNombre','inpDni','inpTel','inpLicencia','inpEmail','inpObs','inpKm'].forEach(id=>document.getElementById(id).value='');
+  toast('Remito '+numero+' generado');
+});
+
+/* ---------- HISTORIAL ---------- */
+function renderHistorial(){
+  const el = document.getElementById('historialList');
+  if(state.remitos.length===0){
+    el.innerHTML = `<div class="empty"><span class="big">📋</span>Todavía no generaste remitos.</div>`;
+    return;
+  }
+  el.innerHTML = state.remitos.map(r=>`
+    <div class="rlist-item">
+      <div class="info">
+        <b>${r.cliente.nombre} <span class="badge">${r.numero}</span></b>
+        <span>${r.vehicle.marca} · ${r.vehicle.patente} · Sale ${fmtDate(r.fechaSalida)}</span>
+      </div>
+      <div class="actions">
+        <button class="icon-btn" onclick="openTicketById('${r.id}')">👁</button>
+        <button class="icon-btn danger" onclick="deleteRemito('${r.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openTicketById(id){
+  const r = state.remitos.find(x=>x.id===id);
+  if(r) openTicket(r);
+}
+
+async function deleteRemito(id){
+  if(!confirm('¿Eliminar este remito del historial?')) return;
+  state.remitos = state.remitos.filter(r=>r.id!==id);
+  await saveState();
+  renderHistorial();
+}
+
+/* ---------- TICKET / IMPRESION ---------- */
+function openTicket(r){
+  const v = r.vehicle;
+  const c = r.cliente;
+  document.getElementById('ticketContent').innerHTML = `
+    <div class="ticket-head">
+      <div>
+        <img src="./icon-512.png" alt="BYD Yacopini">
+        <div class="doctype">Remito de salida · Test Drive</div>
+      </div>
+      <div class="ticket-num">
+        <div class="lbl">N° Remito</div>
+        <div class="num">${r.numero}</div>
+      </div>
+    </div>
+    <div class="ticket-body">
+      <div class="tgroup">
+        <div class="tglabel">Vehículo</div>
+        <div class="tgrid">
+          <div class="tfield"><div class="k">Marca / modelo</div><div class="v">${v.marca}</div></div>
+          <div class="tfield"><div class="k">Patente</div><div class="v">${v.patente}</div></div>
+          <div class="tfield"><div class="k">Color</div><div class="v">${v.color||'—'}</div></div>
+          <div class="tfield"><div class="k">Km de salida</div><div class="v">${r.km||'—'}</div></div>
+          ${v.chasis?`<div class="tfield"><div class="k">Chasis</div><div class="v">${v.chasis}</div></div>`:''}
+          ${v.motor?`<div class="tfield"><div class="k">Motor</div><div class="v">${v.motor}</div></div>`:''}
+        </div>
+      </div>
+      <div class="tgroup">
+        <div class="tglabel">Cliente</div>
+        <div class="tgrid">
+          <div class="tfield full"><div class="k">Nombre y apellido</div><div class="v">${c.nombre}</div></div>
+          <div class="tfield"><div class="k">DNI</div><div class="v">${c.dni}</div></div>
+          <div class="tfield"><div class="k">Teléfono</div><div class="v">${c.telefono||'—'}</div></div>
+          ${c.licencia?`<div class="tfield full"><div class="k">N° Licencia</div><div class="v">${c.licencia}</div></div>`:''}
+          ${c.email?`<div class="tfield full"><div class="k">Email</div><div class="v">${c.email}</div></div>`:''}
+        </div>
+      </div>
+      <div class="tgroup">
+        <div class="tglabel">Salida y regreso</div>
+        <div class="tgrid">
+          <div class="tfield"><div class="k">Fecha salida</div><div class="v">${fmtDate(r.fechaSalida)} ${r.horaSalida||''}</div></div>
+          <div class="tfield"><div class="k">Regreso estimado</div><div class="v">${fmtDate(r.fechaRegreso)} ${r.horaRegreso||''}</div></div>
+        </div>
+      </div>
+      ${r.observaciones?`
+      <div class="tgroup">
+        <div class="tglabel">Observaciones</div>
+        <div class="tnote">${r.observaciones}</div>
+      </div>`:''}
+      <div class="tgroup" style="margin-bottom:6px;">
+        <div class="tglabel">Responsable Yacopini BYD</div>
+        <div class="tnote">${r.responsable||'—'}</div>
+      </div>
+    </div>
+    <div class="tperf"></div>
+    <div class="tsign">
+      <div class="sign-line">Firma del cliente</div>
+      <div class="sign-resp">
+        <div style="height:102px"></div>
+        <div class="resp-underline"></div>
+        <div class="resp-name">Nicolas Manna</div>
+        <div class="resp-role">Gte Ventas</div>
+        <div class="resp-label">Responsable concesionario</div>
+      </div>
+    </div>
+    <div class="ticket-footer">
+      Documento de uso interno · Yacopini BYD Godoy Cruz (ARG092511). Presentar ante guardia para el egreso del vehículo.
+    </div>
+  `;
+  document.getElementById('overlay').classList.remove('hidden');
+}
+
+document.getElementById('btnCerrar').addEventListener('click', ()=>{
+  document.getElementById('overlay').classList.add('hidden');
+});
+document.getElementById('btnImprimir').addEventListener('click', ()=>{
+  window.print();
+});
+
+loadState();
+</script>
+
+<a id="hubBackBtn" href="./index.html" style="position:fixed;bottom:18px;left:18px;z-index:999999;
+  width:44px;height:44px;border-radius:50%;background:#0A0A0A;color:#fff;display:flex;
+  align-items:center;justify-content:center;text-decoration:none;font-family:Arial,sans-serif;
+  font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,0.35);" aria-label="Volver al inicio">&#8592;</a>
+</body>
+</html>
