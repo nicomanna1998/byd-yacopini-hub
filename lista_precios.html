@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BYD Yacopini · Lista de Precios (Gerencia)</title>
+<title>BYD Yacopini &middot; Lista de Precios</title>
 <style>
   :root{
     --negro:#0A0A0A;
@@ -15,10 +15,6 @@
     --blanco:#FFFFFF;
     --azul-ev:#1565D8;
     --verde-dm:#388E3C;
-    --amarillo-web:#F9A825;
-    --amarillo-fondo:#FFF8E1;
-    --verde-lleno:#2E7D32;
-    --verde-lleno-fondo:#E8F5E9;
     --rojo-piso:#C62828;
     --rojo-fondo:#FDECEA;
   }
@@ -28,255 +24,102 @@
     background:var(--gris-fondo);
     color:var(--negro);
     font-family:'Segoe UI', Arial, Helvetica, sans-serif;
-    -webkit-print-color-adjust:exact;
-    print-color-adjust:exact;
   }
-  .page{
-    max-width:1320px; margin:0 auto; background:var(--blanco);
-    background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22600%22%20height%3D%22400%22%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%22100%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2220%22%20font-weight%3D%22700%22%20fill%3D%22rgba%2810%2C10%2C10%2C0.07%29%22%20transform%3D%22rotate%28-30%20300%20100%29%22%20text-anchor%3D%22middle%22%3EUSO%20INTERNO%20%C2%B7%20BYD%20YACOPINI%3C/text%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%22250%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2220%22%20font-weight%3D%22700%22%20fill%3D%22rgba%2810%2C10%2C10%2C0.07%29%22%20transform%3D%22rotate%28-30%20300%20250%29%22%20text-anchor%3D%22middle%22%3EUSO%20INTERNO%20%C2%B7%20BYD%20YACOPINI%3C/text%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%22400%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2220%22%20font-weight%3D%22700%22%20fill%3D%22rgba%2810%2C10%2C10%2C0.07%29%22%20transform%3D%22rotate%28-30%20300%20400%29%22%20text-anchor%3D%22middle%22%3EUSO%20INTERNO%20%C2%B7%20BYD%20YACOPINI%3C/text%3E%0A%3C/svg%3E");
-    background-repeat:repeat;
-  }
-  .header{
+  .app{ max-width:640px; margin:0 auto; padding:0 0 90px; }
+  .app-topbar{
     background:var(--negro);
-    color:var(--blanco);
-    padding:36px 40px 28px;
-    background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22600%22%20height%3D%22400%22%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%22100%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2220%22%20font-weight%3D%22700%22%20fill%3D%22rgba%28255%2C255%2C255%2C0.08%29%22%20transform%3D%22rotate%28-30%20300%20100%29%22%20text-anchor%3D%22middle%22%3EUSO%20INTERNO%20%C2%B7%20BYD%20YACOPINI%3C/text%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%22250%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2220%22%20font-weight%3D%22700%22%20fill%3D%22rgba%28255%2C255%2C255%2C0.08%29%22%20transform%3D%22rotate%28-30%20300%20250%29%22%20text-anchor%3D%22middle%22%3EUSO%20INTERNO%20%C2%B7%20BYD%20YACOPINI%3C/text%3E%0A%20%20%3Ctext%20x%3D%22300%22%20y%3D%22400%22%20font-family%3D%22Arial%2C%20sans-serif%22%20font-size%3D%2220%22%20font-weight%3D%22700%22%20fill%3D%22rgba%28255%2C255%2C255%2C0.08%29%22%20transform%3D%22rotate%28-30%20300%20400%29%22%20text-anchor%3D%22middle%22%3EUSO%20INTERNO%20%C2%B7%20BYD%20YACOPINI%3C/text%3E%0A%3C/svg%3E");
-    background-repeat:repeat;
-    position:relative;
+    padding:20px 20px;
+    display:flex; align-items:center; justify-content:space-between;
   }
-  .header-top{ display:flex; justify-content:space-between; align-items:center; }
-  .brand-logo{ height:48px; display:block; }
-  .header-date{ text-align:right; font-size:12px; color:#A8A8A8; }
-  .header-date .vig-label{ text-transform:uppercase; letter-spacing:1px; font-size:10.5px; opacity:0.85; }
-  .header-date .vig-value{ font-size:14px; font-weight:700; color:var(--blanco); margin-top:2px; }
-  .header h1{ margin:26px 0 4px; font-size:30px; font-weight:800; letter-spacing:0.3px; }
-  .header p.lead{ margin:0; font-size:13.5px; color:#C2C2C2; max-width:560px; line-height:1.5; }
+  .app-topbar svg{ height:32px; width:auto; display:block; }
+  .vig{ text-align:right; color:#A8A8A8; font-size:10.5px; }
+  .vig b{ display:block; color:#fff; font-size:13px; font-weight:700; margin-top:2px; }
+  .title-block{ padding:20px 20px 6px; }
+  .title-block h1{ font-size:21px; font-weight:800; margin:0 0 4px; color:var(--negro); }
+  .title-block p{ font-size:12.5px; color:var(--gris-oscuro); margin:0; line-height:1.5; }
   .confidential-banner{
-    background:var(--carbon); color:var(--blanco); text-align:center;
-    font-size:11.5px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase; padding:8px 20px;
+    background:var(--carbon); color:#fff; text-align:center;
+    font-size:10.5px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase;
+    padding:9px 16px; margin:14px 0 0;
   }
-  .legend-bar{
-    display:flex; flex-wrap:wrap; gap:18px; padding:14px 40px;
-    background:var(--gris-fondo); border-bottom:1px solid var(--gris-claro); font-size:11.5px; color:var(--gris-oscuro);
-  }
-  .legend-bar .item{ display:flex; align-items:center; gap:6px; }
-  .legend-bar .dot{ width:9px;height:9px;border-radius:2px; flex-shrink:0; }
-  .category{ padding:30px 40px 6px; overflow:hidden; }
-  .category-head{ display:flex; align-items:center; gap:10px; margin-bottom:16px; }
-  .category-pill{ font-size:11px; font-weight:800; letter-spacing:1.4px; text-transform:uppercase; padding:5px 12px; border-radius:20px; color:var(--blanco); }
-  .category-pill.ev{ background:var(--azul-ev); }
-  .category-pill.dm{ background:var(--verde-dm); }
-  .category-head .category-title{ font-size:13px; color:var(--gris-medio); letter-spacing:0.3px; }
-  .category-head hr{ flex:1; border:none; border-top:1px solid var(--gris-claro); }
+  .legend{ display:flex; flex-wrap:wrap; gap:10px 14px; padding:12px 20px; font-size:10.5px; color:var(--gris-oscuro); background:var(--blanco); border-bottom:1px solid var(--gris-claro); }
+  .legend .item{ display:flex; align-items:center; gap:5px; }
+  .legend .dot{ width:8px;height:8px;border-radius:2px; flex-shrink:0; }
 
-  .price-table-wrap{
-    overflow-x:auto;
-    -webkit-overflow-scrolling:touch;
-    touch-action:pan-x pan-y;
-    border:1px solid var(--gris-claro);
-    border-radius:10px;
-    margin-bottom:24px;
-    display:block;
-    width:100%;
-  }
-  table.price-table{
-    border-collapse:separate;
-    border-spacing:0;
-    width:100%;
-  }
-  table.price-table thead th{
-    background:var(--gris-fondo);
-    font-size:9.5px;
-    text-transform:uppercase;
-    letter-spacing:0.5px;
-    color:var(--negro);
-    font-weight:700;
-    padding:10px 10px;
-    text-align:center;
-    border-bottom:2px solid var(--gris-claro);
-    white-space:nowrap;
-  }
-  table.price-table tbody td{
-    padding:14px 10px;
-    text-align:right;
-    border-bottom:1px solid var(--gris-claro);
-    font-size:14px;
-    font-weight:700;
-    color:var(--carbon);
-    font-variant-numeric:tabular-nums;
-    white-space:nowrap;
-  }
-  table.price-table tbody tr:last-child td{ border-bottom:none; }
+  .cat-block{ padding:18px 20px 4px; }
+  .cat-head{ display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .cat-pill{ font-size:10px; font-weight:800; letter-spacing:1px; padding:4px 10px; border-radius:20px; color:#fff; }
+  .cat-pill.ev{ background:var(--azul-ev); }
+  .cat-pill.dm{ background:var(--verde-dm); }
+  .cat-title{ font-size:12px; color:var(--gris-medio); }
 
-  table.price-table thead th.col-nombre,
-  table.price-table tbody td.col-nombre{
-    text-align:left;
-    position:-webkit-sticky;
-    position:sticky;
-    left:0;
-    z-index:2;
-    width:210px;
-    min-width:210px;
-    max-width:210px;
+  .model-card{
+    background:var(--blanco); border-radius:12px; border:1px solid var(--gris-claro);
+    padding:14px 16px; margin-bottom:10px; border-left:4px solid var(--gris-claro);
   }
-  table.price-table thead th.col-nombre{ background:var(--gris-fondo); color:var(--negro); }
-  table.price-table tbody td.col-nombre{ background:#FAFAFA; }
-  table.price-table tbody tr.ev td.col-nombre{ border-left:4px solid var(--azul-ev); }
-  table.price-table tbody tr.dm td.col-nombre{ border-left:4px solid var(--verde-dm); }
-  table.price-table tbody td.col-nombre .model-name{ display:block; font-size:15px; font-weight:800; color:var(--negro); line-height:1.25; white-space:normal; }
-  table.price-table tbody td.col-nombre .model-tag{ display:block; margin-top:4px; font-size:10px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; }
-  table.price-table tbody tr.ev td.col-nombre .model-tag{ color:var(--azul-ev); }
-  table.price-table tbody tr.dm td.col-nombre .model-tag{ color:var(--verde-dm); }
+  .model-card.ev{ border-left-color:var(--azul-ev); }
+  .model-card.dm{ border-left-color:var(--verde-dm); }
+  .model-top{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; margin-bottom:6px; }
+  .model-name{ font-size:15.5px; font-weight:800; color:var(--negro); }
+  .model-tag{ font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; white-space:nowrap; }
+  .model-tag.ev{ color:var(--azul-ev); }
+  .model-tag.dm{ color:var(--verde-dm); }
+  .model-lista{ font-size:12px; color:var(--gris-oscuro); margin-bottom:10px; }
+  .model-lista b{ color:var(--negro); font-size:13px; }
 
-  table.price-table thead th.col-lista,
-  table.price-table tbody td.col-lista{
-    position:-webkit-sticky;
-    position:sticky;
-    left:210px;
-    z-index:2;
-    box-shadow:2px 0 4px rgba(0,0,0,0.08);
+  .floor-row{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .floor-box{ border-radius:9px; padding:9px 10px; }
+  .floor-box.venta{ background:var(--rojo-fondo); }
+  .floor-box.gerencia{ background:var(--carbon); }
+  .floor-label{ font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.4px; }
+  .floor-box.venta .floor-label{ color:var(--rojo-piso); }
+  .floor-box.gerencia .floor-label{ color:#B0B0B0; }
+  .floor-val{ font-size:15px; font-weight:800; margin-top:2px; }
+  .floor-box.venta .floor-val{ color:var(--rojo-piso); }
+  .floor-box.gerencia .floor-val{ color:#fff; }
+
+  .model-detail{ margin-top:10px; }
+  .model-detail summary{
+    font-size:11px; font-weight:700; color:var(--gris-oscuro); cursor:pointer;
+    list-style:none; display:flex; align-items:center; gap:4px;
   }
-  table.price-table thead th.col-lista{ background:var(--gris-fondo); }
-  table.price-table tbody td.col-lista{ background:#FAFAFA; font-size:15px; color:var(--negro); }
-
-  table.price-table thead th.web-cell{ background:var(--amarillo-fondo); color:var(--amarillo-web); }
-  table.price-table tbody td.web-cell{ background:var(--amarillo-fondo); color:var(--amarillo-web); font-size:15px; }
-  table.price-table thead th.lleno-cell{ background:var(--verde-lleno-fondo); color:var(--verde-lleno); }
-  table.price-table tbody td.lleno-cell{ background:var(--verde-lleno-fondo); color:var(--verde-lleno); font-size:15px; }
-  table.price-table tbody td.flete-cell,
-  table.price-table tbody td.patentam-cell{ color:var(--gris-medio); }
-  table.price-table thead th.piso-cell{ background:var(--rojo-fondo); color:var(--rojo-piso); }
-  table.price-table tbody td.piso-cell{ background:var(--rojo-fondo); color:var(--rojo-piso); font-size:15px; }
-  table.price-table tbody td.gerencia-cell{ background:var(--carbon); color:var(--blanco); font-size:15px; }
-  table.price-table thead th.gerencia-head{ background:var(--carbon); color:#B0B0B0; }
-  .accesorios{ padding:8px 40px 36px; }
-  .accesorios-card{ border:1px solid var(--gris-claro); border-radius:10px; overflow:hidden; }
-  .accesorios-card table{ width:100%; border-collapse:collapse; }
-  .accesorios-card th{
-    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.8px; color:var(--blanco);
-    background:var(--negro); padding:10px 18px; font-weight:700;
+  .model-detail summary::-webkit-details-marker{ display:none; }
+  .model-detail summary::before{ content:"▸"; font-size:10px; }
+  .model-detail[open] summary::before{ content:"▾"; }
+  .detail-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:6px 12px;
+    margin-top:8px; padding-top:8px; border-top:1px solid var(--gris-fondo);
   }
-  .accesorios-card th.right, .accesorios-card td.right{ text-align:right; }
-  .accesorios-card td{ padding:11px 18px; font-size:13.5px; border-bottom:1px solid var(--gris-claro); color:var(--carbon); }
-  .accesorios-card tr:last-child td{ border-bottom:none; }
-  .accesorios-card td.precio{ font-weight:700; color:var(--negro); }
-  .incluido-badge{ display:inline-block; background:#E8F5E9; color:var(--verde-dm); font-size:11px; font-weight:700; padding:3px 9px; border-radius:20px; border:1px solid #C8E6C9; }
-  .promo-section{ padding:24px 40px 16px; }
-  .promo-header{ margin-bottom:14px; }
-  .promo-header h2{ font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--negro); margin:0 0 4px; }
-  .promo-header p.promo-lead{ font-size:11.5px; color:var(--gris-medio); margin:0; }
-  .promo-table tbody td{ vertical-align:middle; }
-  .promo-table .col-modelo-promo{ min-width:200px; }
-  .promo-table .col-modelo-promo .model-name{ display:block; font-size:14px; font-weight:800; color:var(--negro); }
-  .promo-table .col-modelo-promo .model-tag{ display:block; margin-top:3px; font-size:9.5px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
-  .promo-table .col-modelo-promo .model-tag.ev{ color:var(--azul-ev); }
-  .promo-table .col-modelo-promo .model-tag.dm{ color:var(--verde-dm); }
-  .promo-table tr.ev td.col-modelo-promo{ border-left:4px solid var(--azul-ev); }
-  .promo-table tr.dm td.col-modelo-promo{ border-left:4px solid var(--verde-dm); }
-  .promo-table .precio-normal{ text-decoration:line-through; color:var(--gris-medio); font-size:13px; }
-  .promo-table .precio-promo{ font-size:16px; font-weight:800; color:var(--rojo-piso); background:var(--rojo-fondo); }
-  .promo-table thead th.precio-promo-head{ background:var(--rojo-fondo); color:var(--rojo-piso); }
-  .promo-ahorro{ display:block; font-size:9px; font-weight:600; color:var(--verde-dm); margin-top:2px; }
-  .promo-table .vin-cell{ font-family:monospace; font-size:13px; font-weight:600; color:var(--carbon); letter-spacing:0.5px; }
-  .promo-table .color-cell{ font-size:13px; color:var(--carbon); }
-  .footer{ padding:22px 40px 30px; border-top:1px solid var(--gris-claro); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
-  .footer .footer-note{ font-size:11.5px; color:var(--gris-medio); max-width:560px; line-height:1.5; }
-  .footer .footer-brand{ font-size:11.5px; font-weight:700; color:var(--negro); text-align:right; }
-  .section-title-accesorios{ font-size:13px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:var(--negro); margin:0 0 14px; }
-  @media print{
-    @page{ size: A4 portrait; margin: 8mm; }
-    body{ background:var(--blanco); }
-    .page{ box-shadow:none; max-width:100%; }
+  .detail-grid div{ display:flex; justify-content:space-between; font-size:11.5px; color:var(--gris-oscuro); }
+  .detail-grid div b{ color:var(--negro); }
 
-    /* Header compacto */
-    .header{ padding:8px 12px 8px; }
-    .header h1{ font-size:15px; margin:8px 0 2px; }
-    .header p.lead{ font-size:7.5px; }
-    .header-date .vig-value{ font-size:9px; }
-    .header-date .vig-label{ font-size:7px; }
-    .brand-logo{ height:22px; }
-    .legend-bar{ padding:4px 12px; font-size:7.5px; gap:8px; }
-    .banner-gerencia{ padding:5px 12px; font-size:8px; letter-spacing:0.3px; }
-
-    /* Sin scroll, layout normal */
-    .price-table-wrap{
-      overflow-x:visible;
-      border:1px solid var(--gris-claro);
-      display:block;
-      border-radius:6px;
-    }
-
-    /* Categorías apiladas: sin page-break, márgenes reducidos */
-    .category{
-      page-break-inside:avoid;
-      page-break-before:auto;
-      padding:6px 0 6px;
-    }
-    .category-head{ margin-bottom:6px; }
-    .category-head hr{ display:none; }
-
-    /* EV y DM: tablas con fuente grande porque tienen pocas filas */
-    table.price-table{
-      width:100%;
-      table-layout:fixed;
-      border-collapse:separate;
-      border-spacing:0;
-    }
-    table.price-table thead th{
-      font-size:8px;
-      padding:7px 4px;
-      letter-spacing:0;
-      text-align:center;
-    }
-    table.price-table tbody td{
-      font-size:10px;
-      padding:9px 4px;
-    }
-    table.price-table tbody td.col-nombre{
-      min-width:0; width:19%; max-width:19%;
-      position:static; box-shadow:none;
-    }
-    table.price-table thead th.col-nombre{
-      min-width:0; width:19%; max-width:19%;
-      position:static; box-shadow:none; text-align:left;
-    }
-    table.price-table tbody td.col-lista,
-    table.price-table thead th.col-lista{
-      width:9.5%;
-      position:static; box-shadow:none;
-    }
-    table.price-table tbody td.col-nombre .model-name{ font-size:11px; }
-    table.price-table tbody td.col-nombre .model-tag{ font-size:7.5px; }
-    table.price-table tbody td.web-cell{ font-size:11px; }
-    table.price-table tbody td.piso-cell{ font-size:11px; }
-    table.price-table tbody td.lleno-cell{ font-size:11px; }
-    table.price-table tbody td.gerencia-cell{ font-size:11px; }
-    table.price-table thead{ display:table-header-group; }
-    table.price-table tr{ page-break-inside:avoid; }
-
-    /* Accesorios: tabla compacta pero legible */
-    .accesorios{
-      page-break-inside:avoid;
-      padding:6px 0 6px;
-    }
-    .section-title-accesorios{ font-size:9px; margin-bottom:5px; }
-    .accesorios-card{ border-radius:6px; }
-    .accesorios-card th{ font-size:8.5px; padding:6px 12px; }
-    .accesorios-card td{ font-size:9.5px; padding:5px 12px; }
-    .incluido-badge{ font-size:7.5px; padding:2px 5px; }
-
-    /* Footer */
-    .footer{ padding:6px 0 0; font-size:8px; }
-    .footer .footer-note{ font-size:7.5px; }
-    .footer .footer-brand{ font-size:8px; }
+  .promo-section{ padding:18px 20px 4px; }
+  .promo-head h2{ font-size:13px; font-weight:800; letter-spacing:0.6px; text-transform:uppercase; margin:0 0 3px; color:var(--negro); }
+  .promo-head p{ font-size:11px; color:var(--gris-medio); margin:0 0 12px; }
+  .promo-card{
+    background:var(--blanco); border-radius:12px; border:1px solid var(--gris-claro);
+    padding:12px 14px; margin-bottom:9px; border-left:4px solid var(--gris-claro);
   }
-  @media (max-width:720px){
-    .header{ padding:26px 20px 22px; }
-    .category{ padding:24px 20px 6px; }
-    .accesorios{ padding:8px 20px 28px; }
-    .footer{ padding:18px 20px 24px; }
-    .legend-bar{ padding:12px 20px; }
-  }
+  .promo-card.ev{ border-left-color:var(--azul-ev); }
+  .promo-card.dm{ border-left-color:var(--verde-dm); }
+  .promo-top{ margin-bottom:8px; }
+  .promo-vin{ font-size:10.5px; color:var(--gris-medio); margin-top:2px; }
+  .promo-price-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .promo-old{ font-size:11.5px; color:var(--gris-medio); }
+  .promo-old s{ color:var(--gris-medio); }
+  .promo-new{ text-align:right; }
+  .promo-new-val{ font-size:16px; font-weight:800; color:var(--rojo-piso); }
+  .promo-ahorro{ font-size:10px; font-weight:700; color:var(--verde-dm); }
+
+  .accesorios{ padding:18px 20px 4px; }
+  .accesorios h2{ font-size:13px; font-weight:800; letter-spacing:0.6px; text-transform:uppercase; margin:0 0 10px; color:var(--negro); }
+  .accesorios-card{ background:var(--blanco); border:1px solid var(--gris-claro); border-radius:12px; overflow:hidden; }
+  .acc-row{ display:flex; justify-content:space-between; padding:11px 14px; font-size:13px; color:var(--carbon); border-bottom:1px solid var(--gris-fondo); }
+  .acc-row:last-child{ border-bottom:none; }
+  .acc-precio{ font-weight:700; color:var(--negro); }
+  .incluido-badge{ display:inline-block; background:#E8F5E9; color:var(--verde-dm); font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:20px; border:1px solid #C8E6C9; }
+
+  .footer{ padding:20px 20px 10px; font-size:10.5px; color:var(--gris-medio); line-height:1.6; }
 </style>
 </head>
 <body class="gate-locked">
@@ -320,458 +163,539 @@
 })();
 </script>
 
-<div class="page">
+<div class="app">
+  <div class="app-topbar">
+    <svg viewBox="12 4 529 102" xmlns="http://www.w3.org/2000/svg" aria-label="BYD Yacopini">
+      <defs><style>.st0{fill:#FFFFFF;}</style></defs>
+      <path class="st0" d="M162.93,19.18c-8.06-12.16-21.88-14.53-31.23-14.75-8.23-.19-43.9-.23-64.67-.24-40.91-.03-17.51-.01-54.36-.01v19.54c43.75,0,95.68-.1,118.41.25,4.06.06,8.08.47,11.27,3.3,2.97,2.64,4.02,6.79,2.69,10.4-2.14,5.83-8.07,7.28-13.96,7.37-9.01.14-33.77.19-52.24.22-45.3.06-25.68.03-66.16.03v19.49c43.72,0,95.76-.09,118.41.25,7.06.1,14.53,2.56,14.53,10.43s-7.46,10.45-14.53,10.56c-22.59.33-74.66.24-118.41.24v19.53c43.88,0,101.32.16,119.03-.25,9.35-.22,23.18-2.59,31.23-14.75,7.56-11.41,5.71-26.27-4.22-35.8,9.93-9.54,11.78-24.39,4.21-35.8"/>
+      <path class="st0" d="M520.08,15.93c-13.35-9.58-27.85-10.94-39.61-11.21-11.58-.27-29.05-.39-44.5-.45-37.67-.15-15.02-.08-50.91-.08v19.6c38.19,0,64.97-.32,94.46.52,8.66.24,17.95,1.16,26.31,6.96,7.92,5.5,12.62,14.26,12.62,23.72s-4.57,18.24-12.49,23.74c-8.36,5.81-17.65,6.72-26.31,6.96-29.49.83-56.27.51-94.46.51l-.13,19.59c38.41,0,66.03.14,95.41-.54,11.76-.27,26.26-1.63,39.61-11.21,12.67-9.09,20.33-23.36,20.33-39.05s-7.67-29.97-20.33-39.05"/>
+      <path class="st0" d="M227.22,48.06c-10.23-.2-13.49-3.54-13.56-13.73-.07-9.42-.02-20.58-.02-30.14h-22.56c0,9.67-.19,29.24.19,38.7.74,18.38,6.77,24.11,25.55,24.75,13.02.44,23.36.29,41.36.28v-19.69c-14.43,0-20.31.04-30.96-.16"/>
+      <path class="st0" d="M339.04,34.68c-.07,9.92-3.3,13.18-13.56,13.38-4.89.09-17.75.14-28.33.16h0s-.1.01-.1.01c-10.81,0-22.34-.02-29.1-.02v57.57h26.52v-37.88c.81,0,1.68,0,2.58,0h0s.1,0,.1,0v.02c13.8,0,31.04-.06,37.55-.26,19.93-.61,26-6.23,26.73-24.78.1-2.48.16-5.62.19-9.06V4.18h-22.56c0,9.8.04,20.81-.03,30.5"/>
+    </svg>
+    <div class="vig">VIGENCIA<b>17 de julio de 2026</b></div>
+  </div>
 
-  <div class="header">
-    <div class="header-top">
-      <img class="brand-logo" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iQ2FwYV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDU1MCAyMzkuMTkiPgogIDwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyOS41LjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiAyLjEuMCBCdWlsZCAxNDEpICAtLT4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLnN0MCB7CiAgICAgICAgZmlsbDogI0ZGRkZGRjsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPHJlY3QgY2xhc3M9InN0MCIgeD0iNDc1LjEzIiB5PSIyMTIuNTEiIHdpZHRoPSI0Ljk4IiBoZWlnaHQ9IjIyLjExIi8+CiAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTQ4OS45OCwyMzQuNjJsNi45Mi0yMi4xMWg2bDYuOTIsMjIuMTFoLTUuMjlsLTEuMzYtNS4yNmgtNi43NWwtMS4zNiw1LjI2aC01LjA5Wk00OTcuOTgsMjIzLjQzbC0uNTQsMi4wM2g0LjcxbC0uNTEtMi4wM2MtLjMyLTEuMTEtLjYyLTIuMjgtLjkxLTMuNTMtLjMtMS4yNC0uNTktMi40NC0uODgtMy41OWgtLjE0Yy0uMjcsMS4xOC0uNTUsMi4zOC0uODMsMy42MS0uMjksMS4yMy0uNTgsMi40LS45LDMuNTEiLz4KICA8cG9seWdvbiBjbGFzcz0ic3QwIiBwb2ludHM9IjUxOS42OCAyMzQuNjIgNTE5LjY4IDIxMi41MSA1MjQuNjcgMjEyLjUxIDUyNC42NyAyMzAuNDEgNTMzLjQyIDIzMC40MSA1MzMuNDIgMjM0LjYyIDUxOS42OCAyMzQuNjIiLz4KICA8cmVjdCBjbGFzcz0ic3QwIiB4PSI1MTkuNSIgeT0iMTM3LjYzIiB3aWR0aD0iMTEuMyIgaGVpZ2h0PSI0My4zMSIvPgogIDxnPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTE2Mi45MywxOS4xOGMtOC4wNi0xMi4xNi0yMS44OC0xNC41My0zMS4yMy0xNC43NS04LjIzLS4xOS00My45LS4yMy02NC42Ny0uMjQtNDAuOTEtLjAzLTE3LjUxLS4wMS01NC4zNi0uMDF2MTkuNTRjNDMuNzUsMCw5NS42OC0uMSwxMTguNDEuMjUsNC4wNi4wNiw4LjA4LjQ3LDExLjI3LDMuMywyLjk3LDIuNjQsNC4wMiw2Ljc5LDIuNjksMTAuNC0yLjE0LDUuODMtOC4wNyw3LjI4LTEzLjk2LDcuMzctOS4wMS4xNC0zMy43Ny4xOS01Mi4yNC4yMi00NS4zLjA2LTI1LjY4LjAzLTY2LjE2LjAzdjE5LjQ5YzQzLjcyLDAsOTUuNzYtLjA5LDExOC40MS4yNSw3LjA2LjEsMTQuNTMsMi41NiwxNC41MywxMC40M3MtNy40NiwxMC40NS0xNC41MywxMC41NmMtMjIuNTkuMzMtNzQuNjYuMjQtMTE4LjQxLjI0djE5LjUzYzQzLjg4LDAsMTAxLjMyLjE2LDExOS4wMy0uMjUsOS4zNS0uMjIsMjMuMTgtMi41OSwzMS4yMy0xNC43NSw3LjU2LTExLjQxLDUuNzEtMjYuMjctNC4yMi0zNS44LDkuOTMtOS41NCwxMS43OC0yNC4zOSw0LjIxLTM1LjgiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik01MjAuMDgsMTUuOTNjLTEzLjM1LTkuNTgtMjcuODUtMTAuOTQtMzkuNjEtMTEuMjEtMTEuNTgtLjI3LTI5LjA1LS4zOS00NC41LS40NS0zNy42Ny0uMTUtMTUuMDItLjA4LTUwLjkxLS4wOHYxOS42YzM4LjE5LDAsNjQuOTctLjMyLDk0LjQ2LjUyLDguNjYuMjQsMTcuOTUsMS4xNiwyNi4zMSw2Ljk2LDcuOTIsNS41LDEyLjYyLDE0LjI2LDEyLjYyLDIzLjcycy00LjU3LDE4LjI0LTEyLjQ5LDIzLjc0Yy04LjM2LDUuODEtMTcuNjUsNi43Mi0yNi4zMSw2Ljk2LTI5LjQ5LjgzLTU2LjI3LjUxLTk0LjQ2LjUxbC0uMTMsMTkuNTljMzguNDEsMCw2Ni4wMy4xNCw5NS40MS0uNTQsMTEuNzYtLjI3LDI2LjI2LTEuNjMsMzkuNjEtMTEuMjEsMTIuNjctOS4wOSwyMC4zMy0yMy4zNiwyMC4zMy0zOS4wNXMtNy42Ny0yOS45Ny0yMC4zMy0zOS4wNSIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTIyNy4yMiw0OC4wNmMtMTAuMjMtLjItMTMuNDktMy41NC0xMy41Ni0xMy43My0uMDctOS40Mi0uMDItMjAuNTgtLjAyLTMwLjE0aC0yMi41NmMwLDkuNjctLjE5LDI5LjI0LjE5LDM4LjcuNzQsMTguMzgsNi43NywyNC4xMSwyNS41NSwyNC43NSwxMy4wMi40NCwyMy4zNi4yOSw0MS4zNi4yOHYtMTkuNjljLTE0LjQzLDAtMjAuMzEuMDQtMzAuOTYtLjE2Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMzM5LjA0LDM0LjY4Yy0uMDcsOS45Mi0zLjMsMTMuMTgtMTMuNTYsMTMuMzgtNC44OS4wOS0xNy43NS4xNC0yOC4zMy4xNmgwcy0uMS4wMS0uMS4wMWMtMTAuODEsMC0yMi4zNC0uMDItMjkuMS0uMDJ2NTcuNTdoMjYuNTJ2LTM3Ljg4Yy44MSwwLDEuNjgsMCwyLjU4LDBoMHMuMSwwLC4xLDB2LjAyYzEzLjgsMCwzMS4wNC0uMDYsMzcuNTUtLjI2LDE5LjkzLS42MSwyNi02LjIzLDI2LjczLTI0Ljc4LjEtMi40OC4xNi01LjYyLjE5LTkuMDZWNC4xOGgtMjIuNTZjMCw5LjguMDQsMjAuODEtLjAzLDMwLjUiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0yMS40MiwyMzUuMDJjLTEuNCwwLTIuNzItLjI1LTMuOTctLjczLTEuMjQtLjQ4LTIuMzMtMS4yLTMuMjctMi4xNS0uOTQtLjk1LTEuNjgtMi4xMy0yLjIyLTMuNTQtLjU0LTEuNDEtLjgxLTMuMDUtLjgxLTQuOXMuMjgtMy40Ni44NS00LjljLjU3LTEuNDMsMS4zMi0yLjY1LDIuMjctMy42NC45NS0xLDIuMDYtMS43NSwzLjMyLTIuMjcsMS4yNy0uNTIsMi42LS43OCw0LS43OHMyLjcuMjksMy44My44N2MxLjEzLjU3LDIuMDcsMS4yNSwyLjgxLDIuMDJsLTIuNjUsMy4xOWMtLjU3LS41Mi0xLjE2LS45NC0xLjc4LTEuMjctLjYyLS4zMy0xLjMzLS40OS0yLjEyLS40OS0uNzUsMC0xLjQ1LjE2LTIuMTIuNDktLjY3LjMzLTEuMjQuOC0xLjczLDEuNDEtLjQ5LjYxLS44NywxLjM2LTEuMTUsMi4yNHMtLjQyLDEuODgtLjQyLDIuOThjMCwyLjI4LjQ5LDQuMDUsMS40Niw1LjMxLjk3LDEuMjUsMi4yNywxLjg4LDMuOSwxLjg4LjksMCwxLjcxLS4yLDIuNDMtLjU5LjcxLS40LDEuMzQtLjg5LDEuODgtMS40OGwyLjY1LDMuMTJjLTEuODUsMi4xNy00LjI0LDMuMjYtNy4xNSwzLjI2Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNDcuMTIsMjM1LjAzYy0xLjQ5LDAtMi44NS0uMjctNC4wOS0uOC0xLjIzLS41My0yLjI5LTEuMjktMy4xNy0yLjI5LS44OC0uOTktMS41Ni0yLjItMi4wNS0zLjYzLS40OC0xLjQyLS43My0zLjA0LS43My00Ljg1cy4yNC0zLjQyLjczLTQuODNjLjQ5LTEuNDEsMS4xNy0yLjYsMi4wNS0zLjU2Ljg4LS45NiwxLjk0LTEuNywzLjE3LTIuMiwxLjIzLS41MSwyLjU5LS43Niw0LjA5LS43NnMyLjg1LjI1LDQuMDkuNzZjMS4yMy41MSwyLjI5LDEuMjUsMy4xNywyLjIyLjg4Ljk3LDEuNTYsMi4xNiwyLjA1LDMuNTguNDgsMS40MS43MywzLjAxLjczLDQuOHMtLjI0LDMuNDItLjczLDQuODVjLS40OSwxLjQyLTEuMTcsMi42My0yLjA1LDMuNjMtLjg4LDEtMS45NCwxLjc2LTMuMTcsMi4yOS0xLjIzLjUzLTIuNTkuOC00LjA5LjhNNDcuMTIsMjMwLjcyYzEuNTEsMCwyLjcxLS42NSwzLjU5LTEuOTUuODgtMS4zLDEuMzItMy4wNywxLjMyLTUuMzFzLS40NC0zLjk0LTEuMzItNS4xOWMtLjg4LTEuMjQtMi4wOC0xLjg3LTMuNTktMS44N3MtMi43MS42Mi0zLjU5LDEuODdjLS44OCwxLjI0LTEuMzIsMi45Ny0xLjMyLDUuMTlzLjQ0LDQuMDEsMS4zMiw1LjMxYy44OCwxLjMsMi4wOCwxLjk1LDMuNTksMS45NSIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTY4Ljc5LDIzNC42MnYtMjIuMTFoNS4xMmw1Ljc2LDEwLjk5LDIuMTcsNC44OGguMTRjLS4xMi0xLjE4LS4yNC0yLjQ5LS4zOS0zLjkzLS4xNS0xLjQ1LS4yMi0yLjgzLS4yMi00LjE0di03LjhoNC43NXYyMi4xMWgtNS4xMmwtNS43Ni0xMS4wMi0yLjE3LTQuODFoLS4xNGMuMTEsMS4yMi4yNCwyLjUzLjM5LDMuOTMuMTUsMS40LjIyLDIuNzYuMjIsNC4wN3Y3LjgzaC00Ljc1WiIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTEwOC4wMiwyMzUuMDJjLTEuNCwwLTIuNzItLjI1LTMuOTctLjczcy0yLjMzLTEuMi0zLjI3LTIuMTVjLS45NC0uOTUtMS42OC0yLjEzLTIuMjItMy41NC0uNTQtMS40MS0uODEtMy4wNS0uODEtNC45cy4yOC0zLjQ2Ljg1LTQuOWMuNTYtMS40MywxLjMyLTIuNjUsMi4yNy0zLjY0Ljk1LTEsMi4wNi0xLjc1LDMuMzItMi4yNywxLjI2LS41MiwyLjYtLjc4LDQtLjc4czIuNy4yOSwzLjgzLjg3YzEuMTMuNTcsMi4wNywxLjI1LDIuODEsMi4wMmwtMi42NCwzLjE5Yy0uNTctLjUyLTEuMTYtLjk0LTEuNzgtMS4yNy0uNjItLjMzLTEuMzMtLjQ5LTIuMTItLjQ5LS43NSwwLTEuNDUuMTYtMi4xMi40OS0uNjcuMzMtMS4yNC44LTEuNzMsMS40MS0uNDkuNjEtLjg3LDEuMzYtMS4xNSwyLjI0LS4yOC44OC0uNDIsMS44OC0uNDIsMi45OCwwLDIuMjguNDgsNC4wNSwxLjQ2LDUuMzEuOTcsMS4yNSwyLjI3LDEuODgsMy45LDEuODguOSwwLDEuNzEtLjIsMi40Mi0uNTkuNzEtLjQsMS4zNC0uODksMS44OC0xLjQ4bDIuNjQsMy4xMmMtMS44NSwyLjE3LTQuMjQsMy4yNi03LjE1LDMuMjYiLz4KICAgIDxwb2x5Z29uIGNsYXNzPSJzdDAiIHBvaW50cz0iMTI1Ljk5IDIzNC42MiAxMjUuOTkgMjEyLjUxIDEzOS44MyAyMTIuNTEgMTM5LjgzIDIxNi43MSAxMzAuOTggMjE2LjcxIDEzMC45OCAyMjEuMTUgMTM4LjUxIDIyMS4xNSAxMzguNTEgMjI1LjMzIDEzMC45OCAyMjUuMzMgMTMwLjk4IDIzMC40MSAxNDAuMTcgMjMwLjQxIDE0MC4xNyAyMzQuNjIgMTI1Ljk5IDIzNC42MiIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTE1OC43OCwyMzUuMDJjLTEuNDUsMC0yLjg5LS4yNy00LjMyLS44LTEuNDQtLjUzLTIuNzItMS4zMy0zLjg1LTIuMzlsMi44NS0zLjQyYy43OS42OCwxLjY3LDEuMjMsMi42MywxLjY2Ljk2LjQzLDEuOS42NSwyLjgzLjY1LDEuMDQsMCwxLjgyLS4xOSwyLjMyLS41OC41MS0uMzguNzYtLjkuNzYtMS41NiwwLS4zNC0uMDctLjYzLS4yMi0uODgtLjE1LS4yNS0uMzYtLjQ3LS42NC0uNjYtLjI4LS4xOS0uNjItLjM3LTEuMDItLjU0LS40LS4xNy0uODMtLjM2LTEuMy0uNTZsLTIuODgtMS4yMmMtLjU3LS4yMy0xLjEyLS41Mi0xLjY1LS44OC0uNTMtLjM2LTEuMDEtLjc5LTEuNDItMS4yNy0uNDItLjQ4LS43NS0xLjA1LTEtMS42OS0uMjUtLjY1LS4zNy0xLjM3LS4zNy0yLjE5LDAtLjkuMTktMS43Ni41OC0yLjU2LjM5LS44LjkzLTEuNSwxLjYzLTIuMS43LS42LDEuNTMtMS4wNywyLjQ5LTEuNDEuOTYtLjM0LDIuMDItLjUxLDMuMTctLjUxLDEuMjksMCwyLjU2LjI1LDMuODEuNzUsMS4yNS41LDIuMzYsMS4yMiwzLjMxLDIuMTdsLTIuNTQsMy4xNWMtLjcyLS41Ni0xLjQ1LTEtMi4xNy0xLjMtLjcyLS4zMS0xLjUyLS40Ni0yLjQxLS40NnMtMS41NC4xOC0yLjA1LjUyYy0uNTEuMzUtLjc2Ljg0LS43NiwxLjQ4LDAsLjM0LjA4LjYzLjI2Ljg3LjE3LjI0LjQxLjQ1LjcxLjY0LjMxLjE5LjY2LjM3LDEuMDcuNTQuNDEuMTcuODUuMzYsMS4zMi41NmwyLjg1LDEuMTVjMS4zNi41NCwyLjQyLDEuMjksMy4yLDIuMjRzMS4xNywyLjIsMS4xNywzLjc2YzAsLjkzLS4xOSwxLjgtLjU2LDIuNjMtLjM3LjgyLS45MiwxLjU1LTEuNjMsMi4xNy0uNzEuNjItMS41OSwxLjEyLTIuNjMsMS40OS0xLjA0LjM3LTIuMjIuNTYtMy41My41NiIvPgogICAgPHJlY3QgY2xhc3M9InN0MCIgeD0iMTc4LjM1IiB5PSIyMTIuNTEiIHdpZHRoPSI0Ljk4IiBoZWlnaHQ9IjIyLjExIi8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjA1LDIzNS4wM2MtMS40OSwwLTIuODUtLjI3LTQuMDktLjgtMS4yMy0uNTMtMi4yOS0xLjI5LTMuMTctMi4yOS0uODgtLjk5LTEuNTYtMi4yLTIuMDUtMy42My0uNDgtMS40Mi0uNzMtMy4wNC0uNzMtNC44NXMuMjQtMy40Mi43My00LjgzYy40OS0xLjQxLDEuMTctMi42LDIuMDUtMy41Ni44OC0uOTYsMS45NC0xLjcsMy4xNy0yLjIsMS4yMy0uNTEsMi41OS0uNzYsNC4wOS0uNzZzMi44NS4yNSw0LjA5Ljc2YzEuMjMuNTEsMi4yOSwxLjI1LDMuMTcsMi4yMi44OC45NywxLjU2LDIuMTYsMi4wNSwzLjU4LjQ4LDEuNDEuNzMsMy4wMS43Myw0LjhzLS4yNCwzLjQyLS43Myw0Ljg1Yy0uNDksMS40Mi0xLjE3LDIuNjMtMi4wNSwzLjYzLS44OCwxLTEuOTQsMS43Ni0zLjE3LDIuMjktMS4yMy41My0yLjU5LjgtNC4wOS44TTIwNSwyMzAuNzJjMS41MSwwLDIuNzEtLjY1LDMuNTktMS45NS44OC0xLjMsMS4zMi0zLjA3LDEuMzItNS4zMXMtLjQ0LTMuOTQtMS4zMi01LjE5Yy0uODgtMS4yNC0yLjA4LTEuODctMy41OS0xLjg3cy0yLjcxLjYyLTMuNTksMS44N2MtLjg4LDEuMjQtMS4zMiwyLjk3LTEuMzIsNS4xOXMuNDQsNC4wMSwxLjMyLDUuMzFjLjg4LDEuMywyLjA4LDEuOTUsMy41OSwxLjk1Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjI2LjY3LDIzNC42MnYtMjIuMTFoNS4xMmw1Ljc2LDEwLjk5LDIuMTcsNC44OGguMTRjLS4xMi0xLjE4LS4yNC0yLjQ5LS4zOS0zLjkzLS4xNS0xLjQ1LS4yMi0yLjgzLS4yMi00LjE0di03LjhoNC43NXYyMi4xMWgtNS4xMmwtNS43Ni0xMS4wMi0yLjE3LTQuODFoLS4xNGMuMTEsMS4yMi4yNCwyLjUzLjM5LDMuOTMuMTUsMS40LjIyLDIuNzYuMjIsNC4wN3Y3LjgzaC00Ljc1WiIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTI1My44NywyMzQuNjJsNi45Mi0yMi4xMWg2bDYuOTIsMjIuMTFoLTUuMjlsLTEuMzUtNS4yNmgtNi43NWwtMS4zNiw1LjI2aC01LjA5Wk0yNjEuODcsMjIzLjQzbC0uNTQsMi4wM2g0LjcxbC0uNTEtMi4wM2MtLjMyLTEuMTEtLjYyLTIuMjgtLjkyLTMuNTMtLjI5LTEuMjQtLjU5LTIuNDQtLjg4LTMuNTloLS4xNGMtLjI3LDEuMTgtLjU1LDIuMzgtLjgzLDMuNjEtLjI4LDEuMjMtLjU4LDIuNC0uOSwzLjUxIi8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjgzLjU3LDIzNC42MnYtMjIuMTFoNy45N2MxLjE4LDAsMi4yOC4xMSwzLjMxLjM0LDEuMDMuMjMsMS45My42MSwyLjcsMS4xNC43Ny41MywxLjM4LDEuMjQsMS44MywyLjEyLjQ1Ljg4LjY4LDEuOTguNjgsMy4yOSwwLDEuNjMtLjM2LDIuOTctMS4wNyw0LjAyLS43MSwxLjA1LTEuNjcsMS44NC0yLjg3LDIuMzZsNS4wMiw4Ljg1aC01LjU5bC00LjI0LTcuOTdoLTIuNzV2Ny45N2gtNC45OFpNMjg4LjU2LDIyMi42OGgyLjU4YzEuMzEsMCwyLjMxLS4yOCwzLS44My42OS0uNTUsMS4wMy0xLjM3LDEuMDMtMi40NnMtLjM1LTEuODQtMS4wMy0yLjI3Yy0uNjktLjQzLTEuNjktLjY0LTMtLjY0aC0yLjU4djYuMjFaIi8+CiAgICA8cmVjdCBjbGFzcz0ic3QwIiB4PSIzMTEuODIiIHk9IjIxMi41MSIgd2lkdGg9IjQuOTgiIGhlaWdodD0iMjIuMTEiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0zMzguNDcsMjM1LjAzYy0xLjQ5LDAtMi44NS0uMjctNC4wOS0uOC0xLjIzLS41My0yLjI5LTEuMjktMy4xNy0yLjI5LS44OC0uOTktMS41Ny0yLjItMi4wNS0zLjYzLS40OS0xLjQyLS43My0zLjA0LS43My00Ljg1cy4yNC0zLjQyLjczLTQuODNjLjQ4LTEuNDEsMS4xNy0yLjYsMi4wNS0zLjU2Ljg4LS45NiwxLjk0LTEuNywzLjE3LTIuMiwxLjIzLS41MSwyLjYtLjc2LDQuMDktLjc2czIuODUuMjUsNC4wOS43NmMxLjIzLjUxLDIuMjksMS4yNSwzLjE3LDIuMjIuODguOTcsMS41NywyLjE2LDIuMDUsMy41OC40OCwxLjQxLjczLDMuMDEuNzMsNC44cy0uMjUsMy40Mi0uNzMsNC44NWMtLjQ5LDEuNDItMS4xNywyLjYzLTIuMDUsMy42My0uODgsMS0xLjk0LDEuNzYtMy4xNywyLjI5LTEuMjMuNTMtMi42LjgtNC4wOS44TTMzOC40NywyMzAuNzJjMS41MSwwLDIuNzEtLjY1LDMuNTktMS45NS44OC0xLjMsMS4zMi0zLjA3LDEuMzItNS4zMXMtLjQ0LTMuOTQtMS4zMi01LjE5Yy0uODgtMS4yNC0yLjA4LTEuODctMy41OS0xLjg3cy0yLjcxLjYyLTMuNTksMS44N2MtLjg4LDEuMjQtMS4zMiwyLjk3LTEuMzIsNS4xOXMuNDQsNC4wMSwxLjMyLDUuMzFjLjg4LDEuMywyLjA4LDEuOTUsMy41OSwxLjk1Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMzgzLjM3LDIzNS4wM2MtMS40OSwwLTIuODUtLjI3LTQuMDktLjgtMS4yMy0uNTMtMi4yOS0xLjI5LTMuMTctMi4yOS0uODgtLjk5LTEuNTctMi4yLTIuMDUtMy42My0uNDktMS40Mi0uNzMtMy4wNC0uNzMtNC44NXMuMjQtMy40Mi43My00LjgzYy40OC0xLjQxLDEuMTctMi42LDIuMDUtMy41Ni44OC0uOTYsMS45NC0xLjcsMy4xNy0yLjIsMS4yMy0uNTEsMi42LS43Niw0LjA5LS43NnMyLjg1LjI1LDQuMDkuNzZjMS4yMy41MSwyLjI5LDEuMjUsMy4xNywyLjIyLjg4Ljk3LDEuNTcsMi4xNiwyLjA1LDMuNTguNDgsMS40MS43MywzLjAxLjczLDQuOHMtLjI1LDMuNDItLjczLDQuODVjLS40OSwxLjQyLTEuMTcsMi42My0yLjA1LDMuNjMtLjg4LDEtMS45NCwxLjc2LTMuMTcsMi4yOS0xLjIzLjUzLTIuNi44LTQuMDkuOE0zODMuMzcsMjMwLjcyYzEuNTEsMCwyLjcxLS42NSwzLjU5LTEuOTUuODgtMS4zLDEuMzItMy4wNywxLjMyLTUuMzFzLS40NC0zLjk0LTEuMzItNS4xOWMtLjg4LTEuMjQtMi4wOC0xLjg3LTMuNTktMS44N3MtMi43MS42Mi0zLjU5LDEuODdjLS44OCwxLjI0LTEuMzIsMi45Ny0xLjMyLDUuMTlzLjQ0LDQuMDEsMS4zMiw1LjMxYy44OCwxLjMsMi4wOCwxLjk1LDMuNTksMS45NSIvPgogICAgPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSI0MDUuMDQgMjM0LjYyIDQwNS4wNCAyMTIuNTEgNDE4Ljk3IDIxMi41MSA0MTguOTcgMjE2LjcxIDQxMC4wMiAyMTYuNzEgNDEwLjAyIDIyMS44MyA0MTcuNjkgMjIxLjgzIDQxNy42OSAyMjYuMDQgNDEwLjAyIDIyNi4wNCA0MTAuMDIgMjM0LjYyIDQwNS4wNCAyMzQuNjIiLz4KICAgIDxyZWN0IGNsYXNzPSJzdDAiIHg9IjQzMC4yNiIgeT0iMjEyLjUxIiB3aWR0aD0iNC45OSIgaGVpZ2h0PSIyMi4xMSIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTQ1Ny4xNSwyMzUuMDJjLTEuNCwwLTIuNzItLjI1LTMuOTctLjczcy0yLjMzLTEuMi0zLjI3LTIuMTVjLS45NC0uOTUtMS42OC0yLjEzLTIuMjItMy41NC0uNTQtMS40MS0uODEtMy4wNS0uODEtNC45cy4yOC0zLjQ2Ljg1LTQuOWMuNTYtMS40MywxLjMyLTIuNjUsMi4yNy0zLjY0Ljk1LTEsMi4wNi0xLjc1LDMuMzItMi4yNywxLjI2LS41MiwyLjYtLjc4LDQtLjc4czIuNy4yOSwzLjgzLjg3YzEuMTMuNTcsMi4wNywxLjI1LDIuODEsMi4wMmwtMi42NCwzLjE5Yy0uNTctLjUyLTEuMTYtLjk0LTEuNzgtMS4yNy0uNjItLjMzLTEuMzMtLjQ5LTIuMTItLjQ5LS43NSwwLTEuNDUuMTYtMi4xMi40OS0uNjcuMzMtMS4yNC44LTEuNzMsMS40MS0uNDkuNjEtLjg3LDEuMzYtMS4xNSwyLjI0LS4yOC44OC0uNDIsMS44OC0uNDIsMi45OCwwLDIuMjguNDgsNC4wNSwxLjQ2LDUuMzEuOTcsMS4yNSwyLjI3LDEuODgsMy45LDEuODguOSwwLDEuNzEtLjIsMi40Mi0uNTkuNzEtLjQsMS4zNC0uODksMS44OC0xLjQ4bDIuNjQsMy4xMmMtMS44NSwyLjE3LTQuMjQsMy4yNi03LjE1LDMuMjYiLz4KICAgIDxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik0zMjIuMTgsMTQyLjY0Yy01LjY5LTQuMDgtMTEuODctNC42Ni0xNi44OC00Ljc4LTQtLjA5LTI2LjkyLS4xMi0zMS45NywwLTUuMDEuMTItMTEuMTkuNjktMTYuODgsNC43OC01LjQsMy44Ny04LjY3LDkuOTYtOC42NywxNi42NHMzLjI3LDEyLjc3LDguNjcsMTYuNjRjNS42OSw0LjA4LDExLjg3LDQuNjYsMTYuODgsNC43OCw0LC4wOSwyNi45Mi4xMiwzMS45NywwLDUuMDEtLjEyLDExLjE5LS42OSwxNi44OC00Ljc4LDUuNC0zLjg3LDguNjctOS45Niw4LjY3LTE2LjY0cy0zLjI3LTEyLjc3LTguNjctMTYuNjRNMzE2LjE2LDE2OS40Yy0zLjU2LDIuNDctNy41MiwyLjg2LTExLjIxLDIuOTctNC45OS4xNC0yNi4yMi4xMy0zMS4yMSwwLTMuNjktLjEtNy42NS0uNDktMTEuMjEtMi45Ny0zLjM4LTIuMzQtNS4zOC02LjA4LTUuMzgtMTAuMTFzMS45NS03Ljc3LDUuMzMtMTAuMTJjMy41Ny0yLjQ3LDcuNTItMi44NiwxMS4yMS0yLjk3LDQuOTktLjE0LDI2LjIyLS4xMywzMS4yMSwwLDMuNjkuMSw3LjY1LjQ5LDExLjIxLDIuOTcsMy4zOCwyLjM0LDUuMzgsNi4wOCw1LjM4LDEwLjExcy0xLjk1LDcuNzctNS4zMywxMC4xMiIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTE4My4yMSwxNzUuOTNjNS42OSw0LjA4LDExLjg3LDQuNjYsMTYuODgsNC43OCw0Ljk0LjExLDEyLjM4LjE3LDE4Ljk3LjE5LDE2LjA2LjA2LDYuNC4wNCwyMS43LjA0di04LjM1Yy0xNi4yNywwLTI3LjY5LjE0LTQwLjI2LS4yMi0zLjY5LS4xLTcuNjUtLjQ5LTExLjIxLTIuOTctMy4zOC0yLjM0LTUuMzgtNi4wOC01LjM4LTEwLjExczEuOTUtNy43Nyw1LjMzLTEwLjEyYzMuNTctMi40Nyw3LjUyLTIuODYsMTEuMjEtMi45NywxMi41Ny0uMzUsMjMuOTgtLjIyLDQwLjI2LS4yMmwuMDUtOC4zNWMtMTYuMzcsMC0yOC4xNC0uMDYtNDAuNjYuMjMtNS4wMS4xMi0xMS4xOS42OS0xNi44OCw0Ljc4LTUuNCwzLjg3LTguNjcsOS45Ni04LjY3LDE2LjY0czMuMjcsMTIuNzcsOC42NywxNi42NCIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTI1LjAxLDE1Ni4zM2MtNC4zNi0uMDgtNS43NS0xLjUxLTUuNzgtNS44NS0uMDMtNC4wMSwwLTguNzcsMC0xMi44NWgtOS42MWMwLDQuMTItLjA4LDEyLjQ2LjA4LDE2LjQ5LjMxLDcuODQsMi44OSwxMC4yOCwxMC44OSwxMC41NSw1LjU1LjE5LDkuOTYuMTIsMTcuNjMuMTJ2LTguMzljLTYuMTUsMC04LjY1LjAyLTEzLjItLjA3Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNzIuNjYsMTUwLjYzYy0uMDMsNC4yMy0xLjQxLDUuNjItNS43OCw1LjctMi4wOS4wNC03LjU2LjA2LTEyLjA3LjA3aDBzLS4wNCwwLS4wNCwwaDBjLTQuNjEsMC05LjUyLDAtMTIuNCwwdjI0LjUzaDExLjN2LTE2LjE0Yy4zNSwwLC43MiwwLDEuMSwwaC4wNGM1Ljg4LDAsMTMuMjMtLjAyLDE2LS4xLDguNDktLjI2LDExLjA4LTIuNjUsMTEuMzktMTAuNTYuMDQtMS4wNi4wNy0yLjM5LjA4LTMuODZ2LTEyLjYzaC05LjYxYzAsNC4xOC4wMiw4Ljg3LS4wMSwxMyIvPgogICAgPHBhdGggY2xhc3M9InN0MCIgZD0iTTEwNy43MSwxNDYuMTFjLTQuMzcuMDgtNS43NSwxLjQ3LTUuNzgsNS43LS4wMyw0LjEzLS4wMSwyNC45NS0uMDEsMjkuMTNoLTkuNjF2LTI4Ljc2Yy4wMi0xLjQ3LjA0LTIuOC4wOC0zLjg2LjMxLTcuOTEsMi45LTEwLjMsMTEuMzktMTAuNTYsMi43OC0uMDgsNDQuNjktLjE3LDUwLjI0LjAyLDgsLjI3LDEwLjU3LDIuNzEsMTAuODksMTAuNTUuMTYsNC4wMy4wOCwyOC41MS4wOCwzMi42M2gtOS42MWMwLTQuMDguMDItMjQuOTcsMC0yOC45OC0uMDMtNC4zNS0xLjQyLTUuNzctNS43OC01Ljg1LTQuNTQtLjA4LTM5Ljc5LS4wNC00MS44OCwwIi8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNNDU0LjM0LDE0Ni4xMWMtNC4zNy4wOC01Ljc1LDEuNDctNS43OCw1LjctLjAzLDQuMTMtLjAxLDI0Ljk1LS4wMSwyOS4xM2gtOS42MXYtMjguNzZjLjAyLTEuNDcuMDQtMi44LjA4LTMuODYuMzEtNy45MSwyLjktMTAuMywxMS4zOS0xMC41NiwyLjc4LS4wOCw0NC42OS0uMTcsNTAuMjQuMDIsOCwuMjcsMTAuNTcsMi43MSwxMC44OSwxMC41NS4xNiw0LjAzLjA4LDI4LjUxLjA4LDMyLjYzaC05LjYxYzAtNC4wOC4wMi0yNC45Ny0uMDEtMjguOTgtLjAzLTQuMzUtMS40Mi01Ljc3LTUuNzgtNS44NS00LjU0LS4wOC0zOS43OS0uMDQtNDEuODgsMCIvPgogICAgPHJlY3QgY2xhc3M9InN0MCIgeD0iNDE5Ljc4IiB5PSIxMzcuNjMiIHdpZHRoPSIxMS4zIiBoZWlnaHQ9IjQzLjMxIi8+CiAgICA8cmVjdCBjbGFzcz0ic3QwIiB4PSI5NS4zNyIgeT0iMTU2LjUiIHdpZHRoPSI2NS41OCIgaGVpZ2h0PSI4LjM4Ii8+CiAgICA8cGF0aCBjbGFzcz0ic3QwIiBkPSJNMzk4LjM5LDEzNy43NGgtNDguMnYtLjExaC0xMS4zdjQzLjMxaDExLjN2LTE2LjE1aDQ4LjJjNy40NiwwLDEzLjUzLTYuMDcsMTMuNTMtMTMuNTNzLTYuMDctMTMuNTMtMTMuNTMtMTMuNTNNMzk4LjM5LDE1NS45aC00OC4ydi05LjI4aDQ4LjJjMi41NiwwLDQuNjQsMi4wOCw0LjY0LDQuNjRzLTIuMDgsNC42NC00LjY0LDQuNjQiLz4KICA8L2c+Cjwvc3ZnPg==" alt="BYD Yacopini">
-      <div class="header-date">
-        <div class="vig-label">Vigencia</div>
-        <div class="vig-value">17 de julio de 2026</div>
+  <div class="title-block">
+    <h1>Lista de Precios</h1>
+    <p>Valores de referencia con piso de gerencia incluido. Documento confidencial &mdash; uso exclusivo del gerente de concesionario.</p>
+  </div>
+  <div class="confidential-banner">Uso exclusivo de Gerencia &middot; No compartir con el equipo de ventas</div>
+
+  <div class="legend">
+    <div class="item"><span class="dot" style="background:var(--azul-ev)"></span>EV &mdash; Eléctrico</div>
+    <div class="item"><span class="dot" style="background:var(--verde-dm)"></span>DM &mdash; Híbrido enchufable</div>
+    <div class="item"><span class="dot" style="background:var(--rojo-fondo);border:1px solid var(--rojo-piso)"></span>Piso de Venta</div>
+    <div class="item"><span class="dot" style="background:var(--carbon)"></span>Piso Gerencia (confidencial)</div>
+  </div>
+
+  <div class="cat-block">
+    <div class="cat-head"><span class="cat-pill ev">EV</span><span class="cat-title">Eléctricos</span></div>
+
+    <div class="model-card ev">
+      <div class="model-top">
+        <div class="model-name">Dolphin Mini GL</div>
+        <div class="model-tag ev">Eléctrico</div>
+      </div>
+      <div class="model-lista">Lista <b>USD 23.990</b></div>
+      <div class="floor-row">
+        <div class="floor-box venta">
+          <div class="floor-label">Piso Venta</div>
+          <div class="floor-val">USD 23.011</div>
+        </div>
+        <div class="floor-box gerencia">
+          <div class="floor-label">Piso Gerencia</div>
+          <div class="floor-val">USD 22.711</div>
+        </div>
+      </div>
+      <details class="model-detail">
+        <summary>Ver detalle de cálculo</summary>
+        <div class="detail-grid">
+          <div><span>Flete</span><b>USD 550</b></div>
+          <div><span>Patentamiento</span><b>USD 810</b></div>
+          <div><span>Lleno</span><b>USD 25.350</b></div>
+          <div><span>Prom. Web</span><b>USD 24.750</b></div>
+          <div><span>Web</span><b>USD 24.150</b></div>
+          <div><span>Prom. Piso</span><b>USD 23.581</b></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="model-card ev">
+      <div class="model-top">
+        <div class="model-name">Dolphin Mini GS</div>
+        <div class="model-tag ev">Eléctrico</div>
+      </div>
+      <div class="model-lista">Lista <b>USD 24.990</b></div>
+      <div class="floor-row">
+        <div class="floor-box venta">
+          <div class="floor-label">Piso Venta</div>
+          <div class="floor-val">USD 24.680</div>
+        </div>
+        <div class="floor-box gerencia">
+          <div class="floor-label">Piso Gerencia</div>
+          <div class="floor-val">USD 24.380</div>
+        </div>
+      </div>
+      <details class="model-detail">
+        <summary>Ver detalle de cálculo</summary>
+        <div class="detail-grid">
+          <div><span>Flete</span><b>USD 550</b></div>
+          <div><span>Patentamiento</span><b>USD 840</b></div>
+          <div><span>Lleno</span><b>USD 26.380</b></div>
+          <div><span>Prom. Web</span><b>USD 25.880</b></div>
+          <div><span>Web</span><b>USD 25.380</b></div>
+          <div><span>Prom. Piso</span><b>USD 25.030</b></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="model-card ev">
+      <div class="model-top">
+        <div class="model-name">Yuan Pro GS</div>
+        <div class="model-tag ev">Eléctrico</div>
+      </div>
+      <div class="model-lista">Lista <b>USD 31.990</b></div>
+      <div class="floor-row">
+        <div class="floor-box venta">
+          <div class="floor-label">Piso Venta</div>
+          <div class="floor-val">USD 30.371</div>
+        </div>
+        <div class="floor-box gerencia">
+          <div class="floor-label">Piso Gerencia</div>
+          <div class="floor-val">USD 30.071</div>
+        </div>
+      </div>
+      <details class="model-detail">
+        <summary>Ver detalle de cálculo</summary>
+        <div class="detail-grid">
+          <div><span>Flete</span><b>USD 550</b></div>
+          <div><span>Patentamiento</span><b>USD 1.050</b></div>
+          <div><span>Lleno</span><b>USD 33.590</b></div>
+          <div><span>Prom. Web</span><b>USD 32.631</b></div>
+          <div><span>Web</span><b>USD 31.671</b></div>
+          <div><span>Prom. Piso</span><b>USD 31.021</b></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="cat-block">
+    <div class="cat-head"><span class="cat-pill dm">DM</span><span class="cat-title">Híbridos enchufables</span></div>
+
+    <div class="model-card dm">
+      <div class="model-top">
+        <div class="model-name">Atto 2 DM-i</div>
+        <div class="model-tag dm">Híbrido</div>
+      </div>
+      <div class="model-lista">Lista <b>USD 33.990</b></div>
+      <div class="floor-row">
+        <div class="floor-box venta">
+          <div class="floor-label">Piso Venta</div>
+          <div class="floor-val">USD 34.800</div>
+        </div>
+        <div class="floor-box gerencia">
+          <div class="floor-label">Piso Gerencia</div>
+          <div class="floor-val">USD 34.500</div>
+        </div>
+      </div>
+      <details class="model-detail">
+        <summary>Ver detalle de cálculo</summary>
+        <div class="detail-grid">
+          <div><span>Flete</span><b>USD 550</b></div>
+          <div><span>Patentamiento</span><b>USD 1.110</b></div>
+          <div><span>Lleno</span><b>USD 35.650</b></div>
+          <div><span>Prom. Web</span><b>USD 35.401</b></div>
+          <div><span>Web</span><b>USD 35.152</b></div>
+          <div><span>Prom. Piso</span><b>USD 34.976</b></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="model-card dm">
+      <div class="model-top">
+        <div class="model-name">Song Pro GL</div>
+        <div class="model-tag dm">Híbrido</div>
+      </div>
+      <div class="model-lista">Lista <b>USD 35.490</b></div>
+      <div class="floor-row">
+        <div class="floor-box venta">
+          <div class="floor-label">Piso Venta</div>
+          <div class="floor-val">USD 34.300</div>
+        </div>
+        <div class="floor-box gerencia">
+          <div class="floor-label">Piso Gerencia</div>
+          <div class="floor-val">USD 34.000</div>
+        </div>
+      </div>
+      <details class="model-detail">
+        <summary>Ver detalle de cálculo</summary>
+        <div class="detail-grid">
+          <div><span>Flete</span><b>USD 550</b></div>
+          <div><span>Patentamiento</span><b>USD 1.155</b></div>
+          <div><span>Lleno</span><b>USD 37.195</b></div>
+          <div><span>Prom. Web</span><b>USD 36.131</b></div>
+          <div><span>Web</span><b>USD 35.066</b></div>
+          <div><span>Prom. Piso</span><b>USD 34.683</b></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="model-card dm">
+      <div class="model-top">
+        <div class="model-name">Song Pro GS</div>
+        <div class="model-tag dm">Híbrido</div>
+      </div>
+      <div class="model-lista">Lista <b>USD 37.490</b></div>
+      <div class="floor-row">
+        <div class="floor-box venta">
+          <div class="floor-label">Piso Venta</div>
+          <div class="floor-val">USD 36.930</div>
+        </div>
+        <div class="floor-box gerencia">
+          <div class="floor-label">Piso Gerencia</div>
+          <div class="floor-val">USD 36.630</div>
+        </div>
+      </div>
+      <details class="model-detail">
+        <summary>Ver detalle de cálculo</summary>
+        <div class="detail-grid">
+          <div><span>Flete</span><b>USD 550</b></div>
+          <div><span>Patentamiento</span><b>USD 1.215</b></div>
+          <div><span>Lleno</span><b>USD 39.255</b></div>
+          <div><span>Prom. Web</span><b>USD 38.505</b></div>
+          <div><span>Web</span><b>USD 37.755</b></div>
+          <div><span>Prom. Piso</span><b>USD 37.343</b></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="model-card dm">
+      <div class="model-top">
+        <div class="model-name">Shark GS</div>
+        <div class="model-tag dm">Híbrido</div>
+      </div>
+      <div class="model-lista">Lista <b>USD 59.990</b></div>
+      <div class="floor-row">
+        <div class="floor-box venta">
+          <div class="floor-label">Piso Venta</div>
+          <div class="floor-val">USD 57.530</div>
+        </div>
+        <div class="floor-box gerencia">
+          <div class="floor-label">Piso Gerencia</div>
+          <div class="floor-val">USD 57.230</div>
+        </div>
+      </div>
+      <details class="model-detail">
+        <summary>Ver detalle de cálculo</summary>
+        <div class="detail-grid">
+          <div><span>Flete</span><b>USD 750</b></div>
+          <div><span>Patentamiento</span><b>USD 1.890</b></div>
+          <div><span>Lleno</span><b>USD 62.630</b></div>
+          <div><span>Prom. Web</span><b>USD 61.130</b></div>
+          <div><span>Web</span><b>USD 59.630</b></div>
+          <div><span>Prom. Piso</span><b>USD 58.580</b></div>
+        </div>
+      </details>
+    </div>
+
+    <div class="model-card dm">
+      <div class="model-top">
+        <div class="model-name">Seal U GS</div>
+        <div class="model-tag dm">Híbrido</div>
+      </div>
+      <div class="model-lista">Lista <b>USD 47.990</b></div>
+      <div class="floor-row">
+        <div class="floor-box venta">
+          <div class="floor-label">Piso Venta</div>
+          <div class="floor-val">USD 46.250</div>
+        </div>
+        <div class="floor-box gerencia">
+          <div class="floor-label">Piso Gerencia</div>
+          <div class="floor-val">USD 45.950</div>
+        </div>
+      </div>
+      <details class="model-detail">
+        <summary>Ver detalle de cálculo</summary>
+        <div class="detail-grid">
+          <div><span>Flete</span><b>USD 750</b></div>
+          <div><span>Patentamiento</span><b>USD 1.530</b></div>
+          <div><span>Lleno</span><b>USD 50.270</b></div>
+          <div><span>Prom. Web</span><b>USD 49.070</b></div>
+          <div><span>Web</span><b>USD 47.870</b></div>
+          <div><span>Prom. Piso</span><b>USD 47.060</b></div>
+        </div>
+      </details>
+    </div>
+  </div>
+
+
+  <div class="promo-section">
+    <div class="promo-head">
+      <h2>Vehículos en Promoción</h2>
+      <p>Unidades con precio especial por VIN. Válido según condiciones vigentes.</p>
+    </div>
+
+    <div class="promo-card ev">
+      <div class="promo-top">
+        <div class="model-name">Dolphin Mini GL</div>
+        <div class="promo-vin">LGXCE4CC9T2077814 &middot; Apricity White</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 23.011</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 21.992</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 1.019</div>
+        </div>
       </div>
     </div>
-    <h1>Lista de Precios</h1>
-    <p class="lead">Valores de referencia con piso de gerencia incluido. Documento confidencial — uso exclusivo del gerente de concesionario.</p>
-  </div>
 
-  <div class="confidential-banner">Uso exclusivo de Gerencia — No compartir con el equipo de ventas</div>
-  <div class="legend-bar">
-    <div class="item"><span class="dot" style="background:var(--azul-ev)"></span> EV — 100% eléctrico</div>
-    <div class="item"><span class="dot" style="background:var(--verde-dm)"></span> DM — Híbrido enchufable</div>
-    <div class="item"><span class="dot" style="background:var(--verde-lleno-fondo);border:1px solid var(--verde-lleno)"></span> Precio Lleno</div>
-    <div class="item"><span class="dot" style="background:var(--amarillo-fondo);border:1px solid var(--amarillo-web)"></span> Precio Web</div>
-    <div class="item"><span class="dot" style="background:var(--rojo-fondo);border:1px solid var(--rojo-piso)"></span> Piso de Venta</div>
-    <div class="item"><span class="dot" style="background:var(--carbon)"></span> Piso Gerencia (confidencial)</div>
-  </div>
+    <div class="promo-card ev">
+      <div class="promo-top">
+        <div class="model-name">Dolphin Mini GL</div>
+        <div class="promo-vin">LGXCE4CC2T2077816 &middot; Apricity White</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 23.011</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 21.992</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 1.019</div>
+        </div>
+      </div>
+    </div>
 
-  <div class="category">
-    <div class="category-head">
-      <span class="category-pill ev">EV</span>
-      <span class="category-title">Eléctricos</span>
-      <hr>
+    <div class="promo-card ev">
+      <div class="promo-top">
+        <div class="model-name">Dolphin Mini GL</div>
+        <div class="promo-vin">LGXCE4CC2T2077816 &middot; Obsidian Black</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 23.011</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 22.232</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 779</div>
+        </div>
+      </div>
     </div>
-    
-    <div class="price-table-wrap">
-      <table class="price-table">
-        <thead>
-          <tr>
-            <th class="col-nombre">Modelo</th>
-            <th class="col-lista">Lista</th>
-            <th>Flete</th>
-            <th>Patentam.</th>
-            <th class="sector-end lleno-cell">Lleno</th>
-            <th class="sector-start">Prom. Web</th>
-            <th class="sector-end web-cell">Web</th>
-            <th class="sector-start">Prom. Piso</th>
-            <th class="sector-end piso-cell">Piso Venta</th>
-            <th class="sector-start sector-end gerencia-head">Piso Gerencia</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="ev">
-            <td class="col-nombre"><span class="model-name">Dolphin Mini GL</span><span class="model-tag">● Eléctrico</span></td>
-            <td class="col-lista">USD 23.990</td>
-            <td class="flete-cell">USD 550</td>
-            <td class="patentam-cell">USD 810</td>
-            <td class="sector-end lleno-cell">USD 25.350</td>
-            <td class="sector-start">USD 24.750</td>
-            <td class="sector-end web-cell">USD 24.150</td>
-            <td class="sector-start">USD 23.581</td>
-            <td class="sector-end piso-cell">USD 23.011</td>
-            <td class="sector-start sector-end gerencia-cell">USD 22.711</td>
-          </tr>
-          <tr class="ev">
-            <td class="col-nombre"><span class="model-name">Dolphin Mini GS</span><span class="model-tag">● Eléctrico</span></td>
-            <td class="col-lista">USD 24.990</td>
-            <td class="flete-cell">USD 550</td>
-            <td class="patentam-cell">USD 840</td>
-            <td class="sector-end lleno-cell">USD 26.380</td>
-            <td class="sector-start">USD 25.880</td>
-            <td class="sector-end web-cell">USD 25.380</td>
-            <td class="sector-start">USD 25.030</td>
-            <td class="sector-end piso-cell">USD 24.680</td>
-            <td class="sector-start sector-end gerencia-cell">USD 24.380</td>
-          </tr>
-          <tr class="ev">
-            <td class="col-nombre"><span class="model-name">Yuan Pro GS</span><span class="model-tag">● Eléctrico</span></td>
-            <td class="col-lista">USD 31.990</td>
-            <td class="flete-cell">USD 550</td>
-            <td class="patentam-cell">USD 1.050</td>
-            <td class="sector-end lleno-cell">USD 33.590</td>
-            <td class="sector-start">USD 32.631</td>
-            <td class="sector-end web-cell">USD 31.671</td>
-            <td class="sector-start">USD 31.021</td>
-            <td class="sector-end piso-cell">USD 30.371</td>
-            <td class="sector-start sector-end gerencia-cell">USD 30.071</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
 
-  <div class="category">
-    <div class="category-head">
-      <span class="category-pill dm">DM</span>
-      <span class="category-title">Híbridos enchufables</span>
-      <hr>
+    <div class="promo-card ev">
+      <div class="promo-top">
+        <div class="model-name">Dolphin Mini GL</div>
+        <div class="promo-vin">LGXCE4CC8T2077805 &middot; Obsidian Black</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 23.011</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 22.232</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 779</div>
+        </div>
+      </div>
     </div>
-    
-    <div class="price-table-wrap">
-      <table class="price-table">
-        <thead>
-          <tr>
-            <th class="col-nombre">Modelo</th>
-            <th class="col-lista">Lista</th>
-            <th>Flete</th>
-            <th>Patentam.</th>
-            <th class="sector-end lleno-cell">Lleno</th>
-            <th class="sector-start">Prom. Web</th>
-            <th class="sector-end web-cell">Web</th>
-            <th class="sector-start">Prom. Piso</th>
-            <th class="sector-end piso-cell">Piso Venta</th>
-            <th class="sector-start sector-end gerencia-head">Piso Gerencia</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="dm">
-            <td class="col-nombre"><span class="model-name">Atto 2 DM-i</span><span class="model-tag">● Híbrido</span></td>
-            <td class="col-lista">USD 33.990</td>
-            <td class="flete-cell">USD 550</td>
-            <td class="patentam-cell">USD 1.110</td>
-            <td class="sector-end lleno-cell">USD 35.650</td>
-            <td class="sector-start">USD 35.401</td>
-            <td class="sector-end web-cell">USD 35.152</td>
-            <td class="sector-start">USD 34.976</td>
-            <td class="sector-end piso-cell">USD 34.800</td>
-            <td class="sector-start sector-end gerencia-cell">USD 34.500</td>
-          </tr>
-          <tr class="dm">
-            <td class="col-nombre"><span class="model-name">Song Pro GL</span><span class="model-tag">● Híbrido</span></td>
-            <td class="col-lista">USD 35.490</td>
-            <td class="flete-cell">USD 550</td>
-            <td class="patentam-cell">USD 1.155</td>
-            <td class="sector-end lleno-cell">USD 37.195</td>
-            <td class="sector-start">USD 36.131</td>
-            <td class="sector-end web-cell">USD 35.066</td>
-            <td class="sector-start">USD 34.683</td>
-            <td class="sector-end piso-cell">USD 34.300</td>
-            <td class="sector-start sector-end gerencia-cell">USD 34.000</td>
-          </tr>
-          <tr class="dm">
-            <td class="col-nombre"><span class="model-name">Song Pro GS</span><span class="model-tag">● Híbrido</span></td>
-            <td class="col-lista">USD 37.490</td>
-            <td class="flete-cell">USD 550</td>
-            <td class="patentam-cell">USD 1.215</td>
-            <td class="sector-end lleno-cell">USD 39.255</td>
-            <td class="sector-start">USD 38.505</td>
-            <td class="sector-end web-cell">USD 37.755</td>
-            <td class="sector-start">USD 37.343</td>
-            <td class="sector-end piso-cell">USD 36.930</td>
-            <td class="sector-start sector-end gerencia-cell">USD 36.630</td>
-          </tr>
-          <tr class="dm">
-            <td class="col-nombre"><span class="model-name">Shark GS</span><span class="model-tag">● Híbrido</span></td>
-            <td class="col-lista">USD 59.990</td>
-            <td class="flete-cell">USD 750</td>
-            <td class="patentam-cell">USD 1.890</td>
-            <td class="sector-end lleno-cell">USD 62.630</td>
-            <td class="sector-start">USD 61.130</td>
-            <td class="sector-end web-cell">USD 59.630</td>
-            <td class="sector-start">USD 58.580</td>
-            <td class="sector-end piso-cell">USD 57.530</td>
-            <td class="sector-start sector-end gerencia-cell">USD 57.230</td>
-          </tr>
-          <tr class="dm">
-            <td class="col-nombre"><span class="model-name">Seal U GS</span><span class="model-tag">● Híbrido</span></td>
-            <td class="col-lista">USD 47.990</td>
-            <td class="flete-cell">USD 750</td>
-            <td class="patentam-cell">USD 1.530</td>
-            <td class="sector-end lleno-cell">USD 50.270</td>
-            <td class="sector-start">USD 49.070</td>
-            <td class="sector-end web-cell">USD 47.870</td>
-            <td class="sector-start">USD 47.060</td>
-            <td class="sector-end piso-cell">USD 46.250</td>
-            <td class="sector-start sector-end gerencia-cell">USD 45.950</td>
-          </tr>
-        </tbody>
-      </table>
+
+    <div class="promo-card ev">
+      <div class="promo-top">
+        <div class="model-name">Dolphin Mini GS</div>
+        <div class="promo-vin">LGXCE4CC6T2081982 &middot; Obsidian Black</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 24.680</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 24.130</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 550</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="promo-card ev">
+      <div class="promo-top">
+        <div class="model-name">Dolphin Mini GS</div>
+        <div class="promo-vin">LGXCE4CC4T2082077 &middot; Sprout Green</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 24.680</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 24.130</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 550</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="promo-card ev">
+      <div class="promo-top">
+        <div class="model-name">Dolphin Mini GS</div>
+        <div class="promo-vin">LGXCE4CC3T2082152 &middot; Sprout Green</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 24.680</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 23.881</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 799</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="promo-card dm">
+      <div class="promo-top">
+        <div class="model-name">Shark GS</div>
+        <div class="promo-vin">LPE19W2A9TF128902 &middot; Obsidian Black</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 57.530</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 56.031</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 1.499</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="promo-card dm">
+      <div class="promo-top">
+        <div class="model-name">Shark GS</div>
+        <div class="promo-vin">LPE19W2AXTF128911 &middot; Obsidian Black</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 57.530</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 56.031</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 1.499</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="promo-card dm">
+      <div class="promo-top">
+        <div class="model-name">Shark GS</div>
+        <div class="promo-vin">LPE19W2A9TF129029 &middot; PALLAS WHITE</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 57.530</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 56.031</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 1.499</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="promo-card dm">
+      <div class="promo-top">
+        <div class="model-name">Song Pro GS</div>
+        <div class="promo-vin">LC0C74C49T5040037 &middot; Time Grey</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 36.930</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 35.880</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 1.050</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="promo-card dm">
+      <div class="promo-top">
+        <div class="model-name">Song Pro GL</div>
+        <div class="promo-vin">LC0C74C4XT5073761 &middot; Obsidian Black</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 34.300</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 32.582</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 1.718</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="promo-card dm">
+      <div class="promo-top">
+        <div class="model-name">Song Pro GL</div>
+        <div class="promo-vin">LC0C74C49T5038337 &middot; Snow White</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 34.300</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 32.582</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 1.718</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="promo-card dm">
+      <div class="promo-top">
+        <div class="model-name">Song Pro GL</div>
+        <div class="promo-vin">LC0C74C43T5038317 &middot; Snow White</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 34.300</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 32.582</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 1.718</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="promo-card ev">
+      <div class="promo-top">
+        <div class="model-name">Yuan Pro GS</div>
+        <div class="promo-vin">LC0CE4CB3T4037288 &middot; Malachite Darkcyan</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 30.371</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 29.752</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 619</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="promo-card ev">
+      <div class="promo-top">
+        <div class="model-name">Yuan Pro GS</div>
+        <div class="promo-vin">LC0CE4CB3T4036416 &middot; Skiing White</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 30.371</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 29.752</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 619</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="promo-card ev">
+      <div class="promo-top">
+        <div class="model-name">Yuan Pro GS</div>
+        <div class="promo-vin">LC0CE4CB7T4036824 &middot; Time Grey</div>
+      </div>
+      <div class="promo-price-row">
+        <div class="promo-old">Piso <s>USD 30.371</s></div>
+        <div class="promo-new">
+          <div class="promo-new-val">USD 29.752</div>
+          <div class="promo-ahorro">Ahorro vs piso: USD 619</div>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="accesorios">
-    <p class="section-title-accesorios">Accesorios</p>
+    <h2>Accesorios</h2>
     <div class="accesorios-card">
-      <table>
-        <thead>
-          <tr><th>Accesorio</th><th class="right">Precio</th></tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Cargador Portátil 220V</td>
-            <td class="right "><span class="incluido-badge">Incluido</span></td>
-          </tr>
-          <tr>
-            <td>Cargador Monofásico 7kWh</td>
-            <td class="right "><span class="incluido-badge">Incluido</span></td>
-          </tr>
-          <tr>
-            <td>Cargador Portátil 220V (adicional)</td>
-            <td class="right precio">USD 600</td>
-          </tr>
-          <tr>
-            <td>Cargador Trifásico 22kWh</td>
-            <td class="right precio">USD 1.400</td>
-          </tr>
-          <tr>
-            <td>Polarizado</td>
-            <td class="right precio">USD 120</td>
-          </tr>
-          <tr>
-            <td>Tuercas Antirrobo</td>
-            <td class="right precio">USD 100</td>
-          </tr>
-          <tr>
-            <td>Cable Macho / Macho</td>
-            <td class="right precio">USD 367</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  
-  <div class="promo-section">
-    <div class="promo-header">
-      <h2>Vehículos en Promoción</h2>
-      <p class="promo-lead">Unidades con precio especial por VIN. Válido según condiciones vigentes.</p>
-    </div>
-    <div class="price-table-wrap">
-      <table class="price-table promo-table">
-        <thead>
-          <tr>
-            <th class="col-nombre" style="text-align:left">Modelo</th>
-            <th>VIN / Chasis</th>
-            <th>Color</th>
-            <th class="lleno-cell">Lleno</th>
-            <th class="web-cell">Web</th>
-            <th class="piso-cell">Piso Venta</th>
-            <th class="precio-promo-head">Promoción</th>
-          </tr>
-        </thead>
-        <tbody>
-      <tr class="ev">
-        <td class="col-modelo-promo">
-          <span class="model-name">Dolphin Mini GL</span>
-          <span class="model-tag ev">● Eléctrico</span>
-        </td>
-        <td class="vin-cell">LGXCE4CC9T2077814</td>
-        <td class="color-cell">Apricity White</td>
-        <td class="lleno-ref">USD 25.350</td>
-        <td class="web-ref">USD 24.150</td>
-        <td class="piso-ref">USD 23.011</td>
-        <td class="precio-promo">USD 21.992 <span class="promo-ahorro">Ahorro vs piso: USD 1.019</span></td>
-      </tr>
-      <tr class="ev">
-        <td class="col-modelo-promo">
-          <span class="model-name">Dolphin Mini GL</span>
-          <span class="model-tag ev">● Eléctrico</span>
-        </td>
-        <td class="vin-cell">LGXCE4CC2T2077816</td>
-        <td class="color-cell">Apricity White</td>
-        <td class="lleno-ref">USD 25.350</td>
-        <td class="web-ref">USD 24.150</td>
-        <td class="piso-ref">USD 23.011</td>
-        <td class="precio-promo">USD 21.992 <span class="promo-ahorro">Ahorro vs piso: USD 1.019</span></td>
-      </tr>
-      <tr class="ev">
-        <td class="col-modelo-promo">
-          <span class="model-name">Dolphin Mini GL</span>
-          <span class="model-tag ev">● Eléctrico</span>
-        </td>
-        <td class="vin-cell">LGXCE4CC2T2077816</td>
-        <td class="color-cell">Obsidian Black</td>
-        <td class="lleno-ref">USD 25.350</td>
-        <td class="web-ref">USD 24.150</td>
-        <td class="piso-ref">USD 23.011</td>
-        <td class="precio-promo">USD 22.232 <span class="promo-ahorro">Ahorro vs piso: USD 779</span></td>
-      </tr>
-      <tr class="ev">
-        <td class="col-modelo-promo">
-          <span class="model-name">Dolphin Mini GL</span>
-          <span class="model-tag ev">● Eléctrico</span>
-        </td>
-        <td class="vin-cell">LGXCE4CC8T2077805</td>
-        <td class="color-cell">Obsidian Black</td>
-        <td class="lleno-ref">USD 25.350</td>
-        <td class="web-ref">USD 24.150</td>
-        <td class="piso-ref">USD 23.011</td>
-        <td class="precio-promo">USD 22.232 <span class="promo-ahorro">Ahorro vs piso: USD 779</span></td>
-      </tr>
-      <tr class="ev">
-        <td class="col-modelo-promo">
-          <span class="model-name">Dolphin Mini GS</span>
-          <span class="model-tag ev">● Eléctrico</span>
-        </td>
-        <td class="vin-cell">LGXCE4CC6T2081982</td>
-        <td class="color-cell">Obsidian Black</td>
-        <td class="lleno-ref">USD 26.380</td>
-        <td class="web-ref">USD 25.380</td>
-        <td class="piso-ref">USD 24.680</td>
-        <td class="precio-promo">USD 24.130 <span class="promo-ahorro">Ahorro vs piso: USD 550</span></td>
-      </tr>
-      <tr class="ev">
-        <td class="col-modelo-promo">
-          <span class="model-name">Dolphin Mini GS</span>
-          <span class="model-tag ev">● Eléctrico</span>
-        </td>
-        <td class="vin-cell">LGXCE4CC4T2082077</td>
-        <td class="color-cell">Sprout Green</td>
-        <td class="lleno-ref">USD 26.380</td>
-        <td class="web-ref">USD 25.380</td>
-        <td class="piso-ref">USD 24.680</td>
-        <td class="precio-promo">USD 24.130 <span class="promo-ahorro">Ahorro vs piso: USD 550</span></td>
-      </tr>
-      <tr class="ev">
-        <td class="col-modelo-promo">
-          <span class="model-name">Dolphin Mini GS</span>
-          <span class="model-tag ev">● Eléctrico</span>
-        </td>
-        <td class="vin-cell">LGXCE4CC3T2082152</td>
-        <td class="color-cell">Sprout Green</td>
-        <td class="lleno-ref">USD 26.380</td>
-        <td class="web-ref">USD 25.380</td>
-        <td class="piso-ref">USD 24.680</td>
-        <td class="precio-promo">USD 23.881 <span class="promo-ahorro">Ahorro vs piso: USD 799</span></td>
-      </tr>
-      <tr class="dm">
-        <td class="col-modelo-promo">
-          <span class="model-name">Shark GS</span>
-          <span class="model-tag dm">● Híbrido</span>
-        </td>
-        <td class="vin-cell">LPE19W2A9TF128902</td>
-        <td class="color-cell">Obsidian Black</td>
-        <td class="lleno-ref">USD 62.630</td>
-        <td class="web-ref">USD 59.630</td>
-        <td class="piso-ref">USD 57.530</td>
-        <td class="precio-promo">USD 56.031 <span class="promo-ahorro">Ahorro vs piso: USD 1.499</span></td>
-      </tr>
-      <tr class="dm">
-        <td class="col-modelo-promo">
-          <span class="model-name">Shark GS</span>
-          <span class="model-tag dm">● Híbrido</span>
-        </td>
-        <td class="vin-cell">LPE19W2AXTF128911</td>
-        <td class="color-cell">Obsidian Black</td>
-        <td class="lleno-ref">USD 62.630</td>
-        <td class="web-ref">USD 59.630</td>
-        <td class="piso-ref">USD 57.530</td>
-        <td class="precio-promo">USD 56.031 <span class="promo-ahorro">Ahorro vs piso: USD 1.499</span></td>
-      </tr>
-      <tr class="dm">
-        <td class="col-modelo-promo">
-          <span class="model-name">Shark GS</span>
-          <span class="model-tag dm">● Híbrido</span>
-        </td>
-        <td class="vin-cell">LPE19W2A9TF129029</td>
-        <td class="color-cell">PALLAS WHITE</td>
-        <td class="lleno-ref">USD 62.630</td>
-        <td class="web-ref">USD 59.630</td>
-        <td class="piso-ref">USD 57.530</td>
-        <td class="precio-promo">USD 56.031 <span class="promo-ahorro">Ahorro vs piso: USD 1.499</span></td>
-      </tr>
-      <tr class="dm">
-        <td class="col-modelo-promo">
-          <span class="model-name">Song Pro GS</span>
-          <span class="model-tag dm">● Híbrido</span>
-        </td>
-        <td class="vin-cell">LC0C74C49T5040037</td>
-        <td class="color-cell">Time Grey</td>
-        <td class="lleno-ref">USD 39.255</td>
-        <td class="web-ref">USD 37.755</td>
-        <td class="piso-ref">USD 36.930</td>
-        <td class="precio-promo">USD 35.880 <span class="promo-ahorro">Ahorro vs piso: USD 1.050</span></td>
-      </tr>
-      <tr class="dm">
-        <td class="col-modelo-promo">
-          <span class="model-name">Song Pro GL</span>
-          <span class="model-tag dm">● Híbrido</span>
-        </td>
-        <td class="vin-cell">LC0C74C4XT5073761</td>
-        <td class="color-cell">Obsidian Black</td>
-        <td class="lleno-ref">USD 37.195</td>
-        <td class="web-ref">USD 35.066</td>
-        <td class="piso-ref">USD 34.300</td>
-        <td class="precio-promo">USD 32.582 <span class="promo-ahorro">Ahorro vs piso: USD 1.718</span></td>
-      </tr>
-      <tr class="dm">
-        <td class="col-modelo-promo">
-          <span class="model-name">Song Pro GL</span>
-          <span class="model-tag dm">● Híbrido</span>
-        </td>
-        <td class="vin-cell">LC0C74C49T5038337</td>
-        <td class="color-cell">Snow White</td>
-        <td class="lleno-ref">USD 37.195</td>
-        <td class="web-ref">USD 35.066</td>
-        <td class="piso-ref">USD 34.300</td>
-        <td class="precio-promo">USD 32.582 <span class="promo-ahorro">Ahorro vs piso: USD 1.718</span></td>
-      </tr>
-      <tr class="dm">
-        <td class="col-modelo-promo">
-          <span class="model-name">Song Pro GL</span>
-          <span class="model-tag dm">● Híbrido</span>
-        </td>
-        <td class="vin-cell">LC0C74C43T5038317</td>
-        <td class="color-cell">Snow White</td>
-        <td class="lleno-ref">USD 37.195</td>
-        <td class="web-ref">USD 35.066</td>
-        <td class="piso-ref">USD 34.300</td>
-        <td class="precio-promo">USD 32.582 <span class="promo-ahorro">Ahorro vs piso: USD 1.718</span></td>
-      </tr>
-      <tr class="ev">
-        <td class="col-modelo-promo">
-          <span class="model-name">Yuan Pro GS</span>
-          <span class="model-tag ev">● Eléctrico</span>
-        </td>
-        <td class="vin-cell">LC0CE4CB3T4037288</td>
-        <td class="color-cell">Malachite Darkcyan</td>
-        <td class="lleno-ref">USD 33.590</td>
-        <td class="web-ref">USD 31.671</td>
-        <td class="piso-ref">USD 30.371</td>
-        <td class="precio-promo">USD 29.752 <span class="promo-ahorro">Ahorro vs piso: USD 619</span></td>
-      </tr>
-      <tr class="ev">
-        <td class="col-modelo-promo">
-          <span class="model-name">Yuan Pro GS</span>
-          <span class="model-tag ev">● Eléctrico</span>
-        </td>
-        <td class="vin-cell">LC0CE4CB3T4036416</td>
-        <td class="color-cell">Skiing White</td>
-        <td class="lleno-ref">USD 33.590</td>
-        <td class="web-ref">USD 31.671</td>
-        <td class="piso-ref">USD 30.371</td>
-        <td class="precio-promo">USD 29.752 <span class="promo-ahorro">Ahorro vs piso: USD 619</span></td>
-      </tr>
-      <tr class="ev">
-        <td class="col-modelo-promo">
-          <span class="model-name">Yuan Pro GS</span>
-          <span class="model-tag ev">● Eléctrico</span>
-        </td>
-        <td class="vin-cell">LC0CE4CB7T4036824</td>
-        <td class="color-cell">Time Grey</td>
-        <td class="lleno-ref">USD 33.590</td>
-        <td class="web-ref">USD 31.671</td>
-        <td class="piso-ref">USD 30.371</td>
-        <td class="precio-promo">USD 29.752 <span class="promo-ahorro">Ahorro vs piso: USD 619</span></td>
-      </tr></tbody>
-      </table>
+      <div class="acc-row"><span>Cargador Portátil 220V</span><span class="acc-precio"><span class="incluido-badge">Incluido</span></span></div>
+      <div class="acc-row"><span>Cargador Monofásico 7kWh</span><span class="acc-precio"><span class="incluido-badge">Incluido</span></span></div>
+      <div class="acc-row"><span>Cargador Portátil 220V (adicional)</span><span class="acc-precio">USD 600</span></div>
+      <div class="acc-row"><span>Cargador Trifásico 22kWh</span><span class="acc-precio">USD 1.400</span></div>
+      <div class="acc-row"><span>Polarizado</span><span class="acc-precio">USD 120</span></div>
+      <div class="acc-row"><span>Tuercas Antirrobo</span><span class="acc-precio">USD 100</span></div>
+      <div class="acc-row"><span>Cable Macho / Macho</span><span class="acc-precio">USD 367</span></div>
     </div>
   </div>
 
   <div class="footer">
-    <div class="footer-note">Documento confidencial de uso interno gerencial. El piso de gerencia es el límite mínimo absoluto de negociación y no debe comunicarse al equipo de ventas.</div>
-    <div class="footer-brand">BYD Yacopini · Gerencia de Concesionario</div>
+    Documento confidencial de uso interno gerencial. El piso de gerencia es el límite mínimo absoluto de negociación y no debe comunicarse al equipo de ventas.<br>
+    BYD Yacopini &middot; Gerencia de Concesionario
   </div>
-
 </div>
+
+<a id="hubBackBtn" href="./index.html" style="position:fixed;bottom:18px;left:18px;z-index:999999;
+  width:44px;height:44px;border-radius:50%;background:#0A0A0A;color:#fff;display:flex;
+  align-items:center;justify-content:center;text-decoration:none;font-family:Arial,sans-serif;
+  font-size:20px;box-shadow:0 4px 14px rgba(0,0,0,0.3);">&larr;</a>
 </body>
 </html>
