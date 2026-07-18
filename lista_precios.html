@@ -98,10 +98,28 @@
   .promo-head p{ font-size:11px; color:var(--gris-medio); margin:0 0 12px; }
   .promo-card{
     background:var(--blanco); border-radius:12px; border:1px solid var(--gris-claro);
-    padding:12px 14px; margin-bottom:9px; border-left:4px solid var(--gris-claro);
+    padding:12px 40px 12px 14px; margin-bottom:9px; border-left:4px solid var(--gris-claro);
+    position:relative;
   }
   .promo-card.ev{ border-left-color:var(--azul-ev); }
   .promo-card.dm{ border-left-color:var(--verde-dm); }
+  .promo-del{
+    position:absolute; top:10px; right:10px; width:26px; height:26px; border-radius:50%;
+    background:var(--gris-fondo); border:1px solid var(--gris-claro); color:var(--gris-oscuro);
+    font-size:15px; font-weight:700; line-height:1; display:flex; align-items:center;
+    justify-content:center; cursor:pointer; padding:0;
+  }
+  .promo-del:active{ background:var(--rojo-fondo); color:var(--rojo-piso); border-color:var(--rojo-piso); }
+  .promo-restore{
+    display:none; text-align:center; font-size:11.5px; color:var(--gris-medio);
+    padding:10px; margin-top:2px; cursor:pointer; text-decoration:underline; text-underline-offset:2px;
+  }
+  .promo-restore.show{ display:block; }
+  .promo-empty{
+    display:none; text-align:center; font-size:12px; color:var(--gris-medio);
+    padding:16px 0;
+  }
+  .promo-empty.show{ display:block; }
   .promo-top{ margin-bottom:8px; }
   .promo-vin{ font-size:10.5px; color:var(--gris-medio); margin-top:2px; }
   .promo-price-row{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
@@ -435,7 +453,8 @@
       <p>Unidades con precio especial por VIN. Válido según condiciones vigentes.</p>
     </div>
 
-    <div class="promo-card ev">
+    <div class="promo-card ev" data-vin="LGXCE4CC9T2077814 &middot; Apricity White">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Dolphin Mini GL</div>
         <div class="promo-vin">LGXCE4CC9T2077814 &middot; Apricity White</div>
@@ -449,7 +468,8 @@
       </div>
     </div>
 
-    <div class="promo-card ev">
+    <div class="promo-card ev" data-vin="LGXCE4CC2T2077816 &middot; Apricity White">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Dolphin Mini GL</div>
         <div class="promo-vin">LGXCE4CC2T2077816 &middot; Apricity White</div>
@@ -463,7 +483,8 @@
       </div>
     </div>
 
-    <div class="promo-card ev">
+    <div class="promo-card ev" data-vin="LGXCE4CC2T2077816 &middot; Obsidian Black">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Dolphin Mini GL</div>
         <div class="promo-vin">LGXCE4CC2T2077816 &middot; Obsidian Black</div>
@@ -477,7 +498,8 @@
       </div>
     </div>
 
-    <div class="promo-card ev">
+    <div class="promo-card ev" data-vin="LGXCE4CC8T2077805 &middot; Obsidian Black">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Dolphin Mini GL</div>
         <div class="promo-vin">LGXCE4CC8T2077805 &middot; Obsidian Black</div>
@@ -491,7 +513,8 @@
       </div>
     </div>
 
-    <div class="promo-card ev">
+    <div class="promo-card ev" data-vin="LGXCE4CC6T2081982 &middot; Obsidian Black">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Dolphin Mini GS</div>
         <div class="promo-vin">LGXCE4CC6T2081982 &middot; Obsidian Black</div>
@@ -505,7 +528,8 @@
       </div>
     </div>
 
-    <div class="promo-card ev">
+    <div class="promo-card ev" data-vin="LGXCE4CC4T2082077 &middot; Sprout Green">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Dolphin Mini GS</div>
         <div class="promo-vin">LGXCE4CC4T2082077 &middot; Sprout Green</div>
@@ -519,7 +543,8 @@
       </div>
     </div>
 
-    <div class="promo-card ev">
+    <div class="promo-card ev" data-vin="LGXCE4CC3T2082152 &middot; Sprout Green">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Dolphin Mini GS</div>
         <div class="promo-vin">LGXCE4CC3T2082152 &middot; Sprout Green</div>
@@ -533,7 +558,8 @@
       </div>
     </div>
 
-    <div class="promo-card dm">
+    <div class="promo-card dm" data-vin="LPE19W2A9TF128902 &middot; Obsidian Black">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Shark GS</div>
         <div class="promo-vin">LPE19W2A9TF128902 &middot; Obsidian Black</div>
@@ -547,7 +573,8 @@
       </div>
     </div>
 
-    <div class="promo-card dm">
+    <div class="promo-card dm" data-vin="LPE19W2AXTF128911 &middot; Obsidian Black">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Shark GS</div>
         <div class="promo-vin">LPE19W2AXTF128911 &middot; Obsidian Black</div>
@@ -561,7 +588,8 @@
       </div>
     </div>
 
-    <div class="promo-card dm">
+    <div class="promo-card dm" data-vin="LPE19W2A9TF129029 &middot; PALLAS WHITE">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Shark GS</div>
         <div class="promo-vin">LPE19W2A9TF129029 &middot; PALLAS WHITE</div>
@@ -575,7 +603,8 @@
       </div>
     </div>
 
-    <div class="promo-card dm">
+    <div class="promo-card dm" data-vin="LC0C74C49T5040037 &middot; Time Grey">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Song Pro GS</div>
         <div class="promo-vin">LC0C74C49T5040037 &middot; Time Grey</div>
@@ -589,7 +618,8 @@
       </div>
     </div>
 
-    <div class="promo-card dm">
+    <div class="promo-card dm" data-vin="LC0C74C4XT5073761 &middot; Obsidian Black">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Song Pro GL</div>
         <div class="promo-vin">LC0C74C4XT5073761 &middot; Obsidian Black</div>
@@ -603,7 +633,8 @@
       </div>
     </div>
 
-    <div class="promo-card dm">
+    <div class="promo-card dm" data-vin="LC0C74C49T5038337 &middot; Snow White">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Song Pro GL</div>
         <div class="promo-vin">LC0C74C49T5038337 &middot; Snow White</div>
@@ -617,7 +648,8 @@
       </div>
     </div>
 
-    <div class="promo-card dm">
+    <div class="promo-card dm" data-vin="LC0C74C43T5038317 &middot; Snow White">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Song Pro GL</div>
         <div class="promo-vin">LC0C74C43T5038317 &middot; Snow White</div>
@@ -631,7 +663,8 @@
       </div>
     </div>
 
-    <div class="promo-card ev">
+    <div class="promo-card ev" data-vin="LC0CE4CB3T4037288 &middot; Malachite Darkcyan">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Yuan Pro GS</div>
         <div class="promo-vin">LC0CE4CB3T4037288 &middot; Malachite Darkcyan</div>
@@ -645,7 +678,8 @@
       </div>
     </div>
 
-    <div class="promo-card ev">
+    <div class="promo-card ev" data-vin="LC0CE4CB3T4036416 &middot; Skiing White">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Yuan Pro GS</div>
         <div class="promo-vin">LC0CE4CB3T4036416 &middot; Skiing White</div>
@@ -659,7 +693,8 @@
       </div>
     </div>
 
-    <div class="promo-card ev">
+    <div class="promo-card ev" data-vin="LC0CE4CB7T4036824 &middot; Time Grey">
+      <button type="button" class="promo-del" aria-label="Marcar como vendido">&times;</button>
       <div class="promo-top">
         <div class="model-name">Yuan Pro GS</div>
         <div class="promo-vin">LC0CE4CB7T4036824 &middot; Time Grey</div>
@@ -672,6 +707,8 @@
         </div>
       </div>
     </div>
+    <div class="promo-empty" id="promoEmptyMsg">No hay vehículos en promoción visibles.</div>
+    <div class="promo-restore" id="promoRestoreBtn">Restaurar <span id="promoHiddenCount">0</span> vendido(s) oculto(s)</div>
   </div>
 
   <div class="accesorios">
@@ -697,5 +734,70 @@
   width:44px;height:44px;border-radius:50%;background:#0A0A0A;color:#fff;display:flex;
   align-items:center;justify-content:center;text-decoration:none;font-family:Arial,sans-serif;
   font-size:20px;box-shadow:0 4px 14px rgba(0,0,0,0.3);">&larr;</a>
+
+<script>
+(function(){
+  var KEY = 'byd_lista_precios_vins_ocultos';
+  function getHidden(){
+    try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch(e){ return []; }
+  }
+  function setHidden(arr){
+    localStorage.setItem(KEY, JSON.stringify(arr));
+  }
+  function applyHidden(){
+    var hidden = getHidden();
+    var cards = document.querySelectorAll('.promo-card');
+    var visibleCount = 0;
+    cards.forEach(function(card){
+      var vin = card.getAttribute('data-vin');
+      if (hidden.indexOf(vin) !== -1) {
+        card.style.display = 'none';
+      } else {
+        card.style.display = '';
+        visibleCount++;
+      }
+    });
+    var restoreBtn = document.getElementById('promoRestoreBtn');
+    var countEl = document.getElementById('promoHiddenCount');
+    var emptyMsg = document.getElementById('promoEmptyMsg');
+    if (restoreBtn && countEl) {
+      if (hidden.length > 0) {
+        countEl.textContent = hidden.length;
+        restoreBtn.classList.add('show');
+      } else {
+        restoreBtn.classList.remove('show');
+      }
+    }
+    if (emptyMsg) {
+      if (cards.length > 0 && visibleCount === 0) {
+        emptyMsg.classList.add('show');
+      } else {
+        emptyMsg.classList.remove('show');
+      }
+    }
+  }
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest && e.target.closest('.promo-del');
+    if (btn) {
+      var card = btn.closest('.promo-card');
+      var vin = card && card.getAttribute('data-vin');
+      if (vin) {
+        var hidden = getHidden();
+        if (hidden.indexOf(vin) === -1) {
+          hidden.push(vin);
+          setHidden(hidden);
+          applyHidden();
+        }
+      }
+      return;
+    }
+    if (e.target && e.target.id === 'promoRestoreBtn') {
+      setHidden([]);
+      applyHidden();
+    }
+  });
+  applyHidden();
+})();
+</script>
 </body>
 </html>
