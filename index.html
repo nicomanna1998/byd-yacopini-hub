@@ -721,11 +721,8 @@
         </div>
 
         <div class="tcard">
-          <h2>Vehículos entregados (mes)</h2>
-          <table class="data-table" id="entregasTable">
-            <thead><tr><th>Fecha</th><th>Modelo</th><th>Vendedor</th><th>Sucursal</th></tr></thead>
-            <tbody></tbody>
-          </table>
+          <h2>Vehículos entregados por modelo (mes)</h2>
+          <div id="entregasModelo"></div>
         </div>
       </div>
 
@@ -1006,14 +1003,12 @@
     document.getElementById('entregasSucursalBars').innerHTML = sucArr.length ?
       barList(sucArr, 'morado') : '<p class="note">Sin entregas para este filtro.</p>';
 
-    var tbody = document.querySelector('#entregasTable tbody');
-    var ordenado = rows.slice().sort(function(a,b){
-      var pa = a.d.split('/').reverse().join(''), pb = b.d.split('/').reverse().join('');
-      return pb.localeCompare(pa);
-    });
-    tbody.innerHTML = ordenado.length ? ordenado.map(function(r){
-      return '<tr><td>' + r.d + '</td><td>' + fixCaps(r.m) + '</td><td>' + r.v + '</td><td>' + r.suc + '</td></tr>';
-    }).join('') : '<tr><td colspan="4" class="note">Sin entregas para este filtro.</td></tr>';
+    var modeloMap = {};
+    rows.forEach(function(r){ modeloMap[r.m] = (modeloMap[r.m] || 0) + 1; });
+    var modeloArr = Object.keys(modeloMap).map(function(k){ return { n:k, c:modeloMap[k] }; })
+      .sort(function(a,b){ return b.c - a.c; });
+    document.getElementById('entregasModelo').innerHTML = modeloArr.length ?
+      barList(fixModelArr(modeloArr), 'verde') : '<p class="note">Sin entregas para este filtro.</p>';
   }
 
   function populateEntregasFilter(rows){
