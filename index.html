@@ -1069,29 +1069,55 @@
     llegados: {
       total: 55,
       detalle: [
-        {n:'Dolphin Mini EV GS', c:23}, {n:'Atto 2 DM-i GS', c:8}, {n:'Shark DMO GS', c:8},
-        {n:'Song Pro DM-i GS', c:8}, {n:'Seal U', c:4}, {n:'Song Pro DM-i GL', c:2},
-        {n:'Yuan Pro EVGS C/ADAS', c:1}, {n:'Dolphin Mini 4 Seats EU', c:1}
+        { modelo:'Dolphin Mini EV GS', total:23, variantes:[{color:'Apricity White', c:21},{color:'Obsidian Black', c:2}] },
+        { modelo:'Atto 2 DM-i GS', total:8, variantes:[{color:'Time Grey', c:3},{color:'Skiing White', c:2},{color:'Malachite Darkcyan', c:2},{color:'Obsidian Black', c:1}] },
+        { modelo:'Shark DMO GS', total:8, variantes:[{color:'Black', c:6},{color:'Obsidian Black', c:2}] },
+        { modelo:'Song Pro DM-i GS', total:8, variantes:[{color:'Snow White', c:4},{color:'Atlantis Blue', c:2},{color:'Time Grey', c:1},{color:'Obsidian Black', c:1}] },
+        { modelo:'Seal U', total:4, variantes:[{color:'Obsidian Black', c:2},{color:'Time Grey', c:1},{color:'Smoke Gray', c:1}] },
+        { modelo:'Song Pro DM-i GL', total:2, variantes:[{color:'Atlantis Blue', c:1},{color:'Snow White', c:1}] },
+        { modelo:'Yuan Pro EVGS C/ADAS', total:1, variantes:[{color:'Obsidian Black', c:1}] },
+        { modelo:'Dolphin Mini 4 Seats EU', total:1, variantes:[{color:'Sprout Green', c:1}] }
       ]
     },
     esperando: {
       total: 7,
       detalle: [
-        {n:'Song Pro DM-i GS', c:4}, {n:'Atto 2 DM-i GS', c:3}
+        { modelo:'Song Pro DM-i GS', total:4, variantes:[{color:'Snow White', c:3},{color:'Time Grey', c:1}] },
+        { modelo:'Atto 2 DM-i GS', total:3, variantes:[{color:'Time Grey', c:3}] }
       ]
     },
     sinPagar: {
       total: 149,
       detalle: [
-        {n:'Dolphin Mini EV GS', c:30}, {n:'Yuan Pro EVGS C/ADAS', c:26}, {n:'Song Pro DM-i GL', c:25},
-        {n:'Song Pro DM-i GS', c:24}, {n:'Shark DMO GS', c:22}, {n:'Sin modelo cargado', c:15},
-        {n:'Dolphin Mini EV GL', c:7}
+        { modelo:'Dolphin Mini EV GS', total:30, variantes:[{color:'Obsidian Black', c:13},{color:'Apricity White', c:9},{color:'Sprout Green', c:8}] },
+        { modelo:'Yuan Pro EVGS C/ADAS', total:26, variantes:[{color:'Time Grey', c:14},{color:'Skiing White', c:8},{color:'Malachite Darkcyan', c:4}] },
+        { modelo:'Song Pro DM-i GL', total:25, variantes:[{color:'Time Grey', c:14},{color:'Snow White', c:8},{color:'Atlantis Blue', c:2},{color:'Obsidian Black', c:1}] },
+        { modelo:'Song Pro DM-i GS', total:24, variantes:[{color:'Time Grey', c:18},{color:'Snow White', c:5},{color:'Obsidian Black', c:1}] },
+        { modelo:'Shark DMO GS', total:22, variantes:[{color:'Pallas White', c:8},{color:'Black', c:7},{color:'Obsidian Black', c:7}] },
+        { modelo:'Sin modelo cargado', total:15, variantes:[{color:'Sin color cargado', c:15}] },
+        { modelo:'Dolphin Mini EV GL', total:7, variantes:[{color:'Apricity White', c:5},{color:'Obsidian Black', c:2}] }
       ]
     }
   };
 
+  function renderStockColorModelDetalle(arr, colorClass){
+    if (!arr || !arr.length) return '<p class="note">Sin datos.</p>';
+    var max = Math.max.apply(null, arr.map(function(x){ return x.total; }));
+    return arr.map(function(m){
+      var pct = Math.max(4, Math.round((m.total / max) * 100));
+      var variantesHtml = (m.variantes || []).map(function(v){
+        return '<div class="variant-row"><span class="vname">' + fixCaps(v.color) + '</span><span class="vcount">' + v.c + '</span></div>';
+      }).join('');
+      return '<div class="model-group">' +
+        '<div class="bar-row"><div class="top"><span class="name">' + fixCaps(m.modelo) + '</span><span class="count">' + m.total + '</span></div>' +
+        '<div class="bar-track"><div class="bar-fill ' + (colorClass||'') + '" style="width:' + pct + '%"></div></div></div>' +
+        '<div class="stock-variantes">' + variantesHtml + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
   function renderStockColorBlock(elId, noteElId, bloque, colorClass, etiqueta){
-    document.getElementById(elId).innerHTML = barList(fixModelArr(bloque.detalle), colorClass);
+    document.getElementById(elId).innerHTML = renderStockColorModelDetalle(bloque.detalle, colorClass);
     document.getElementById(noteElId).innerHTML =
       'Total: <strong>' + bloque.total + '</strong> unidades. ' + etiqueta +
       ' Foto manual de la planilla de Stock al ' + STOCK_COLOR_SNAPSHOT.fecha + ' — no se actualiza sola todavía.';
