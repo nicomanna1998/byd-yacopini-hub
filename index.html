@@ -693,6 +693,24 @@
         </div>
 
         <div class="tcard">
+          <h2>Autos llegados al concesionario</h2>
+          <div id="stockLlegados"></div>
+          <p class="note" id="stockLlegadosNote"></p>
+        </div>
+
+        <div class="tcard">
+          <h2>Autos pagados, esperando que lleguen</h2>
+          <div id="stockEsperando"></div>
+          <p class="note" id="stockEsperandoNote"></p>
+        </div>
+
+        <div class="tcard">
+          <h2>Autos todavía sin pagar</h2>
+          <div id="stockSinPagar"></div>
+          <p class="note" id="stockSinPagarNote"></p>
+        </div>
+
+        <div class="tcard">
           <h2>Deudas — vehículos por modelo y color (mes)</h2>
           <div id="deudasPorModeloColor"></div>
           <p class="note">Son operaciones ya cerradas este mes que todavía no tienen VIN asignado del stock físico.</p>
@@ -1040,6 +1058,45 @@
 
   document.getElementById('entregasVendedorFilter').addEventListener('change', renderEntregasView);
 
+  // ---- Stock por color de fila (llegados / pagados esperando / sin pagar) ----
+  // Estos datos NO vienen del Apps Script en vivo: en la planilla de Stock los
+  // colores de fila los pintan a mano (celeste = llegó, amarillo = pagado y
+  // esperando, blanco = todavía sin pagar; verde = entregado, que ya está
+  // cubierto por el reporte de Entregas y por eso no se repite acá). Se carga
+  // como una foto puntual y hay que actualizarla a mano cada tanto.
+  var STOCK_COLOR_SNAPSHOT = {
+    fecha: '19/07/2026',
+    llegados: {
+      total: 55,
+      detalle: [
+        {n:'Dolphin Mini EV GS', c:23}, {n:'Atto 2 DM-i GS', c:8}, {n:'Shark DMO GS', c:8},
+        {n:'Song Pro DM-i GS', c:8}, {n:'Seal U', c:4}, {n:'Song Pro DM-i GL', c:2},
+        {n:'Yuan Pro EVGS C/ADAS', c:1}, {n:'Dolphin Mini 4 Seats EU', c:1}
+      ]
+    },
+    esperando: {
+      total: 7,
+      detalle: [
+        {n:'Song Pro DM-i GS', c:4}, {n:'Atto 2 DM-i GS', c:3}
+      ]
+    },
+    sinPagar: {
+      total: 149,
+      detalle: [
+        {n:'Dolphin Mini EV GS', c:30}, {n:'Yuan Pro EVGS C/ADAS', c:26}, {n:'Song Pro DM-i GL', c:25},
+        {n:'Song Pro DM-i GS', c:24}, {n:'Shark DMO GS', c:22}, {n:'Sin modelo cargado', c:15},
+        {n:'Dolphin Mini EV GL', c:7}
+      ]
+    }
+  };
+
+  function renderStockColorBlock(elId, noteElId, bloque, colorClass, etiqueta){
+    document.getElementById(elId).innerHTML = barList(fixModelArr(bloque.detalle), colorClass);
+    document.getElementById(noteElId).innerHTML =
+      'Total: <strong>' + bloque.total + '</strong> unidades. ' + etiqueta +
+      ' Foto manual de la planilla de Stock al ' + STOCK_COLOR_SNAPSHOT.fecha + ' — no se actualiza sola todavía.';
+  }
+
   // ---- Snapshot de referencia (se usa si todavía no está conectado el Apps Script,
   // o si por algún motivo falla la conexión en vivo) ----
   var FALLBACK_DATA = {
@@ -1200,6 +1257,10 @@
     document.getElementById('deudasPorModeloColor').innerHTML = (d.deudasPorModeloColor && d.deudasPorModeloColor.length) ?
       barList(d.deudasPorModeloColor.map(function(x){ return { n: fixCaps(x.n), c: x.c }; }), 'rojo') :
       '<p class="note">Sin deudas este mes.</p>';
+
+    renderStockColorBlock('stockLlegados', 'stockLlegadosNote', STOCK_COLOR_SNAPSHOT.llegados, '', 'Ya están en el concesionario.');
+    renderStockColorBlock('stockEsperando', 'stockEsperandoNote', STOCK_COLOR_SNAPSHOT.esperando, 'ambar', 'Ya se pagaron, todavía no llegaron.');
+    renderStockColorBlock('stockSinPagar', 'stockSinPagarNote', STOCK_COLOR_SNAPSHOT.sinPagar, 'gris', 'Todavía no se pagaron.');
 
     // Entregas
     document.getElementById('kpiEntregasMes').textContent = d.entregasTotal;
