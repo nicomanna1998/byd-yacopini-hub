@@ -927,14 +927,8 @@
       var val = document.getElementById('bydGatePass').value;
       crypto.subtle.digest('SHA-256', new TextEncoder().encode(val)).then(function(buf){
         var hex = Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
-        if (hex === HASH) {
-          sessionStorage.setItem('bydGateOk','1');
-          unlock();
-        } else {
-          document.getElementById('bydGateError').style.display = 'block';
-          document.getElementById('bydGatePass').value = '';
-          document.getElementById('bydGatePass').focus();
-        }
+        if (hex === HASH) { sessionStorage.setItem('bydGateOk','1'); unlock(); }
+        else { document.getElementById('bydGateError').style.display = 'block'; document.getElementById('bydGatePass').value = ''; document.getElementById('bydGatePass').focus(); }
       });
     });
   }
