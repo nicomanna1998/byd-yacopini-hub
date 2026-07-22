@@ -1519,11 +1519,23 @@
         ];
     }
 
+    const IVA_INTERESES = 0.21; // IVA 21% sobre intereses, aplica a todos los créditos
+
     function cuotaFrancesa(monto, tnaPct, n){
         const i = (tnaPct/100) / 12;
         if(i === 0) return monto / n;
         const factor = (i * Math.pow(1+i, n)) / (Math.pow(1+i, n) - 1);
         return monto * factor;
+    }
+
+    // Retorna la cuota del MES 1 (la más alta y más conservadora) = cuota base + IVA sobre el primer interés.
+    // El IVA varía por cuota (a medida que el interés baja), pero mostramos la primera como referencia.
+    function cuotaMes1ConIVA(monto, tnaPct, n){
+        const i = (tnaPct/100) / 12;
+        const cuotaBase = cuotaFrancesa(monto, tnaPct, n);
+        const interesMes1 = monto * i;
+        const ivaMes1 = interesMes1 * IVA_INTERESES;
+        return cuotaBase + ivaMes1;
     }
 
     // ============ BBDD ============
@@ -1558,8 +1570,8 @@
                     </select>
                 </td>
                 <td><input class="cell-input" data-field="plazo" type="number" min="1" value="${c.plazo}" style="max-width:80px"></td>
-                <td><input class="cell-input" data-field="tna" type="number" step="0.01" min="0" value="${c.tna}" style="max-width:90px"></td>
-                <td><input class="cell-input" data-field="quebranto" type="number" step="0.01" min="0" value="${c.quebranto||0}" style="max-width:90px"></td>
+                <td><input class="cell-input" data-field="tna" type="number" step="0.1" min="0" value="${Number(c.tna).toFixed(1)}" style="max-width:90px"></td>
+                <td><input class="cell-input" data-field="quebranto" type="number" step="0.1" min="0" value="${Number(c.quebranto||0).toFixed(1)}" style="max-width:90px"></td>
                 <td><button class="row-delete" title="Eliminar fila">
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0l-1 14a2 2 0 01-2 2H7a2 2 0 01-2-2L4 6"/></svg>
                 </button></td>
@@ -1856,14 +1868,21 @@
         let added = 0, skipped = 0;
 
         lines.forEach(line=>{
-            const parts = line.split(/\t|,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(p=>p.trim().replace(/^"|"$/g,''));
+            // Si la línea tiene tabulaciones (pegado típico desde Excel/Sheets),
+            // se separa SOLO por tabulación, para no confundir una coma decimal
+            // (ej: TNA "14,9") con un separador de columna.
+            // Si no hay tabulaciones, se asume CSV con comas como separador.
+            const tieneTab = line.includes('\t');
+            const parts = tieneTab
+                ? line.split('\t').map(p=>p.trim().replace(/^"|"$/g,''))
+                : line.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(p=>p.trim().replace(/^"|"$/g,''));
             if(parts.length < 5) { skipped++; return; }
 
             const [banco, linea, modalidadRaw, plazoRaw, tnaRaw, quebrantoRaw] = parts;
             const modalidad = /uva/i.test(modalidadRaw) ? 'UVA' : 'FIJA';
             const plazo = parseInt(plazoRaw.replace(/[^\d]/g,''), 10);
-            const tna = parseFloat(tnaRaw.replace('%','').replace(',','.').replace(/[^\d.]/g,''));
-            const quebranto = quebrantoRaw ? parseFloat(quebrantoRaw.replace('%','').replace(',','.').replace(/[^\d.-]/g,'')) || 0 : 0;
+            const tna = parseFloat(tnaRaw.replace('%','').trim().replace(',','.').replace(/[^\d.]/g,''));
+            const quebranto = quebrantoRaw ? parseFloat(quebrantoRaw.replace('%','').trim().replace(',','.').replace(/[^\d.-]/g,'')) || 0 : 0;
 
             if(!banco || !linea || isNaN(plazo) || isNaN(tna)){ skipped++; return; }
 
@@ -2149,15 +2168,25 @@
             montoAFinanciar = montoIngresado / (1 - (credito.quebranto/100));
         }
 
-        const cuota = cuotaFrancesa(montoAFinanciar, credito.tna, credito.plazo);
-        const totalPagado = cuota * credito.plazo;
-        const totalIntereses = totalPagado - montoAFinanciar;
+        const i = (credito.tna/100) / 12;
+        const n = credito.plazo;
+        const cuotaBase = cuotaFrancesa(montoAFinanciar, credito.tna, n);
+        const cuota = cuotaMes1ConIVA(montoAFinanciar, credito.tna, n);
+
+        // Total pagado real = suma de cuotas base (fijas) + suma de todos los IVA sobre intereses
+        // La suma de intereses totales es: totalBase - montoAFinanciar
+        // La suma de IVA sobre todos los intereses es: IVA_INTERESES × (totalBase - montoAFinanciar)
+        const totalBase = cuotaBase * n;
+        const interesesTotales = totalBase - montoAFinanciar;
+        const ivaTotal = interesesTotales * IVA_INTERESES;
+        const totalPagado = totalBase + ivaTotal;
+        const totalIntereses = interesesTotales + ivaTotal; // intereses + IVA = costo financiero total
 
         cuotaEl.textContent = fmtMoney(cuota);
         cuotaEl.classList.remove('empty');
 
         badgeEl.style.display = 'inline-block';
-        badgeEl.textContent = 'TASA ' + (credito.modalidad === 'UVA' ? 'UVA' : 'FIJA');
+        badgeEl.textContent = 'TASA ' + (credito.modalidad === 'UVA' ? 'UVA' : 'FIJA') + ' + IVA';
         badgeEl.style.backgroundColor = credito.modalidad === 'UVA' ? 'var(--azul-ev)' : 'var(--carbon)';
 
         document.getElementById('lblTasa').textContent = credito.tna.toFixed(2) + '% TNA';
@@ -2180,9 +2209,7 @@
             desgloseEl.style.display = 'none';
         }
 
-        hintEl.textContent = credito.modalidad === 'UVA'
-            ? 'Crédito UVA: la cuota se ajusta mensualmente según la evolución del coeficiente UVA. El valor mostrado es la cuota inicial al valor UVA de hoy, sin proyección de inflación futura.'
-            : 'Crédito a tasa fija — sistema de amortización francés (cuota fija durante todo el plazo).';
+        hintEl.textContent = 'Se muestra la cuota del primer mes (la más alta). Incluye IVA 21% sobre intereses. El componente de intereses disminuye cada cuota, por lo que la cuota total decrece levemente a lo largo del plazo.';
 
         ultimaSimulacion = {
             banco: estado.banco,
@@ -2270,6 +2297,7 @@
 
     wireAutocompletarCuit('dat');
     wireAutocompletarCuit('dat-c');
+
 
     function renderResumenCredito(){
         const s = ultimaSimulacion;
@@ -2455,7 +2483,7 @@
             ? fmtMoney(sim.montoAFinanciar * (sim.quebranto/100))
             : 'Bonificado');
         field('6. Monto a Financiar', fmtMoney(sim.montoAFinanciar));
-        field('7. Cuota Mensual Estimada', fmtMoney(sim.cuota) + '  (TNA ' + sim.tna.toFixed(2) + '%)');
+        field('7. Cuota Mensual Estimada', fmtMoney(sim.cuota) + '  (TNA ' + sim.tna.toFixed(2) + '% + IVA 21% — valor del 1er mes)');
 
         y += 8;
         const textoLegal = 'Documento de carácter informativo y orientativo, generado a partir de una simulación con datos ingresados por el vendedor y tasas vigentes al momento de su generación. Los valores, tasas, plazos y entidades aquí mencionados están sujetos en todos los casos a la evaluación y aprobación crediticia de la entidad financiera correspondiente. Este documento no constituye una pre-aprobación, oferta ni compromiso de otorgamiento de crédito por parte de BYD Yacopini ni de la entidad financiera mencionada. BYD Yacopini no se responsabiliza por errores u omisiones en los datos aquí consignados ni por modificaciones posteriores en las tasas o condiciones informadas.';
@@ -2478,6 +2506,7 @@
 
 })();
 </script>
+
 
 
 <a id="hubBackBtn" href="./index.html" style="position:fixed;bottom:18px;left:18px;z-index:999999;
