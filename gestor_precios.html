@@ -1185,7 +1185,10 @@ function generarListas(){
   const fecha = new Date().toISOString().slice(0,10);
   descargarHtml(htmlVendedores, `lista_precios_vendedores_${fecha}.html`);
   setTimeout(() => {
-    descargarHtml(htmlGerencia, `lista_precios_gerencia_${fecha}.html`);
+    // Nombre fijo (sin fecha) para la de Gerencia: así al subirla a Drive
+    // siempre reemplaza al archivo anterior en vez de crear duplicados,
+    // y el sync automático no tiene ninguna duda de cuál es la última.
+    descargarHtml(htmlGerencia, 'Lista precios gerencia.html');
   }, 300);
   mostrarToast('Descargando las dos listas (vendedores y gerencia)');
 }
