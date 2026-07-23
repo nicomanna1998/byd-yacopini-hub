@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BYD Yacopini &middot; Fichas Técnicas</title>
+<style>
+  :root{
+    --negro:#0A0A0A;
+    --carbon:#2A2A2A;
+    --gris-oscuro:#4A4A4A;
+    --gris-medio:#8C8C8C;
+    --gris-claro:#D4D4D4;
+    --gris-fondo:#F2F2F2;
+    --blanco:#FFFFFF;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--gris-fondo); color:var(--negro); font-family:'Segoe UI', Arial, Helvetica, sans-serif; }
+  .app{ max-width:640px; margin:0 auto; padding:0 0 90px; }
+  .app-topbar{ background:var(--negro); padding:20px 20px; display:flex; align-items:center; justify-content:space-between; }
+  .app-topbar svg{ height:32px; width:auto; display:block; }
+  .title-block{ padding:20px 20px 6px; }
+  .title-block h1{ font-size:21px; font-weight:800; margin:0 0 4px; color:var(--negro); }
+  .title-block p{ font-size:12.5px; color:var(--gris-oscuro); margin:0; line-height:1.5; }
+  .ficha-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:16px; padding:16px 20px; }
+  .ficha-card{ background:var(--blanco); border:1px solid var(--gris-claro); border-radius:12px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+  .ficha-cover{ display:block; aspect-ratio:3/4; background:var(--gris-fondo); overflow:hidden; }
+  .ficha-cover img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .ficha-cover-fallback{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:var(--carbon); }
+  .ficha-cover-fallback span{ color:#fff; font-weight:800; font-size:13px; letter-spacing:1px; }
+  .ficha-info{ padding:10px 10px 12px; }
+  .ficha-nombre{ font-size:12.5px; font-weight:700; color:var(--negro); margin-bottom:8px; line-height:1.3; min-height:32px; }
+  .ficha-actions{ display:flex; flex-direction:column; gap:6px; }
+  .ficha-btn{ display:block; text-align:center; font-size:11.5px; font-weight:700; padding:7px 6px; border-radius:8px; border:none; cursor:pointer; text-decoration:none; }
+  .ficha-btn.ver{ background:var(--negro); color:#fff; }
+  .ficha-btn.compartir{ background:var(--gris-fondo); color:var(--negro); border:1px solid var(--gris-claro); }
+  .ficha-toast{ position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--negro); color:#fff; padding:10px 18px; border-radius:20px; font-size:12.5px; font-weight:600; opacity:0; pointer-events:none; transition:opacity .2s ease, transform .2s ease; z-index:999998; }
+  .ficha-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body class="gate-locked">
+<div id="bydGate" style="position:fixed;inset:0;z-index:999999;background:#0A0A0A;display:flex;align-items:center;justify-content:center;padding:24px;opacity:1;">
+  <form id="bydGateForm" style="width:100%;max-width:300px;text-align:center;font-family:Arial,sans-serif;">
+    <div style="color:#fff;font-weight:800;font-size:16px;margin-bottom:4px;">BYD Yacopini</div>
+    <div style="color:#8C8C8C;font-size:12px;margin-bottom:18px;">Acceso interno &middot; Gerencia</div>
+    <input id="bydGatePass" type="password" inputmode="numeric" placeholder="Clave" autocomplete="off" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #4A4A4A;background:#2A2A2A;color:#fff;font-size:16px;text-align:center;box-sizing:border-box;">
+    <button type="submit" style="width:100%;margin-top:10px;padding:12px;border-radius:10px;border:none;background:#1565D8;color:#fff;font-weight:700;font-size:14px;">Entrar</button>
+    <div id="bydGateError" style="color:#E85555;font-size:12px;margin-top:10px;display:none;">Clave incorrecta</div>
+  </form>
+</div>
+<style>
+  body.gate-locked > *:not(#bydGate){display:none !important;}
+  #bydGate{ transition:opacity .25s ease; }
+  #bydGate.fadeOut{ opacity:0; }
+</style>
+<script>
+(function(){
+  var HASH = "a734aecec77bc8826bec68f0264b70228ab419e52a8fcdf05016ebee0465f257";
+  var body = document.body;
+  function unlock(){ var g=document.getElementById('bydGate'); if(g){ g.classList.add('fadeOut'); setTimeout(function(){ body.classList.remove('gate-locked'); g.remove(); }, 220); } else { body.classList.remove('gate-locked'); } }
+  if (sessionStorage.getItem('bydGateOk') === '1') { unlock(); }
+  else {
+    document.getElementById('bydGateForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      var val = document.getElementById('bydGatePass').value;
+      crypto.subtle.digest('SHA-256', new TextEncoder().encode(val)).then(function(buf){
+        var hex = Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+        if (hex === HASH) { sessionStorage.setItem('bydGateOk','1'); unlock(); }
+        else { document.getElementById('bydGateError').style.display = 'block'; document.getElementById('bydGatePass').value = ''; document.getElementById('bydGatePass').focus(); }
+      });
+    });
+  }
+})();
+</script>
+
+<div class="app">
+  <div class="app-topbar">
+    <svg viewBox="12 4 529 102" xmlns="http://www.w3.org/2000/svg" aria-label="BYD Yacopini">
+      <defs><style>.st0{fill:#FFFFFF;}</style></defs>
+      <path class="st0" d="M162.93,19.18c-8.06-12.16-21.88-14.53-31.23-14.75-8.23-.19-43.9-.23-64.67-.24-40.91-.03-17.51-.01-54.36-.01v19.54c43.75,0,95.68-.1,118.41.25,4.06.06,8.08.47,11.27,3.3,2.97,2.64,4.02,6.79,2.69,10.4-2.14,5.83-8.07,7.28-13.96,7.37-9.01.14-33.77.19-52.24.22-45.3.06-25.68.03-66.16.03v19.49c43.72,0,95.76-.09,118.41.25,7.06.1,14.53,2.56,14.53,10.43s-7.46,10.45-14.53,10.56c-22.59.33-74.66.24-118.41.24v19.53c43.88,0,101.32.16,119.03-.25,9.35-.22,23.18-2.59,31.23-14.75,7.56-11.41,5.71-26.27-4.22-35.8,9.93-9.54,11.78-24.39,4.21-35.8"/>
+      <path class="st0" d="M520.08,15.93c-13.35-9.58-27.85-10.94-39.61-11.21-11.58-.27-29.05-.39-44.5-.45-37.67-.15-15.02-.08-50.91-.08v19.6c38.19,0,64.97-.32,94.46.52,8.66.24,17.95,1.16,26.31,6.96,7.92,5.5,12.62,14.26,12.62,23.72s-4.57,18.24-12.49,23.74c-8.36,5.81-17.65,6.72-26.31,6.96-29.49.83-56.27.51-94.46.51l-.13,19.59c38.41,0,66.03.14,95.41-.54,11.76-.27,26.26-1.63,39.61-11.21,12.67-9.09,20.33-23.36,20.33-39.05s-7.67-29.97-20.33-39.05"/>
+      <path class="st0" d="M227.22,48.06c-10.23-.2-13.49-3.54-13.56-13.73-.07-9.42-.02-20.58-.02-30.14h-22.56c0,9.67-.19,29.24.19,38.7.74,18.38,6.77,24.11,25.55,24.75,13.02.44,23.36.29,41.36.28v-19.69c-14.43,0-20.31.04-30.96-.16"/>
+      <path class="st0" d="M339.04,34.68c-.07,9.92-3.3,13.18-13.56,13.38-4.89.09-17.75.14-28.33.16h0s-.1.01-.1.01c-10.81,0-22.34-.02-29.1-.02v57.57h26.52v-37.88c.81,0,1.68,0,2.58,0h0s.1,0,.1,0v.02c13.8,0,31.04-.06,37.55-.26,19.93-.61,26-6.23,26.73-24.78.1-2.48.16-5.62.19-9.06V4.18h-22.56c0,9.8.04,20.81-.03,30.5"/>
+    </svg>
+  </div>
+
+  <div class="title-block">
+    <h1>Fichas Técnicas de Modelos</h1>
+    <p>Tocá una ficha para verla o compartirla con el cliente.</p>
+  </div>
+  <div class="ficha-grid">
+    <div class="ficha-card">
+      <a class="ficha-cover" href="./fichas/byd-atto-2.pdf" target="_blank" rel="noopener"><img src="./fichas/thumbs/byd-atto-2.jpg" alt="BYD - ATTO 2" loading="lazy"></a>
+      <div class="ficha-info">
+        <div class="ficha-nombre">BYD - ATTO 2</div>
+        <div class="ficha-actions">
+          <a class="ficha-btn ver" href="./fichas/byd-atto-2.pdf" target="_blank" rel="noopener">Ver ficha</a>
+          <button type="button" class="ficha-btn compartir" data-nombre="BYD - ATTO 2" data-url="fichas/byd-atto-2.pdf">Compartir</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ficha-card">
+      <a class="ficha-cover" href="./fichas/byd-dolphin-mini.pdf" target="_blank" rel="noopener"><img src="./fichas/thumbs/byd-dolphin-mini.jpg" alt="BYD - DOLPHIN MINI" loading="lazy"></a>
+      <div class="ficha-info">
+        <div class="ficha-nombre">BYD - DOLPHIN MINI</div>
+        <div class="ficha-actions">
+          <a class="ficha-btn ver" href="./fichas/byd-dolphin-mini.pdf" target="_blank" rel="noopener">Ver ficha</a>
+          <button type="button" class="ficha-btn compartir" data-nombre="BYD - DOLPHIN MINI" data-url="fichas/byd-dolphin-mini.pdf">Compartir</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ficha-card">
+      <a class="ficha-cover" href="./fichas/byd-song-pro.pdf" target="_blank" rel="noopener"><img src="./fichas/thumbs/byd-song-pro.jpg" alt="BYD - SONG PRO" loading="lazy"></a>
+      <div class="ficha-info">
+        <div class="ficha-nombre">BYD - SONG PRO</div>
+        <div class="ficha-actions">
+          <a class="ficha-btn ver" href="./fichas/byd-song-pro.pdf" target="_blank" rel="noopener">Ver ficha</a>
+          <button type="button" class="ficha-btn compartir" data-nombre="BYD - SONG PRO" data-url="fichas/byd-song-pro.pdf">Compartir</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ficha-card">
+      <a class="ficha-cover" href="./fichas/byd-yuan-pro.pdf" target="_blank" rel="noopener"><img src="./fichas/thumbs/byd-yuan-pro.jpg" alt="BYD - YUAN PRO" loading="lazy"></a>
+      <div class="ficha-info">
+        <div class="ficha-nombre">BYD - YUAN PRO</div>
+        <div class="ficha-actions">
+          <a class="ficha-btn ver" href="./fichas/byd-yuan-pro.pdf" target="_blank" rel="noopener">Ver ficha</a>
+          <button type="button" class="ficha-btn compartir" data-nombre="BYD - YUAN PRO" data-url="fichas/byd-yuan-pro.pdf">Compartir</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ficha-card">
+      <a class="ficha-cover" href="./fichas/byd-seal-u.pdf" target="_blank" rel="noopener"><img src="./fichas/thumbs/byd-seal-u.jpg" alt="BYD SEAL U" loading="lazy"></a>
+      <div class="ficha-info">
+        <div class="ficha-nombre">BYD SEAL U</div>
+        <div class="ficha-actions">
+          <a class="ficha-btn ver" href="./fichas/byd-seal-u.pdf" target="_blank" rel="noopener">Ver ficha</a>
+          <button type="button" class="ficha-btn compartir" data-nombre="BYD SEAL U" data-url="fichas/byd-seal-u.pdf">Compartir</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ficha-card">
+      <a class="ficha-cover" href="./fichas/byd-shark-arg.pdf" target="_blank" rel="noopener"><img src="./fichas/thumbs/byd-shark-arg.jpg" alt="BYD-SHARK-ARG" loading="lazy"></a>
+      <div class="ficha-info">
+        <div class="ficha-nombre">BYD-SHARK-ARG</div>
+        <div class="ficha-actions">
+          <a class="ficha-btn ver" href="./fichas/byd-shark-arg.pdf" target="_blank" rel="noopener">Ver ficha</a>
+          <button type="button" class="ficha-btn compartir" data-nombre="BYD-SHARK-ARG" data-url="fichas/byd-shark-arg.pdf">Compartir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<a id="hubBackBtn" href="./index.html" style="position:fixed;bottom:18px;left:18px;z-index:999999;
+  width:44px;height:44px;border-radius:50%;background:#0A0A0A;color:#fff;display:flex;
+  align-items:center;justify-content:center;text-decoration:none;font-family:Arial,sans-serif;
+  font-size:20px;box-shadow:0 4px 14px rgba(0,0,0,0.3);">&larr;</a>
+
+<div class="ficha-toast" id="fichaToast">Link copiado</div>
+<script>
+(function(){
+  var toast = document.getElementById('fichaToast');
+  function showToast(msg){ toast.textContent = msg; toast.classList.add('show'); setTimeout(function(){ toast.classList.remove('show'); }, 2200); }
+  document.querySelectorAll('.ficha-btn.compartir').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var nombre = btn.dataset.nombre;
+      var url = new URL(btn.dataset.url, window.location.href).href;
+      if (navigator.share) {
+        navigator.share({ title: 'Ficha t\u00e9cnica ' + nombre, text: 'Ficha t\u00e9cnica ' + nombre + ' - BYD Yacopini', url: url }).catch(function(){});
+      } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(function(){ showToast('Link copiado'); }).catch(function(){ showToast(url); });
+      } else {
+        showToast(url);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
