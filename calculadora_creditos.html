@@ -953,7 +953,7 @@
 
     <div class="tabs-bar">
         <button class="tab-btn active" data-view="calc">Calculadora</button>
-        <button class="tab-btn" data-view="bbdd">Base de Datos</button>
+        <button class="tab-btn" data-view="bbdd">Tasas Vigentes</button>
         <button class="tab-btn" data-view="ayuda">¿Cómo usarlo?</button>
     </div>
 
@@ -1382,7 +1382,15 @@
 
     async function loadData(){
         if(window.__MODO_VENDEDOR__){
-            creditos = window.__CREDITOS_FIJOS__ || [];
+            try{
+                var resp = await fetch(TASAS_SHEET_CSV_URL, {cache:'no-store'});
+                if(!resp.ok) throw new Error('HTTP ' + resp.status);
+                var csvText = await resp.text();
+                var parsed = parseTasasCSV(csvText);
+                creditos = (parsed && parsed.length) ? parsed : (window.__CREDITOS_FIJOS__ || []);
+            } catch(e){
+                creditos = window.__CREDITOS_FIJOS__ || [];
+            }
             nextId = creditos.length + 1;
             renderBbddTable();
             rebuildBancoOptions();
@@ -2495,6 +2503,74 @@
         doc.save(nombreArchivo);
         showToast('Datero generado correctamente');
     }
+
+    // ============ TASAS VIGENTES: fuente única = Google Sheet publicado ============
+    window.__MODO_VENDEDOR__ = true;
+    window.__FECHA_GENERACION_VENDEDOR__ = new Date().toLocaleDateString('es-AR') + ' ' + new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
+    var TASAS_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSIAsbsgDVEJuVKPmFLb4rulObvg-eYmRdzQrj5Dy4_fpCUFe7I10IhdZYPSna19m9RvlNSNSZQEDH1/pub?gid=0&single=true&output=csv';
+    // Respaldo fijo: se usa SOLO si falla la conexión con el Sheet.
+    window.__CREDITOS_FIJOS__ = [
+        {id: uid(), banco:'Santander', linea:'BYD Auto', modalidad:'UVA', plazo:12, tna:14.9, quebranto:0},
+        {id: uid(), banco:'Santander', linea:'BYD Auto', modalidad:'FIJA', plazo:12, tna:38.9, quebranto:0},
+        {id: uid(), banco:'BBVA', linea:'BYD Auto', modalidad:'UVA', plazo:12, tna:11.9, quebranto:0},
+        {id: uid(), banco:'BBVA', linea:'BYD Auto', modalidad:'FIJA', plazo:12, tna:35.9, quebranto:0},
+        {id: uid(), banco:'ICBC', linea:'Tasa Green Promocional BYD', modalidad:'FIJA', plazo:12, tna:42.9, quebranto:0},
+        {id: uid(), banco:'ICBC', linea:'Tasa Green Promocional BYD', modalidad:'FIJA', plazo:24, tna:42.9, quebranto:0},
+        {id: uid(), banco:'ICBC', linea:'Tasa Green Promocional BYD', modalidad:'FIJA', plazo:36, tna:42.9, quebranto:0},
+        {id: uid(), banco:'ICBC', linea:'Tasa Especial UVA BYD', modalidad:'UVA', plazo:12, tna:0, quebranto:7.6},
+        {id: uid(), banco:'ICBC', linea:'Tasa Especial UVA BYD', modalidad:'UVA', plazo:18, tna:9.9, quebranto:3.8},
+        {id: uid(), banco:'ICBC', linea:'Tasa Especial UVA BYD', modalidad:'UVA', plazo:24, tna:9.9, quebranto:4.9}
+    ];
+
+    function parseTasasCSV(text){
+        var lines = text.split(/\r\n|\n|\r/).map(function(l){ return l.trim(); }).filter(function(l){ return l.length > 0; });
+        if(lines.length < 2) return [];
+        var out = [];
+        for(var i=1; i<lines.length; i++){
+            var parts = lines[i].split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(function(p){ return p.trim().replace(/^"|"$/g, ''); });
+            if(parts.length < 5) continue;
+            var banco = parts[0], linea = parts[1], modalidadRaw = parts[2], plazoRaw = parts[3], tnaRaw = parts[4], quebrantoRaw = parts[5] || '';
+            if(!banco || !linea) continue;
+            var modalidad = /uva/i.test(modalidadRaw) ? 'UVA' : 'FIJA';
+            var plazo = parseInt(plazoRaw.replace(/[^\d]/g, ''), 10);
+            var tna = parseFloat(tnaRaw.replace('%','').trim().replace(',','.').replace(/[^\d.\-]/g, ''));
+            var quebrantoNum = quebrantoRaw ? parseFloat(quebrantoRaw.replace('%','').trim().replace(',','.').replace(/[^\d.\-]/g, '')) : 0;
+            if(isNaN(quebrantoNum)) quebrantoNum = 0;
+            if(isNaN(plazo) || isNaN(tna)) continue;
+            out.push({id: 'sheet-' + i, banco: banco, linea: linea, modalidad: modalidad, plazo: plazo, tna: tna, quebranto: quebrantoNum});
+        }
+        return out;
+    }
+
+    function activarVistaTasasVigentes(){
+        var tabBbdd = document.querySelector('.tab-btn[data-view="bbdd"]');
+        if(tabBbdd) tabBbdd.textContent = 'Tasas Vigentes';
+
+        var bbddToolbar = document.querySelector('.bbdd-toolbar');
+        if(bbddToolbar){
+            bbddToolbar.style.display = 'none';
+            var infoHeader = document.createElement('div');
+            infoHeader.className = 'bbdd-toolbar';
+            infoHeader.innerHTML = '<div><h2>Tasas Vigentes</h2><p>Se actualizan autom\u00e1ticamente desde la planilla de Google Sheets &quot;TASAS VIGENTES&quot;. Para modificarlas, edit\u00e1 esa planilla \u2014 ac\u00e1 no se editan.</p></div>';
+            bbddToolbar.parentNode.insertBefore(infoHeader, bbddToolbar);
+        }
+
+        var tableCard = document.querySelector('#view-bbdd .table-card');
+        if(tableCard){
+            tableCard.style.display = 'none';
+            var vigenciaDiv = document.createElement('div');
+            vigenciaDiv.id = 'catalogo-vigencia';
+            var catalogoDiv = document.createElement('div');
+            catalogoDiv.id = 'catalogo-container';
+            tableCard.parentNode.insertBefore(vigenciaDiv, tableCard);
+            tableCard.parentNode.insertBefore(catalogoDiv, tableCard);
+        }
+
+        var styleEl = document.querySelector('style');
+        if(styleEl && typeof OBTENER_CSS_CATALOGO === 'function') styleEl.textContent += OBTENER_CSS_CATALOGO();
+    }
+    activarVistaTasasVigentes();
+
 
     loadData();
 
