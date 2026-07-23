@@ -1347,6 +1347,15 @@
       navigator.serviceWorker.register('./sw.js').catch(function(){});
     });
   }
+
+  // La fecha de "Lista de Precios" se lee del propio lista_precios.html
+  // (campo VIGENCIA) en vez de depender de que algo reescriba index.html
+  // cada día — así este archivo no se vuelve a tocar nunca por el sync diario.
+  fetch('./lista_precios.html').then(function(r){ return r.text(); }).then(function(html){
+    var m = html.match(/<div class="vig">VIGENCIA<b>([^<]*)<\/b>/);
+    var el = document.getElementById('preciosUpdated');
+    if (m && m[1] && el) { el.textContent = 'Vigencia: ' + m[1]; }
+  }).catch(function(){});
   var isStandalone = window.matchMedia('(display-mode: standalone)').matches
     || window.navigator.standalone === true;
   if (!isStandalone) {
