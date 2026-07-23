@@ -2542,6 +2542,95 @@
         return out;
     }
 
+    // ---------- Filtro por entidad + banner de color (reemplaza al catálogo original) ----------
+    var BANCO_COLORS = { SANTANDER: '#EC0000', BBVA: '#004481', ICBC: '#C8102E' };
+    function colorForBanco(nombre){
+        var key = (nombre || '').toUpperCase().trim();
+        if(BANCO_COLORS[key]) return BANCO_COLORS[key];
+        var hash = 0;
+        for(var i=0; i<key.length; i++) hash = (hash * 31 + key.charCodeAt(i)) % 360;
+        return 'hsl(' + hash + ', 55%, 38%)';
+    }
+    var filtroBancoActivo = null;
+    function renderCatalogoVendedor(){
+        var vigenciaEl = document.getElementById('catalogo-vigencia');
+        var container = document.getElementById('catalogo-container');
+        if(!vigenciaEl || !container) return;
+
+        vigenciaEl.innerHTML = '<div class="catalogo-vigencia-banner"><span>\ud83d\udcc5</span>' +
+            '<span>Tasas vigentes generadas el ' + escapeHtml(window.__FECHA_GENERACION_VENDEDOR__ || '') + '. Ante cualquier duda, confirm\u00e1 con el sector de Operaciones antes de comunicar al cliente.</span></div>';
+
+        if(creditos.length === 0){
+            container.innerHTML = '<div class="table-card"><div class="catalogo-empty">' +
+                '<strong>No hay cr\u00e9ditos cargados</strong><span>Consult\u00e1 con el administrador de la herramienta.</span></div></div>';
+            return;
+        }
+
+        var bancos = [...new Set(creditos.map(function(c){ return c.banco; }).filter(Boolean))].sort();
+
+        var filtroHtml = '<div class="catalogo-filtro-bar">';
+        filtroHtml += '<button type="button" class="catalogo-filtro-pill' + (!filtroBancoActivo ? ' active' : '') + '" data-banco="">Todas</button>';
+        bancos.forEach(function(b){
+            filtroHtml += '<button type="button" class="catalogo-filtro-pill' + (filtroBancoActivo === b ? ' active' : '') + '" data-banco="' + escapeHtml(b) + '">' + escapeHtml(b) + '</button>';
+        });
+        filtroHtml += '</div>';
+
+        var bancosAMostrar = filtroBancoActivo ? bancos.filter(function(b){ return b === filtroBancoActivo; }) : bancos;
+
+        var html = filtroHtml;
+        bancosAMostrar.forEach(function(banco){
+            html += '<div class="catalogo-entidad">';
+            if(filtroBancoActivo){
+                html += '<div class="catalogo-logo-banner" style="background:' + colorForBanco(banco) + '">' + escapeHtml(banco) + '</div>';
+            } else {
+                html += '<div class="catalogo-entidad-title">' + escapeHtml(banco) + '</div>';
+            }
+
+            var lineasBanco = [...new Set(creditos.filter(function(c){ return c.banco===banco; }).map(function(c){ return c.linea; }).filter(Boolean))];
+            lineasBanco.forEach(function(linea){
+                var filas = creditos.filter(function(c){ return c.banco===banco && c.linea===linea; })
+                    .sort(function(a,b){ return a.modalidad.localeCompare(b.modalidad) || a.plazo - b.plazo; });
+
+                html += '<div class="catalogo-linea-card">';
+                html += '<div class="catalogo-linea-title">' + escapeHtml(linea) + '</div>';
+                html += '<div class="catalogo-table-scroll"><table class="catalogo-plazos-table"><thead><tr>' +
+                    '<th>Modalidad</th><th>Plazo</th><th>TNA</th><th>Quebranto %</th><th>Quebranto $ (c/100.000)</th>' +
+                    '</tr></thead><tbody>';
+
+                filas.forEach(function(f){
+                    var chipClass = f.modalidad === 'UVA' ? 'uva' : 'fija';
+                    var chipLabel = f.modalidad === 'UVA' ? 'UVA' : 'Fija';
+                    var tieneQuebranto = f.quebranto && f.quebranto > 0;
+                    var quebrantoPctHtml = tieneQuebranto
+                        ? '<span class="catalogo-quebranto-tag tiene">' + f.quebranto.toFixed(2) + '%</span>'
+                        : '<span class="catalogo-quebranto-tag bonificado">Bonificado</span>';
+                    var quebrantoMontoHtml = tieneQuebranto ? fmtMoney(100000 * (f.quebranto/100)) : '-';
+
+                    html += '<tr>' +
+                        '<td><span class="catalogo-modalidad-chip ' + chipClass + '">' + chipLabel + '</span></td>' +
+                        '<td>' + f.plazo + ' meses</td>' +
+                        '<td>' + f.tna.toFixed(2) + '% TNA</td>' +
+                        '<td>' + quebrantoPctHtml + '</td>' +
+                        '<td>' + quebrantoMontoHtml + '</td>' +
+                        '</tr>';
+                });
+
+                html += '</tbody></table></div></div>';
+            });
+
+            html += '</div>';
+        });
+
+        container.innerHTML = html;
+
+        container.querySelectorAll('.catalogo-filtro-pill').forEach(function(btn){
+            btn.addEventListener('click', function(){
+                filtroBancoActivo = btn.dataset.banco || null;
+                renderCatalogoVendedor();
+            });
+        });
+    }
+
     function activarVistaTasasVigentes(){
         var tabBbdd = document.querySelector('.tab-btn[data-view="bbdd"]');
         if(tabBbdd) tabBbdd.textContent = 'Tasas Vigentes';
@@ -2568,6 +2657,19 @@
 
         var styleEl = document.querySelector('style');
         if(styleEl && typeof OBTENER_CSS_CATALOGO === 'function') styleEl.textContent += OBTENER_CSS_CATALOGO();
+        if(styleEl){
+            styleEl.textContent += '\n.catalogo-table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}' +
+                '\n.catalogo-plazos-table{min-width:480px;}' +
+                '\n@media (max-width:640px){' +
+                '.catalogo-plazos-table th,.catalogo-plazos-table td{padding:6px 8px;font-size:12px;}' +
+                '.catalogo-linea-card{padding:14px 12px;}' +
+                '.catalogo-entidad-title{font-size:16px;}' +
+                '}' +
+                '\n.catalogo-filtro-bar{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}' +
+                '\n.catalogo-filtro-pill{padding:8px 16px;border-radius:20px;border:1px solid var(--gris-claro);background:var(--blanco);color:var(--carbon);font-size:12.5px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:0.3px;}' +
+                '\n.catalogo-filtro-pill.active{background:var(--negro);color:var(--blanco);border-color:var(--negro);}' +
+                '\n.catalogo-logo-banner{padding:16px 20px;border-radius:10px;margin-bottom:20px;text-align:center;color:#fff;font-size:20px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;}';
+        }
     }
     activarVistaTasasVigentes();
 
