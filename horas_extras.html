@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horas Extras · Yacopini BYD</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --negro:#0A0A0A;
+    --carbon:#2A2A2A;
+    --gris-oscuro:#4A4A4A;
+    --gris-medio:#8C8C8C;
+    --gris-claro:#D4D4D4;
+    --gris-fondo:#F2F2F2;
+    --blanco:#FFFFFF;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--gris-fondo);
+    color:var(--carbon);
+    font-family:'Segoe UI', Arial, Helvetica, sans-serif;
+  }
+
+  .topbar{
+    position:sticky;top:0;z-index:20;
+    background:var(--negro);
+    color:#fff;
+    padding:16px 18px 15px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .topbar img{ height:30px; display:block; }
+  .topbar svg{ height:30px; width:auto; display:block; }
+  .topbar .sub{
+    font-size:11px;
+    color:#B8B8B8;
+    text-align:right;
+    line-height:1.5;
+  }
+  .topbar .sub .doctype{
+    font-size:12.5px;
+    font-weight:700;
+    color:#fff;
+    letter-spacing:.02em;
+  }
+
+  main{max-width:520px;margin:0 auto;padding:18px 16px 24px;}
+  .view{display:none;}
+  .view.active{display:block;animation:fade .18s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+  h1.section-title{
+    font-size:13.5px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--gris-oscuro);
+    margin:0 0 12px;
+  }
+
+  .card{
+    background:var(--blanco);
+    border:1px solid var(--gris-claro);
+    border-radius:var(--radius);
+    padding:18px;
+    margin-bottom:14px;
+  }
+
+  label{
+    display:block;
+    font-size:11.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    color:#8A97A3;
+    margin:13px 0 5px;
+  }
+  label:first-child{margin-top:0;}
+  input[type=text],input[type=date],input[type=time],input[type=number],select,textarea{
+    width:100%;
+    padding:10px 11px;
+    border:1px solid var(--gris-claro);
+    border-radius:8px;
+    font-size:14.5px;
+    font-family:inherit;
+    background:var(--blanco);
+    color:var(--carbon);
+  }
+  input:hover,select:hover,textarea:hover{ background:var(--gris-fondo); }
+  input:focus,select:focus,textarea:focus{
+    outline:none;border-color:var(--gris-medio);background:var(--blanco);
+  }
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:11px 16px;border-radius:8px;
+    font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;
+    width:100%;
+    border:1px solid var(--gris-claro);
+    background:var(--blanco);color:var(--carbon);
+    transition:background .15s ease;
+  }
+  .btn:hover{ background:var(--gris-fondo); }
+  .btn:active{ transform:scale(0.99); }
+  .btn:disabled{ opacity:.6;cursor:default; }
+  .btn-primary{background:var(--negro);color:#fff;border-color:var(--negro);}
+  .btn-primary:hover{background:var(--carbon);}
+  .btn-ghost{background:var(--blanco);color:var(--carbon);}
+
+  .empty{
+    text-align:center;color:var(--gris-medio);padding:36px 12px;font-size:13.5px;
+  }
+  .empty .big{font-size:30px;display:block;margin-bottom:8px;}
+
+  .vlist-item, .rlist-item{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:12px 4px;border-top:1px solid var(--gris-claro);
+    cursor:pointer;
+  }
+  .vlist-item:first-child,.rlist-item:first-child{border-top:none;}
+  .vlist-item .info b,.rlist-item .info b{display:block;font-size:14px;color:var(--negro);}
+  .vlist-item .info span,.rlist-item .info span{font-size:12px;color:var(--gris-medio);}
+  .actions{display:flex;gap:6px;}
+  .icon-btn{
+    border:1px solid var(--gris-claro);background:var(--blanco);color:var(--carbon);
+    width:32px;height:32px;border-radius:8px;font-size:13px;cursor:pointer;
+  }
+  .icon-btn:hover{background:var(--gris-fondo);}
+
+  .badge{
+    display:inline-block;font-size:11px;font-weight:700;
+    background:var(--gris-fondo);color:var(--negro);padding:3px 9px;border-radius:20px;
+    border:1px solid var(--gris-claro);letter-spacing:.02em;
+  }
+  .badge.saldo-pos{ background:#E3F5EA;color:#1B7F4C;border-color:#BFE6CE; }
+  .badge.saldo-neg{ background:#FCEBEB;color:#A32D2D;border-color:#F0C1C1; }
+
+  .tabbar{
+    background:var(--blanco);border-bottom:1px solid var(--gris-claro);
+    display:flex;
+  }
+  .tabbar button{
+    flex:1;border:none;background:none;padding:13px 4px 11px;
+    font-family:inherit;font-size:12.5px;font-weight:700;color:var(--gris-medio);
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    letter-spacing:.01em;
+  }
+  .tabbar button.active{color:var(--negro);border-bottom-color:var(--negro);}
+
+  .toast{
+    position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
+    background:var(--negro);color:#fff;padding:10px 18px;border-radius:10px;
+    font-size:13px;font-weight:600;z-index:60;opacity:0;pointer-events:none;transition:opacity .2s;
+    box-shadow:0 4px 14px rgba(0,0,0,.18);
+  }
+  .toast.show{ opacity:1; }
+
+  .hint{
+    font-size:12px;color:#8A97A3;line-height:1.55;margin:6px 0 0;
+  }
+  .errmsg{
+    font-size:12.5px;color:#A32D2D;line-height:1.5;margin-top:10px;
+    background:#FCEBEB;border:1px solid #F0C1C1;border-radius:8px;padding:9px 11px;
+  }
+
+  .tipo-toggle{ display:flex;gap:8px; }
+  .tipo-toggle .btn{ margin:0; }
+
+  /* ---- Overlay / ticket preview ---- */
+  .overlay{
+    position:fixed;inset:0;background:rgba(10,10,10,.6);
+    display:flex;align-items:flex-end;justify-content:center;z-index:100;
+  }
+  .overlay.hidden{display:none;}
+  .sheet{
+    background:var(--gris-fondo);width:100%;max-width:560px;max-height:92vh;overflow-y:auto;
+    border-radius:18px 18px 0 0;padding:16px 14px 22px;
+  }
+  .sheet-handle{width:36px;height:4px;background:var(--gris-claro);border-radius:2px;margin:2px auto 14px;}
+  .sheet-actions{display:flex;gap:8px;margin-top:14px;}
+
+  .ticket{
+    background:var(--blanco);
+    border:1px solid var(--gris-claro);
+    border-radius:10px;
+    overflow:hidden;
+    position:relative;
+    background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22480%22%20height%3D%22360%22%3E%3Ctext%20x%3D%22240%22%20y%3D%2280%22%20font-family%3D%22Arial%22%20font-size%3D%2216%22%20font-weight%3D%22700%22%20fill%3D%22rgba%2810%2C10%2C10%2C0.045%29%22%20transform%3D%22rotate%28-28%20240%2080%29%22%20text-anchor%3D%22middle%22%3EBYD%20YACOPINI%3C/text%3E%3Ctext%20x%3D%22240%22%20y%3D%22200%22%20font-family%3D%22Arial%22%20font-size%3D%2216%22%20font-weight%3D%22700%22%20fill%3D%22rgba%2810%2C10%2C10%2C0.045%29%22%20transform%3D%22rotate%28-28%20240%20200%29%22%20text-anchor%3D%22middle%22%3EBYD%20YACOPINI%3C/text%3E%3Ctext%20x%3D%22240%22%20y%3D%22320%22%20font-family%3D%22Arial%22%20font-size%3D%2216%22%20font-weight%3D%22700%22%20fill%3D%22rgba%2810%2C10%2C10%2C0.045%29%22%20transform%3D%22rotate%28-28%20240%20320%29%22%20text-anchor%3D%22middle%22%3EBYD%20YACOPINI%3C/text%3E%3C/svg%3E");
+    background-repeat:repeat;
+  }
+  .ticket-head{
+    background:var(--negro);
+    padding:18px 18px 15px;
+    display:flex;justify-content:space-between;align-items:flex-start;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+  .ticket-head img{height:24px;display:block;}
+  .ticket-head svg{height:22px;width:auto;display:block;}
+  .ticket-head .doctype{font-size:11px;color:#B8B8B8;margin-top:8px;letter-spacing:.02em;}
+  .ticket-num{text-align:right;}
+  .ticket-num .lbl{font-size:9.5px;color:#9A9A9A;letter-spacing:.1em;text-transform:uppercase;}
+  .ticket-num .num{font-family:'Courier New',monospace;font-size:19px;font-weight:700;color:#fff;letter-spacing:.03em;}
+  .ticket-body{padding:16px 18px 6px;position:relative;}
+  .tgroup{margin-bottom:14px;}
+  .tgroup .tglabel{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#8A97A3;margin-bottom:6px;font-weight:700;}
+  .tgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 14px;}
+  .tfield .k{font-size:10.5px;color:var(--gris-medio);}
+  .tfield .v{font-size:14px;font-weight:700;color:var(--negro);}
+  .tfield.full{grid-column:1/-1;}
+  .tnote{font-size:13px;color:var(--carbon);white-space:pre-wrap;}
+  .tperf{
+    height:0;border-top:1px dashed var(--gris-claro);margin:4px 18px 0;position:relative;
+  }
+  .tperf::before,.tperf::after{
+    content:"";position:absolute;top:-8px;width:16px;height:16px;border-radius:50%;background:var(--gris-fondo);
+  }
+  .tperf::before{left:-26px;}
+  .tperf::after{right:-26px;}
+  .ticket-footer{
+    padding:14px 18px 16px;font-size:10px;color:var(--gris-medio);line-height:1.5;
+  }
+
+  @media(max-width:380px){
+    .tgrid{grid-template-columns:1fr 1fr;}
+  }
+
+  @media print{
+    body *{visibility:hidden;}
+    #printArea, #printArea *{visibility:visible;}
+    #printArea{position:absolute;top:0;left:0;width:100%;}
+    body{background:#fff;padding:0;}
+    .ticket{border:none;}
+    .tperf::before,.tperf::after{background:#fff;}
+  }
+</style>
+</head>
+<body class="gate-locked">
+<div id="bydGate" style="position:fixed;inset:0;z-index:999999;background:#0A0A0A;display:flex;align-items:center;justify-content:center;padding:24px;opacity:1;">
+  <form id="bydGateForm" style="width:100%;max-width:300px;text-align:center;font-family:Arial,sans-serif;">
+    <div style="color:#fff;font-weight:800;font-size:16px;margin-bottom:4px;">BYD Yacopini</div>
+    <div style="color:#8C8C8C;font-size:12px;margin-bottom:18px;">Acceso interno &middot; Gerencia</div>
+    <input id="bydGatePass" type="password" inputmode="numeric" placeholder="Clave" autocomplete="off" style="width:100%;padding:12px 14px;border-radius:10px;border:1px solid #4A4A4A;background:#2A2A2A;color:#fff;font-size:16px;text-align:center;box-sizing:border-box;">
+    <button type="submit" style="width:100%;margin-top:10px;padding:12px;border-radius:10px;border:none;background:#1565D8;color:#fff;font-weight:700;font-size:14px;">Entrar</button>
+    <div id="bydGateError" style="color:#E85555;font-size:12px;margin-top:10px;display:none;">Clave incorrecta</div>
+  </form>
+</div>
+<style>
+  body.gate-locked > *:not(#bydGate){display:none !important;}
+  #bydGate{ transition:opacity .25s ease; }
+  #bydGate.fadeOut{ opacity:0; }
+</style>
+<script>
+(function(){
+  var HASH = "a734aecec77bc8826bec68f0264b70228ab419e52a8fcdf05016ebee0465f257";
+  var body = document.body;
+  function unlock(){ var g=document.getElementById('bydGate'); if(g){ g.classList.add('fadeOut'); setTimeout(function(){ body.classList.remove('gate-locked'); g.remove(); }, 220); } else { body.classList.remove('gate-locked'); } }
+  if (sessionStorage.getItem('bydGateOk') === '1') { unlock(); }
+  else {
+    document.getElementById('bydGateForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      var val = document.getElementById('bydGatePass').value;
+      crypto.subtle.digest('SHA-256', new TextEncoder().encode(val)).then(function(buf){
+        var hex = Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,'0');}).join('');
+        if (hex === HASH) {
+          sessionStorage.setItem('bydGateOk','1');
+          unlock();
+        } else {
+          document.getElementById('bydGateError').style.display = 'block';
+          document.getElementById('bydGatePass').value = '';
+          document.getElementById('bydGatePass').focus();
+        }
+      });
+    });
+  }
+})();
+</script>
+
+<div class="topbar">
+  <svg viewBox="12 4 529 102" xmlns="http://www.w3.org/2000/svg" aria-label="BYD Yacopini">
+    <defs><style>.st0{fill:#FFFFFF;}</style></defs>
+    <path class="st0" d="M162.93,19.18c-8.06-12.16-21.88-14.53-31.23-14.75-8.23-.19-43.9-.23-64.67-.24-40.91-.03-17.51-.01-54.36-.01v19.54c43.75,0,95.68-.1,118.41.25,4.06.06,8.08.47,11.27,3.3,2.97,2.64,4.02,6.79,2.69,10.4-2.14,5.83-8.07,7.28-13.96,7.37-9.01.14-33.77.19-52.24.22-45.3.06-25.68.03-66.16.03v19.49c43.72,0,95.76-.09,118.41.25,7.06.1,14.53,2.56,14.53,10.43s-7.46,10.45-14.53,10.56c-22.59.33-74.66.24-118.41.24v19.53c43.88,0,101.32.16,119.03-.25,9.35-.22,23.18-2.59,31.23-14.75,7.56-11.41,5.71-26.27-4.22-35.8,9.93-9.54,11.78-24.39,4.21-35.8"/>
+    <path class="st0" d="M520.08,15.93c-13.35-9.58-27.85-10.94-39.61-11.21-11.58-.27-29.05-.39-44.5-.45-37.67-.15-15.02-.08-50.91-.08v19.6c38.19,0,64.97-.32,94.46.52,8.66.24,17.95,1.16,26.31,6.96,7.92,5.5,12.62,14.26,12.62,23.72s-4.57,18.24-12.49,23.74c-8.36,5.81-17.65,6.72-26.31,6.96-29.49.83-56.27.51-94.46.51l-.13,19.59c38.41,0,66.03.14,95.41-.54,11.76-.27,26.26-1.63,39.61-11.21,12.67-9.09,20.33-23.36,20.33-39.05s-7.67-29.97-20.33-39.05"/>
+    <path class="st0" d="M227.22,48.06c-10.23-.2-13.49-3.54-13.56-13.73-.07-9.42-.02-20.58-.02-30.14h-22.56c0,9.67-.19,29.24.19,38.7.74,18.38,6.77,24.11,25.55,24.75,13.02.44,23.36.29,41.36.28v-19.69c-14.43,0-20.31.04-30.96-.16"/>
+    <path class="st0" d="M339.04,34.68c-.07,9.92-3.3,13.18-13.56,13.38-4.89.09-17.75.14-28.33.16h0s-.1.01-.1.01c-10.81,0-22.34-.02-29.1-.02v57.57h26.52v-37.88c.81,0,1.68,0,2.58,0h0s.1,0,.1,0v.02c13.8,0,31.04-.06,37.55-.26,19.93-.61,26-6.23,26.73-24.78.1-2.48.16-5.62.19-9.06V4.18h-22.56c0,9.8.04,20.81-.03,30.5"/>
+  </svg>
+  <div class="sub">
+    <div class="doctype">Horas Extras</div>
+    Godoy Cruz · ARG092511
+  </div>
+</div>
+
+<nav class="tabbar">
+  <button data-tab="gestion" class="active">Gestión</button>
+  <button data-tab="acumulado">Acumulado</button>
+</nav>
+
+<main>
+  <!-- GESTION -->
+  <section id="view-gestion" class="view active">
+    <h1 class="section-title">Registrar movimiento</h1>
+    <div class="card">
+      <label>Tipo de movimiento</label>
+      <div class="tipo-toggle">
+        <button type="button" class="btn" id="btnTipoSolicitud">Solicitud</button>
+        <button type="button" class="btn" id="btnTipoDevolucion">Devolución</button>
+      </div>
+      <div class="hint">Solicitud: le pedís horas extra de trabajo al vendedor. Devolución: le devolvés horas (se toma el día o sale antes).</div>
+
+      <label for="selVendedorHoras">Vendedor</label>
+      <select id="selVendedorHoras"><option value="">Cargando vendedores…</option></select>
+      <div class="hint" id="sucursalHint">&nbsp;</div>
+
+      <label for="inpFechaHoras">Fecha de la operatoria</label>
+      <input type="date" id="inpFechaHoras">
+
+      <label for="inpHorasCantidad">Cantidad de horas</label>
+      <input type="number" id="inpHorasCantidad" step="0.5" min="0.5" placeholder="Ej: 3">
+
+      <button class="btn btn-primary" id="btnEmitirHoras" style="margin-top:18px;">Emitir comprobante</button>
+      <div class="errmsg" id="gestionMsg" style="display:none;"></div>
+    </div>
+
+    <h1 class="section-title">Registrados desde este teléfono</h1>
+    <div class="card">
+      <div id="localHistList"><div class="empty"><span class="big">🕓</span>Todavía no registraste ningún movimiento acá.</div></div>
+    </div>
+  </section>
+
+  <!-- ACUMULADO -->
+  <section id="view-acumulado" class="view">
+    <h1 class="section-title" id="acumuladoTitle">Acumulado de horas</h1>
+    <div class="card" id="resumenCard">
+      <div id="resumenList"><div class="empty"><span class="big">⏳</span>Cargando…</div></div>
+    </div>
+    <div class="card" id="detalleCard" style="display:none;">
+      <button type="button" class="btn btn-ghost" id="btnVolverResumen" style="margin-bottom:14px;">&larr; Volver al resumen</button>
+      <div id="detalleHeader"></div>
+      <div id="detalleList"></div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<!-- COMPROBANTE OVERLAY -->
+<div class="overlay hidden" id="overlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div id="printArea">
+      <div class="ticket" id="ticketContent"></div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" id="btnCerrar">Cerrar</button>
+      <button class="btn btn-primary" id="btnImprimir">Imprimir / Guardar PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TABLERO_API_URL = 'https://script.google.com/macros/s/AKfycbzTYBoM56BBMj2B-8hUG_MIuOh7r5qG4qq2sGlTRM-y6QyFm0XHqgE6XUG5OQB022iy/exec';
+const TABLERO_API_KEY = 'i4uH92SO1sFyNYi8PJ2dsGb9LDM-Xoq3';
+const LS_VENDEDORES = 'byd_horas_extras_vendedores_v1';
+const LS_HISTORIAL_LOCAL = 'byd_horas_extras_historial_local_v1';
+
+let vendedores = [];        // [{nombre, sucursal}]
+let vendedoresMap = {};      // nombre -> sucursal
+let tipoSeleccionado = null; // 'solicitud' | 'devolucion'
+let movimientoActual = null; // el que está mostrando el overlay/ticket
+let movimientosCache = null; // resultado de listarMovimientosHoras (para Acumulado)
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+function escapeHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, function(ch){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch];
+  });
+}
+
+function fmtDate(iso){
+  if(!iso) return '—';
+  const parts = String(iso).split('-');
+  if (parts.length !== 3) return String(iso);
+  const [y,m,d] = parts;
+  return `${d}/${m}/${y}`;
+}
+
+function fmtHoras(h){
+  const n = Math.round(Number(h)*100)/100;
+  return (n % 1 === 0 ? n.toFixed(0) : n.toString().replace('.', ',')) + ' hs';
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+tab).classList.add('active');
+  document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  if (tab === 'acumulado') loadAcumulado();
+}
+document.querySelectorAll('.tabbar button').forEach(b=>{
+  b.addEventListener('click', ()=>switchTab(b.dataset.tab));
+});
+
+/* ---------- TIPO (Solicitud / Devolución) ---------- */
+function setTipo(t){
+  tipoSeleccionado = t;
+  document.getElementById('btnTipoSolicitud').classList.toggle('btn-primary', t==='solicitud');
+  document.getElementById('btnTipoDevolucion').classList.toggle('btn-primary', t==='devolucion');
+}
+document.getElementById('btnTipoSolicitud').addEventListener('click', ()=>setTipo('solicitud'));
+document.getElementById('btnTipoDevolucion').addEventListener('click', ()=>setTipo('devolucion'));
+
+/* ---------- VENDEDORES ---------- */
+async function loadVendedores(){
+  const sel = document.getElementById('selVendedorHoras');
+  try{
+    const cached = localStorage.getItem(LS_VENDEDORES);
+    if (cached) {
+      vendedores = JSON.parse(cached);
+      renderVendedoresSelect();
+    }
+  }catch(e){ /* sin cache, seguimos */ }
+
+  try{
+    const url = TABLERO_API_URL + '?key=' + encodeURIComponent(TABLERO_API_KEY) + '&action=listarVendedoresHoras';
+    const resp = await fetch(url, {cache:'no-store'});
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+    vendedores = data.vendedores || [];
+    localStorage.setItem(LS_VENDEDORES, JSON.stringify(vendedores));
+  }catch(e){
+    console.error(e);
+    if (!vendedores.length) toast('No se pudo cargar la lista de vendedores');
+  }
+  renderVendedoresSelect();
+}
+
+function renderVendedoresSelect(){
+  const sel = document.getElementById('selVendedorHoras');
+  vendedoresMap = {};
+  vendedores.forEach(v => { vendedoresMap[v.nombre] = v.sucursal || ''; });
+  if (!vendedores.length){
+    sel.innerHTML = '<option value="">— No hay vendedores cargados —</option>';
+    return;
+  }
+  sel.innerHTML = '<option value="">— Elegí un vendedor —</option>' +
+    vendedores.map(v => `<option value="${escapeHtml(v.nombre)}">${escapeHtml(v.nombre)}${v.sucursal?(' · '+escapeHtml(v.sucursal)):''}</option>`).join('');
+  updateSucursalHint();
+}
+document.getElementById('selVendedorHoras').addEventListener('change', updateSucursalHint);
+function updateSucursalHint(){
+  const nombre = document.getElementById('selVendedorHoras').value;
+  const suc = vendedoresMap[nombre];
+  document.getElementById('sucursalHint').innerHTML = (nombre && suc) ? ('Sucursal: <b>' + escapeHtml(suc) + '</b>') : '&nbsp;';
+}
+
+/* ---------- EMITIR COMPROBANTE ---------- */
+function mostrarErrorGestion(msg){
+  const el = document.getElementById('gestionMsg');
+  el.textContent = msg;
+  el.style.display = msg ? 'block' : 'none';
+}
+
+document.getElementById('btnEmitirHoras').addEventListener('click', async () => {
+  mostrarErrorGestion('');
+  const vendedor = document.getElementById('selVendedorHoras').value;
+  const fecha = document.getElementById('inpFechaHoras').value;
+  const horas = Number(document.getElementById('inpHorasCantidad').value);
+
+  if (!tipoSeleccionado) return mostrarErrorGestion('Elegí si es una Solicitud o una Devolución.');
+  if (!vendedor) return mostrarErrorGestion('Elegí un vendedor.');
+  if (!fecha) return mostrarErrorGestion('Ingresá la fecha de la operatoria.');
+  if (!horas || horas <= 0) return mostrarErrorGestion('Ingresá una cantidad de horas mayor a 0.');
+
+  const sucursal = vendedoresMap[vendedor] || '';
+  const btn = document.getElementById('btnEmitirHoras');
+  const textoOriginal = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Emitiendo…';
+
+  try{
+    const url = TABLERO_API_URL + '?key=' + encodeURIComponent(TABLERO_API_KEY) + '&action=registrarHoraExtra' +
+      '&vendedor=' + encodeURIComponent(vendedor) +
+      '&sucursal=' + encodeURIComponent(sucursal) +
+      '&tipo=' + encodeURIComponent(tipoSeleccionado) +
+      '&fecha=' + encodeURIComponent(fecha) +
+      '&horas=' + encodeURIComponent(horas);
+    const resp = await fetch(url, {cache:'no-store'});
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+
+    guardarHistorialLocal(data);
+    renderLocalHistorial();
+    openTicket(data);
+    toast('Comprobante ' + data.numero + ' emitido');
+
+    // limpiar el formulario para el próximo registro
+    document.getElementById('inpHorasCantidad').value = '';
+    setTipo(null);
+  }catch(e){
+    console.error(e);
+    mostrarErrorGestion('No se pudo emitir el comprobante: ' + e.message);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = textoOriginal;
+  }
+});
+
+function guardarHistorialLocal(mov){
+  let hist = [];
+  try{ hist = JSON.parse(localStorage.getItem(LS_HISTORIAL_LOCAL) || '[]'); }catch(e){ hist = []; }
+  hist.unshift(mov);
+  hist = hist.slice(0, 30);
+  localStorage.setItem(LS_HISTORIAL_LOCAL, JSON.stringify(hist));
+}
+
+function renderLocalHistorial(){
+  let hist = [];
+  try{ hist = JSON.parse(localStorage.getItem(LS_HISTORIAL_LOCAL) || '[]'); }catch(e){ hist = []; }
+  const cont = document.getElementById('localHistList');
+  if (!hist.length){
+    cont.innerHTML = '<div class="empty"><span class="big">🕓</span>Todavía no registraste ningún movimiento acá.</div>';
+    return;
+  }
+  cont.innerHTML = hist.map((m, i) => `
+    <div class="rlist-item" data-idx="${i}">
+      <div class="info">
+        <b>${escapeHtml(m.vendedor)}</b>
+        <span>${m.tipo==='devolucion'?'Devolución':'Solicitud'} · ${fmtHoras(m.horas)} · ${fmtDate(m.fecha)}</span>
+      </div>
+      <span class="badge">${escapeHtml(m.numero)}</span>
+    </div>
+  `).join('');
+  cont.querySelectorAll('.rlist-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const idx = Number(el.dataset.idx);
+      openTicket(hist[idx]);
+    });
+  });
+}
+
+/* ---------- COMPROBANTE (ticket + PDF) ---------- */
+function tipoLabel(t){
+  return t === 'devolucion' ? 'Devolución de horas' : 'Solicitud de horas extra';
+}
+function saldoTexto(saldo){
+  const n = Number(saldo) || 0;
+  const abs = fmtHoras(Math.abs(n));
+  if (n > 0) return abs + ' · el vendedor te debe horas';
+  if (n < 0) return abs + ' · le debés horas al vendedor';
+  return 'Está al día';
+}
+
+function openTicket(mov){
+  movimientoActual = mov;
+  const fechaEmision = new Date().toLocaleDateString('es-AR', { day:'2-digit', month:'2-digit', year:'numeric' });
+  document.getElementById('ticketContent').innerHTML = `
+    <div class="ticket-head">
+      <div>
+        <svg viewBox="12 4 529 102" xmlns="http://www.w3.org/2000/svg" aria-label="BYD Yacopini">
+          <defs><style>.st0{fill:#FFFFFF;}</style></defs>
+          <path class="st0" d="M162.93,19.18c-8.06-12.16-21.88-14.53-31.23-14.75-8.23-.19-43.9-.23-64.67-.24-40.91-.03-17.51-.01-54.36-.01v19.54c43.75,0,95.68-.1,118.41.25,4.06.06,8.08.47,11.27,3.3,2.97,2.64,4.02,6.79,2.69,10.4-2.14,5.83-8.07,7.28-13.96,7.37-9.01.14-33.77.19-52.24.22-45.3.06-25.68.03-66.16.03v19.49c43.72,0,95.76-.09,118.41.25,7.06.1,14.53,2.56,14.53,10.43s-7.46,10.45-14.53,10.56c-22.59.33-74.66.24-118.41.24v19.53c43.88,0,101.32.16,119.03-.25,9.35-.22,23.18-2.59,31.23-14.75,7.56-11.41,5.71-26.27-4.22-35.8,9.93-9.54,11.78-24.39,4.21-35.8"/>
+          <path class="st0" d="M520.08,15.93c-13.35-9.58-27.85-10.94-39.61-11.21-11.58-.27-29.05-.39-44.5-.45-37.67-.15-15.02-.08-50.91-.08v19.6c38.19,0,64.97-.32,94.46.52,8.66.24,17.95,1.16,26.31,6.96,7.92,5.5,12.62,14.26,12.62,23.72s-4.57,18.24-12.49,23.74c-8.36,5.81-17.65,6.72-26.31,6.96-29.49.83-56.27.51-94.46.51l-.13,19.59c38.41,0,66.03.14,95.41-.54,11.76-.27,26.26-1.63,39.61-11.21,12.67-9.09,20.33-23.36,20.33-39.05s-7.67-29.97-20.33-39.05"/>
+          <path class="st0" d="M227.22,48.06c-10.23-.2-13.49-3.54-13.56-13.73-.07-9.42-.02-20.58-.02-30.14h-22.56c0,9.67-.19,29.24.19,38.7.74,18.38,6.77,24.11,25.55,24.75,13.02.44,23.36.29,41.36.28v-19.69c-14.43,0-20.31.04-30.96-.16"/>
+          <path class="st0" d="M339.04,34.68c-.07,9.92-3.3,13.18-13.56,13.38-4.89.09-17.75.14-28.33.16h0s-.1.01-.1.01c-10.81,0-22.34-.02-29.1-.02v57.57h26.52v-37.88c.81,0,1.68,0,2.58,0h0s.1,0,.1,0v.02c13.8,0,31.04-.06,37.55-.26,19.93-.61,26-6.23,26.73-24.78.1-2.48.16-5.62.19-9.06V4.18h-22.56c0,9.8.04,20.81-.03,30.5"/>
+        </svg>
+        <div class="doctype">${tipoLabel(mov.tipo)}</div>
+      </div>
+      <div class="ticket-num">
+        <div class="lbl">N&deg; Comprobante</div>
+        <div class="num">${escapeHtml(mov.numero)}</div>
+      </div>
+    </div>
+    <div class="ticket-body">
+      <div class="tgroup">
+        <div class="tglabel">Movimiento</div>
+        <div class="tgrid">
+          <div class="tfield full"><div class="k">Vendedor</div><div class="v">${escapeHtml(mov.vendedor)}</div></div>
+          <div class="tfield"><div class="k">Sucursal</div><div class="v">${escapeHtml(mov.sucursal || '—')}</div></div>
+          <div class="tfield"><div class="k">Cantidad de horas</div><div class="v">${fmtHoras(mov.horas)}</div></div>
+          <div class="tfield full"><div class="k">Fecha de la operatoria</div><div class="v">${fmtDate(mov.fecha)}</div></div>
+        </div>
+      </div>
+      <div class="tgroup">
+        <div class="tglabel">Saldo acumulado del vendedor</div>
+        <div class="tnote" style="font-weight:700;">${saldoTexto(mov.saldo)}</div>
+      </div>
+      <div class="tgroup" style="margin-bottom:6px;">
+        <div class="tglabel">Emitido por</div>
+        <div class="tnote">Nicolas Manna · Gte Ventas</div>
+      </div>
+    </div>
+    <div class="tperf"></div>
+    <div class="ticket-footer">
+      Comprobante interno de horas extras &middot; Yacopini BYD Godoy Cruz (ARG092511) &middot; Emitido ${fechaEmision}.
+    </div>
+  `;
+  document.getElementById('overlay').classList.remove('hidden');
+}
+
+document.getElementById('btnCerrar').addEventListener('click', ()=>{
+  document.getElementById('overlay').classList.add('hidden');
+});
+
+const BYD_LOGO_SVG_DARK =
+  '<svg viewBox="12 4 529 102" xmlns="http://www.w3.org/2000/svg" aria-label="BYD Yacopini" style="height:26px;width:auto;display:block;">' +
+  '<defs><style>.st0d{fill:#0A0A0A;}</style></defs>' +
+  '<path class="st0d" d="M162.93,19.18c-8.06-12.16-21.88-14.53-31.23-14.75-8.23-.19-43.9-.23-64.67-.24-40.91-.03-17.51-.01-54.36-.01v19.54c43.75,0,95.68-.1,118.41.25,4.06.06,8.08.47,11.27,3.3,2.97,2.64,4.02,6.79,2.69,10.4-2.14,5.83-8.07,7.28-13.96,7.37-9.01.14-33.77.19-52.24.22-45.3.06-25.68.03-66.16.03v19.49c43.72,0,95.76-.09,118.41.25,7.06.1,14.53,2.56,14.53,10.43s-7.46,10.45-14.53,10.56c-22.59.33-74.66.24-118.41.24v19.53c43.88,0,101.32.16,119.03-.25,9.35-.22,23.18-2.59,31.23-14.75,7.56-11.41,5.71-26.27-4.22-35.8,9.93-9.54,11.78-24.39,4.21-35.8"/>' +
+  '<path class="st0d" d="M520.08,15.93c-13.35-9.58-27.85-10.94-39.61-11.21-11.58-.27-29.05-.39-44.5-.45-37.67-.15-15.02-.08-50.91-.08v19.6c38.19,0,64.97-.32,94.46.52,8.66.24,17.95,1.16,26.31,6.96,7.92,5.5,12.62,14.26,12.62,23.72s-4.57,18.24-12.49,23.74c-8.36,5.81-17.65,6.72-26.31,6.96-29.49.83-56.27.51-94.46.51l-.13,19.59c38.41,0,66.03.14,95.41-.54,11.76-.27,26.26-1.63,39.61-11.21,12.67-9.09,20.33-23.36,20.33-39.05s-7.67-29.97-20.33-39.05"/>' +
+  '<path class="st0d" d="M227.22,48.06c-10.23-.2-13.49-3.54-13.56-13.73-.07-9.42-.02-20.58-.02-30.14h-22.56c0,9.67-.19,29.24.19,38.7.74,18.38,6.77,24.11,25.55,24.75,13.02.44,23.36.29,41.36.28v-19.69c-14.43,0-20.31.04-30.96-.16"/>' +
+  '<path class="st0d" d="M339.04,34.68c-.07,9.92-3.3,13.18-13.56,13.38-4.89.09-17.75.14-28.33.16h0s-.1.01-.1.01c-10.81,0-22.34-.02-29.1-.02v57.57h26.52v-37.88c.81,0,1.68,0,2.58,0h0s.1,0,.1,0v.02c13.8,0,31.04-.06,37.55-.26,19.93-.61,26-6.23,26.73-24.78.1-2.48.16-5.62.19-9.06V4.18h-22.56c0,9.8.04,20.81-.03,30.5"/>' +
+  '</svg>';
+
+function generarHtmlComprobantePdf(mov){
+  const fecha = new Date().toLocaleDateString('es-AR', { day:'2-digit', month:'2-digit', year:'numeric' });
+  const campos = [
+    ['Vendedor', mov.vendedor],
+    ['Sucursal', mov.sucursal || '—'],
+    ['Cantidad de horas', fmtHoras(mov.horas)],
+    ['Fecha de la operatoria', fmtDate(mov.fecha)]
+  ].map(f => '<div class="field"><div class="lbl">' + escapeHtml(f[0]) + '</div><div class="v">' + escapeHtml(f[1]) + '</div></div>').join('');
+
+  return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>' +
+    '*{box-sizing:border-box;}' +
+    'body{margin:0;padding:0;background:#fff;font-family:Arial,Helvetica,sans-serif;color:#2A2A2A;}' +
+    '.page{width:800px;min-height:600px;padding:44px 50px;display:flex;flex-direction:column;}' +
+    '.head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:3px solid #0A0A0A;padding-bottom:18px;}' +
+    '.head .doctype{font-size:15px;font-weight:800;color:#0A0A0A;margin-top:10px;letter-spacing:.02em;}' +
+    '.head .sub{font-size:11.5px;color:#8C8C8C;margin-top:3px;}' +
+    '.numbox{text-align:right;}' +
+    '.numbox .lbl{font-size:10px;color:#8C8C8C;text-transform:uppercase;letter-spacing:.08em;}' +
+    '.numbox .num{font-family:"Courier New",monospace;font-size:26px;font-weight:800;color:#0A0A0A;letter-spacing:.03em;}' +
+    '.section{margin-top:28px;}' +
+    '.section h2{font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:#8C8C8C;border-bottom:1px solid #D4D4D4;padding-bottom:7px;margin:0 0 14px;font-weight:800;}' +
+    '.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px 30px;}' +
+    '.field .lbl{font-size:10.5px;color:#8C8C8C;text-transform:uppercase;font-weight:700;letter-spacing:.02em;}' +
+    '.field .v{font-size:16px;font-weight:700;color:#0A0A0A;margin-top:3px;}' +
+    '.saldo-box{margin-top:10px;padding:14px 16px;border-radius:8px;background:#F2F2F2;font-size:15px;font-weight:700;color:#0A0A0A;}' +
+    '.footer{margin-top:26px;padding-top:14px;border-top:1px solid #D4D4D4;font-size:10.5px;color:#8C8C8C;line-height:1.6;}' +
+    '</style></head><body><div class="page">' +
+    '<div class="head">' +
+      '<div>' + BYD_LOGO_SVG_DARK + '<div class="doctype">' + escapeHtml(tipoLabel(mov.tipo)) + '</div><div class="sub">Godoy Cruz &middot; ARG092511 &middot; ' + fecha + '</div></div>' +
+      '<div class="numbox"><div class="lbl">N&deg; Comprobante</div><div class="num">' + escapeHtml(mov.numero) + '</div></div>' +
+    '</div>' +
+    '<div class="section"><h2>Movimiento</h2><div class="grid2">' + campos + '</div></div>' +
+    '<div class="section"><h2>Saldo acumulado del vendedor</h2><div class="saldo-box">' + escapeHtml(saldoTexto(mov.saldo)) + '</div></div>' +
+    '<div class="section"><h2>Emitido por</h2><div class="field"><div class="v">Nicolas Manna &middot; Gte Ventas</div></div></div>' +
+    '<div class="footer">Comprobante interno de horas extras &middot; Yacopini BYD Godoy Cruz (ARG092511).</div>' +
+    '</div></body></html>';
+}
+
+function generarPdfDesdeHtml(contenido, nombreArchivo, btn){
+  const textoOriginal = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Generando PDF…';
+
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;height:auto;border:none;';
+  document.body.appendChild(iframe);
+
+  function limpiar(){
+    if (iframe.parentNode) document.body.removeChild(iframe);
+    btn.disabled = false;
+    btn.textContent = textoOriginal;
+  }
+
+  iframe.onload = function(){
+    setTimeout(function(){
+      try{
+        const body = iframe.contentDocument.body;
+        html2canvas(body, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          width: 800,
+          height: body.scrollHeight,
+          scrollX: 0,
+          scrollY: 0,
+          logging: false
+        }).then(function(canvas){
+          const A4_W = 595, A4_H = 842;
+          const imgHeight = (canvas.height * A4_W) / canvas.width;
+          let finalW = A4_W, finalH = imgHeight, offsetY = 0;
+          if (imgHeight > A4_H) {
+            const scale = A4_H / imgHeight;
+            finalW = A4_W * scale;
+            finalH = A4_H;
+          } else {
+            offsetY = 0;
+          }
+          const offsetX = (A4_W - finalW) / 2;
+          const jsPDF = window.jspdf.jsPDF;
+          const pdf = new jsPDF({ orientation:'portrait', unit:'pt', format:'a4' });
+          const imgData = canvas.toDataURL('image/jpeg', 0.95);
+          pdf.addImage(imgData, 'JPEG', offsetX, offsetY, finalW, finalH);
+          pdf.save(nombreArchivo);
+          limpiar();
+        }).catch(function(e){
+          console.error(e);
+          alert('No se pudo generar el PDF. Probá de nuevo.');
+          limpiar();
+        });
+      }catch(e){
+        console.error(e);
+        alert('No se pudo generar el PDF. Probá de nuevo.');
+        limpiar();
+      }
+    }, 500);
+  };
+
+  const blob = new Blob([contenido], { type:'text/html' });
+  const url = URL.createObjectURL(blob);
+  iframe.src = url;
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 6000);
+}
+
+document.getElementById('btnImprimir').addEventListener('click', function(){
+  if(!movimientoActual) return;
+  const m = movimientoActual;
+  const slugVendedor = (m.vendedor || 'comprobante').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'comprobante';
+  generarPdfDesdeHtml(generarHtmlComprobantePdf(m), 'horas_extras_' + m.numero + '_' + slugVendedor + '.pdf', this);
+});
+
+/* ---------- ACUMULADO ---------- */
+async function loadAcumulado(){
+  document.getElementById('resumenList').innerHTML = '<div class="empty"><span class="big">⏳</span>Cargando…</div>';
+  document.getElementById('detalleCard').style.display = 'none';
+  document.getElementById('resumenCard').style.display = 'block';
+
+  try{
+    const url = TABLERO_API_URL + '?key=' + encodeURIComponent(TABLERO_API_KEY) + '&action=listarMovimientosHoras';
+    const resp = await fetch(url, {cache:'no-store'});
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error);
+    movimientosCache = data;
+  }catch(e){
+    console.error(e);
+    document.getElementById('resumenList').innerHTML = '<div class="empty"><span class="big">⚠️</span>No se pudo cargar el acumulado.</div>';
+    toast('No se pudo cargar el acumulado de horas');
+    return;
+  }
+
+  if (!vendedores.length) await loadVendedores();
+  renderResumen();
+}
+
+function renderResumen(){
+  const saldosMap = {};
+  vendedores.forEach(v => { saldosMap[v.nombre] = 0; });
+  (movimientosCache.saldos || []).forEach(s => { saldosMap[s.vendedor] = s.saldo; });
+
+  const lista = Object.keys(saldosMap).map(nombre => ({
+    nombre: nombre,
+    sucursal: vendedoresMap[nombre] || '',
+    saldo: saldosMap[nombre]
+  })).sort((a,b) => Math.abs(b.saldo) - Math.abs(a.saldo) || a.nombre.localeCompare(b.nombre));
+
+  const cont = document.getElementById('resumenList');
+  if (!lista.length){
+    cont.innerHTML = '<div class="empty"><span class="big">🕓</span>Todavía no hay vendedores ni movimientos cargados.</div>';
+    return;
+  }
+  cont.innerHTML = lista.map(v => {
+    const badgeClase = v.saldo > 0 ? 'saldo-pos' : (v.saldo < 0 ? 'saldo-neg' : '');
+    const badgeTexto = v.saldo === 0 ? 'Al día' : (v.saldo > 0 ? 'Te debe ' + fmtHoras(v.saldo) : 'Le debés ' + fmtHoras(Math.abs(v.saldo)));
+    return `
+      <div class="vlist-item" data-nombre="${escapeHtml(v.nombre)}">
+        <div class="info">
+          <b>${escapeHtml(v.nombre)}</b>
+          <span>${escapeHtml(v.sucursal || 'Sin sucursal')}</span>
+        </div>
+        <span class="badge ${badgeClase}">${badgeTexto}</span>
+      </div>
+    `;
+  }).join('');
+  cont.querySelectorAll('.vlist-item').forEach(el => {
+    el.addEventListener('click', () => mostrarDetalleVendedor(el.dataset.nombre));
+  });
+}
+
+function mostrarDetalleVendedor(nombre){
+  const movs = (movimientosCache.movimientos || [])
+    .filter(m => m.vendedor === nombre)
+    .sort((a,b) => (b.fechaRegistro || '').localeCompare(a.fechaRegistro || ''));
+
+  const saldoActual = movs.length ? movs[0].saldoTrasMovimiento : 0;
+  const sucursal = vendedoresMap[nombre] || '';
+
+  document.getElementById('detalleHeader').innerHTML = `
+    <div style="margin-bottom:14px;">
+      <div style="font-size:16px;font-weight:800;color:var(--negro);">${escapeHtml(nombre)}</div>
+      <div style="font-size:12px;color:var(--gris-medio);margin-bottom:8px;">${escapeHtml(sucursal || 'Sin sucursal')}</div>
+      <span class="badge ${saldoActual>0?'saldo-pos':(saldoActual<0?'saldo-neg':'')}" style="font-size:13px;padding:6px 12px;">${saldoTexto(saldoActual)}</span>
+    </div>
+  `;
+
+  const listCont = document.getElementById('detalleList');
+  if (!movs.length){
+    listCont.innerHTML = '<div class="empty"><span class="big">🕓</span>Todavía no tiene movimientos registrados.</div>';
+  } else {
+    listCont.innerHTML = movs.map(m => `
+      <div class="rlist-item">
+        <div class="info">
+          <b>${m.tipo==='devolucion'?'Devolución':'Solicitud'} · ${fmtHoras(m.horas)}</b>
+          <span>${fmtDate(m.fecha)} · ${escapeHtml(m.numero)}</span>
+        </div>
+        <span class="badge ${m.saldoTrasMovimiento>0?'saldo-pos':(m.saldoTrasMovimiento<0?'saldo-neg':'')}">${fmtHoras(Math.abs(m.saldoTrasMovimiento))}</span>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('resumenCard').style.display = 'none';
+  document.getElementById('detalleCard').style.display = 'block';
+}
+
+document.getElementById('btnVolverResumen').addEventListener('click', () => {
+  document.getElementById('detalleCard').style.display = 'none';
+  document.getElementById('resumenCard').style.display = 'block';
+});
+
+/* ---------- INIT ---------- */
+document.getElementById('inpFechaHoras').value = new Date().toISOString().slice(0,10);
+renderLocalHistorial();
+loadVendedores();
+</script>
+
+<a id="hubBackBtn" href="./index.html" style="position:fixed;bottom:18px;left:18px;z-index:999999;
+  width:44px;height:44px;border-radius:50%;background:#0A0A0A;color:#fff;display:flex;
+  align-items:center;justify-content:center;text-decoration:none;font-family:Arial,sans-serif;
+  font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,0.35);" aria-label="Volver al inicio">&#8592;</a>
+</body>
+</html>
