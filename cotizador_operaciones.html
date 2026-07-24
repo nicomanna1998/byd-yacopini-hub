@@ -73,11 +73,66 @@
     color:var(--gris-medio);
     font-size:9px;
   }
+
+  /* ---- Navegación por pasos ---- */
+  .stepbar{
+    display:flex;
+    background:var(--blanco);
+    border-bottom:1px solid var(--gris-claro);
+    position:sticky;
+    top:0;
+    z-index:15;
+  }
+  .stepbar button{
+    flex:1;
+    border:none;
+    background:none;
+    padding:12px 4px 10px;
+    font-family:inherit;
+    font-size:11px;
+    font-weight:700;
+    color:var(--gris-medio);
+    cursor:pointer;
+    border-bottom:2px solid transparent;
+    white-space:nowrap;
+  }
+  .stepbar button.active{ color:var(--negro); border-bottom-color:var(--azul-ev); }
+  .stepbar button.done::before{ content:'✓ '; color:var(--verde-dm); }
+
   .wrap{
     max-width:640px;
     margin:0 auto;
     padding:20px 16px 40px;
   }
+  .step-view{ display:none; }
+  .step-view.active{ display:block; animation:stepFade .18s ease; }
+  @keyframes stepFade{ from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:none;} }
+
+  .step-nav{
+    display:flex;
+    gap:10px;
+    margin-top:6px;
+    margin-bottom:6px;
+  }
+  .nav-btn{
+    flex:1;
+    padding:13px;
+    border-radius:10px;
+    border:none;
+    background:var(--azul-ev);
+    color:#fff;
+    font-weight:800;
+    font-size:13.5px;
+    cursor:pointer;
+  }
+  .nav-btn.back{
+    background:var(--blanco);
+    color:var(--carbon);
+    border:1px solid var(--gris-claro);
+    flex:0 0 auto;
+    padding:13px 18px;
+  }
+
   .card{
     background:var(--blanco);
     border-radius:14px;
@@ -131,7 +186,7 @@
   .unidad-row input:focus{ border-bottom-color:var(--azul-ev); }
   .items{ margin-top:4px; }
   .item{
-    padding:10px 0;
+    padding:12px 0;
     border-bottom:1px solid var(--gris-fondo);
   }
   .item .item-row1{
@@ -139,7 +194,7 @@
     align-items:center;
     gap:8px;
   }
-  .item .item-row2{
+  .item .item-row3{
     display:flex;
     align-items:center;
     gap:6px;
@@ -155,30 +210,28 @@
     outline:none;
     min-width:0;
   }
-  .item select.tipo{
+
+  /* ---- Grupos de botones (Forma de pago / Moneda) ---- */
+  .pill-group{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin:8px 0;
+  }
+  .pill-btn{
     flex:0 0 auto;
-    font-size:11.5px;
-    font-weight:700;
-    padding:6px 4px;
+    padding:8px 12px;
+    border-radius:20px;
     border:1px solid var(--gris-claro);
-    border-radius:6px;
     background:var(--gris-fondo);
     color:var(--carbon);
-    -webkit-appearance:none;
-    appearance:none;
-  }
-  .item select.moneda{
-    flex:0 0 auto;
     font-size:11.5px;
     font-weight:700;
-    padding:6px 4px;
-    border:1px solid var(--gris-claro);
-    border-radius:6px;
-    background:var(--gris-fondo);
-    color:var(--carbon);
-    -webkit-appearance:none;
-    appearance:none;
+    cursor:pointer;
   }
+  .pill-btn.active{ background:var(--negro); color:#fff; border-color:var(--negro); }
+  .pill-btn.moneda-btn{ min-width:52px; text-align:center; }
+
   .item .monto-wrap{
     flex:1;
     display:flex;
@@ -244,6 +297,17 @@
     color:var(--gris-medio);
     padding:8px 0 2px;
   }
+  .pago-total{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+    font-weight:700;
+    color:var(--carbon);
+    background:var(--gris-fondo);
+    border-radius:10px;
+    padding:10px 12px;
+    margin-top:12px;
+  }
   .cliente-field{ margin-bottom:12px; }
   .cliente-field:last-child{ margin-bottom:0; }
   .cliente-field label{
@@ -274,6 +338,15 @@
   }
   .cuit-status.ok{ color:var(--verde-dm, #1a9c5c); }
   .cuit-status.err{ color:var(--rojo, #c0392b); }
+  .afip-note{
+    font-size:11px;
+    color:var(--gris-medio);
+    background:var(--gris-fondo);
+    border-radius:8px;
+    padding:8px 10px;
+    margin-top:12px;
+    line-height:1.5;
+  }
   .saldo-card{
     background:var(--negro);
     border-radius:14px;
@@ -333,6 +406,20 @@
   }
   .pdf-btn:active{ opacity:0.85; }
   .pdf-btn:disabled{ opacity:0.6; }
+  .share-btn{
+    width:100%;
+    padding:14px;
+    border-radius:10px;
+    border:1px solid var(--gris-claro);
+    background:var(--blanco);
+    color:var(--carbon);
+    font-weight:800;
+    font-size:14px;
+    cursor:pointer;
+    margin-top:10px;
+  }
+  .share-btn:active{ background:var(--gris-fondo); }
+  .share-btn:disabled{ opacity:0.6; }
   .reset-row{
     text-align:center;
     margin-top:16px;
@@ -345,6 +432,15 @@
     text-decoration:underline;
     cursor:pointer;
   }
+  .toast{
+    position:fixed;bottom:26px;left:50%;transform:translateX(-50%);
+    background:var(--negro);color:#fff;padding:10px 18px;border-radius:10px;
+    font-size:12.5px;font-weight:600;z-index:999998;opacity:0;pointer-events:none;transition:opacity .2s;
+    box-shadow:0 4px 14px rgba(0,0,0,.18);
+    max-width:88%;
+    text-align:center;
+  }
+  .toast.show{ opacity:1; }
 </style>
 </head>
 <body class="gate-locked">
@@ -400,63 +496,104 @@
   </div>
 </div>
 
+<nav class="stepbar" id="stepbar">
+  <button data-step="unidad" class="active">1 · Unidad</button>
+  <button data-step="pago">2 · Pago</button>
+  <button data-step="cliente">3 · Cliente</button>
+  <button data-step="resumen">4 · Resumen</button>
+</nav>
+
 <div class="wrap">
 
-  <div class="card">
-    <h2>Unidad 0km (USD)</h2>
-    <select class="select-field" id="modeloSelect"></select>
-    <div class="unidad-row">
-      <span class="prefix">USD</span>
-      <input type="number" inputmode="decimal" id="precioUsd" placeholder="0" min="0" step="1">
+  <!-- ============ PASO 1: UNIDAD ============ -->
+  <div class="step-view active" id="step-unidad">
+    <div class="card">
+      <h2>Unidad 0km (USD)</h2>
+      <select class="select-field" id="modeloSelect"></select>
+      <div class="unidad-row">
+        <span class="prefix">USD</span>
+        <input type="number" inputmode="decimal" id="precioUsd" placeholder="0" min="0" step="1">
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="nav-btn next" data-goto="pago">Siguiente: Forma de pago →</button>
     </div>
   </div>
 
-  <div class="card">
-    <h2>Forma de pago</h2>
-    <div class="items" id="itemsList"></div>
-    <p class="empty-hint" id="emptyHint">Todavía no agregaste ítems de pago.</p>
-    <button class="add-btn" id="addItemBtn" type="button">+ Agregar ítem de pago</button>
-  </div>
-
-  <div class="card">
-    <h2>Datos del cliente</h2>
-    <div class="cliente-field">
-      <label>Nombre y apellido</label>
-      <input type="text" id="clienteNombre" placeholder="Nombre completo">
+  <!-- ============ PASO 2: PAGO ============ -->
+  <div class="step-view" id="step-pago">
+    <div class="card">
+      <h2>Forma de pago</h2>
+      <div class="items" id="itemsList"></div>
+      <p class="empty-hint" id="emptyHint">Todavía no agregaste ítems de pago.</p>
+      <button class="add-btn" id="addItemBtn" type="button">+ Agregar ítem de pago</button>
+      <div class="pago-total"><span>Total pagado (equivalente USD)</span><span id="pagoTotalUsd">USD 0</span></div>
     </div>
-    <div class="cliente-field">
-      <label>DNI / CUIT</label>
-      <input type="text" id="clienteDni" placeholder="00.000.000">
-      <span class="cuit-status" id="clienteDniStatus"></span>
-    </div>
-    <div class="cliente-field">
-      <label>Teléfono</label>
-      <input type="tel" id="clienteTelefono" placeholder="+54 9 261...">
-    </div>
-    <div class="cliente-field">
-      <label>Email</label>
-      <input type="email" id="clienteEmail" placeholder="cliente@mail.com">
+    <div class="step-nav">
+      <button class="nav-btn back" data-goto="unidad">← Atrás</button>
+      <button class="nav-btn next" data-goto="cliente">Siguiente: Cliente →</button>
     </div>
   </div>
 
-  <div class="saldo-card">
-    <div class="lbl">Saldo restante</div>
-    <div class="val" id="saldoVal">USD 0</div>
-    <div class="sub" id="saldoSub">≈ $ 0</div>
-    <div class="estado ok" id="estadoPill">Operación cerrada</div>
-    <div class="breakdown">
-      <div>Unidad<br><b id="bkUnidad">USD 0</b></div>
-      <div>Pagado<br><b id="bkPagado">USD 0</b></div>
-      <div>Diferencia<br><b id="bkDif">USD 0</b></div>
+  <!-- ============ PASO 3: CLIENTE ============ -->
+  <div class="step-view" id="step-cliente">
+    <div class="card">
+      <h2>Datos del cliente</h2>
+      <div class="cliente-field">
+        <label>Nombre y apellido</label>
+        <input type="text" id="clienteNombre" placeholder="Nombre completo">
+      </div>
+      <div class="cliente-field">
+        <label>DNI / CUIT</label>
+        <input type="text" id="clienteDni" placeholder="00.000.000">
+        <span class="cuit-status" id="clienteDniStatus"></span>
+      </div>
+      <div class="cliente-field">
+        <label>Teléfono</label>
+        <input type="tel" id="clienteTelefono" placeholder="+54 9 261...">
+      </div>
+      <div class="cliente-field">
+        <label>Email</label>
+        <input type="email" id="clienteEmail" placeholder="cliente@mail.com">
+      </div>
+      <div class="afip-note">
+        El autocompletado por CUIT todavía funciona en modo de prueba (solo responde con un CUIT de prueba). Cuando esté el certificado digital de ARCA cargado, esto se activa para clientes reales sin tocar nada más acá.
+      </div>
+    </div>
+    <div class="step-nav">
+      <button class="nav-btn back" data-goto="pago">← Atrás</button>
+      <button class="nav-btn next" data-goto="resumen">Siguiente: Resumen →</button>
     </div>
   </div>
 
-  <button class="pdf-btn" id="pdfBtn" type="button">📄 Generar PDF de presupuesto</button>
+  <!-- ============ PASO 4: RESUMEN ============ -->
+  <div class="step-view" id="step-resumen">
+    <div class="saldo-card">
+      <div class="lbl">Saldo restante</div>
+      <div class="val" id="saldoVal">USD 0</div>
+      <div class="sub" id="saldoSub">≈ $ 0</div>
+      <div class="estado ok" id="estadoPill">Operación cerrada</div>
+      <div class="breakdown">
+        <div>Unidad<br><b id="bkUnidad">USD 0</b></div>
+        <div>Pagado<br><b id="bkPagado">USD 0</b></div>
+        <div>Diferencia<br><b id="bkDif">USD 0</b></div>
+      </div>
+    </div>
 
-  <div class="reset-row">
-    <button id="resetBtn" type="button">Vaciar cotización</button>
+    <button class="pdf-btn" id="pdfBtn" type="button">📄 Descargar PDF de presupuesto</button>
+    <button class="share-btn" id="shareBtn" type="button">↗ Compartir presupuesto</button>
+
+    <div class="step-nav">
+      <button class="nav-btn back" data-goto="cliente">← Atrás</button>
+    </div>
+    <div class="reset-row">
+      <button id="resetBtn" type="button">Vaciar cotización</button>
+    </div>
   </div>
+
 </div>
+
+<div class="toast" id="toast"></div>
 
 <a id="hubBackBtn" href="./index.html" style="position:fixed;bottom:18px;left:18px;z-index:999999;
   width:44px;height:44px;border-radius:50%;background:#0A0A0A;color:#fff;display:flex;
@@ -484,6 +621,7 @@
     itemsList: document.getElementById('itemsList'),
     emptyHint: document.getElementById('emptyHint'),
     addItemBtn: document.getElementById('addItemBtn'),
+    pagoTotalUsd: document.getElementById('pagoTotalUsd'),
     clienteNombre: document.getElementById('clienteNombre'),
     clienteDni: document.getElementById('clienteDni'),
     clienteDniStatus: document.getElementById('clienteDniStatus'),
@@ -496,6 +634,7 @@
     bkPagado: document.getElementById('bkPagado'),
     bkDif: document.getElementById('bkDif'),
     pdfBtn: document.getElementById('pdfBtn'),
+    shareBtn: document.getElementById('shareBtn'),
     resetBtn: document.getElementById('resetBtn')
   };
 
@@ -511,8 +650,34 @@
     return String(str == null ? '' : str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
   function tipoLabel(t){
-    return { efectivo:'Efectivo', credito:'Crédito', usado:'Usado' }[t] || t;
+    return { efectivo:'Efectivo', credito:'Crédito', usado:'Usado Sin Tasación', documentos:'Documentos', cheques:'Cheques' }[t] || t;
   }
+  function toast(msg){
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function(){ t.classList.remove('show'); }, 2600);
+  }
+
+  /* ---------- Navegación por pasos ---------- */
+  var STEPS = ['unidad', 'pago', 'cliente', 'resumen'];
+  function switchStep(step){
+    document.querySelectorAll('.step-view').forEach(function(v){ v.classList.remove('active'); });
+    document.getElementById('step-' + step).classList.add('active');
+    var idx = STEPS.indexOf(step);
+    document.querySelectorAll('.stepbar button').forEach(function(b){
+      var bIdx = STEPS.indexOf(b.dataset.step);
+      b.classList.toggle('active', b.dataset.step === step);
+      b.classList.toggle('done', bIdx < idx);
+    });
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll('.stepbar button').forEach(function(btn){
+    btn.addEventListener('click', function(){ switchStep(btn.dataset.step); });
+  });
+  document.querySelectorAll('[data-goto]').forEach(function(btn){
+    btn.addEventListener('click', function(){ switchStep(btn.dataset.goto); });
+  });
 
   // --- Modelos: primero intenta traerlos en vivo desde el Sheet (hoja
   // "Lista de Precio", vía el mismo Apps Script del Tablero), y si no está
@@ -608,6 +773,28 @@
     return fxRate ? (it.monto || 0) / fxRate : 0;
   }
 
+  var FORMA_OPTS = [['efectivo','Efectivo'],['credito','Crédito'],['usado','Usado Sin Tasación'],['documentos','Documentos'],['cheques','Cheques']];
+  var MONEDA_OPTS = [['ARS','$'],['USD','USD']];
+
+  function pillGroup(options, currentValue, onSelect, extraClass){
+    var wrap = document.createElement('div');
+    wrap.className = 'pill-group' + (extraClass ? ' ' + extraClass : '');
+    options.forEach(function(opt){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'pill-btn' + (extraClass === 'moneda' ? ' moneda-btn' : '');
+      btn.textContent = opt[1];
+      btn.classList.toggle('active', opt[0] === currentValue);
+      btn.addEventListener('click', function(){
+        wrap.querySelectorAll('.pill-btn').forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        onSelect(opt[0]);
+      });
+      wrap.appendChild(btn);
+    });
+    return wrap;
+  }
+
   function renderItems(){
     els.itemsList.innerHTML = '';
     els.emptyHint.style.display = items.length ? 'none' : 'block';
@@ -621,7 +808,7 @@
 
       var concepto = document.createElement('input');
       concepto.className = 'concepto';
-      concepto.placeholder = 'Concepto (ej: Toma usado, Efectivo)';
+      concepto.placeholder = 'Concepto (opcional)';
       concepto.value = it.concepto || '';
       concepto.addEventListener('input', function(){ items[idx].concepto = concepto.value; saveState(); });
 
@@ -639,28 +826,15 @@
       row1.appendChild(concepto);
       row1.appendChild(del);
 
-      // Fila 2: tipo de pago + moneda + monto + equivalente
-      var row2 = document.createElement('div');
-      row2.className = 'item-row2';
+      // Forma de pago: grupo de botones (Efectivo / Crédito / Usado Sin Tasación / Documentos / Cheques)
+      var formaGroup = pillGroup(FORMA_OPTS, it.tipo || 'efectivo', function(val){
+        items[idx].tipo = val;
+        saveState();
+      }, 'forma');
 
-      var tipoSel = document.createElement('select');
-      tipoSel.className = 'tipo';
-      [['efectivo','Efectivo'], ['credito','Crédito'], ['usado','Usado']].forEach(function(p){
-        var o = document.createElement('option');
-        o.value = p[0]; o.textContent = p[1];
-        tipoSel.appendChild(o);
-      });
-      tipoSel.value = it.tipo || 'efectivo';
-      tipoSel.addEventListener('change', function(){ items[idx].tipo = tipoSel.value; saveState(); });
-
-      var monedaSel = document.createElement('select');
-      monedaSel.className = 'moneda';
-      [['ARS','$'], ['USD','USD']].forEach(function(p){
-        var o = document.createElement('option');
-        o.value = p[0]; o.textContent = p[1];
-        monedaSel.appendChild(o);
-      });
-      monedaSel.value = it.moneda || 'ARS';
+      // Fila 3: moneda (botones $ / USD) + monto + equivalente en USD
+      var row3 = document.createElement('div');
+      row3.className = 'item-row3';
 
       var montoWrap = document.createElement('div');
       montoWrap.className = 'monto-wrap';
@@ -680,24 +854,24 @@
       montoWrap.appendChild(pesoSign);
       montoWrap.appendChild(monto);
 
-      monedaSel.addEventListener('change', function(){
-        items[idx].moneda = monedaSel.value;
-        pesoSign.textContent = (monedaSel.value === 'USD') ? 'USD' : '$';
+      var monedaGroup = pillGroup(MONEDA_OPTS, it.moneda || 'ARS', function(val){
+        items[idx].moneda = val;
+        pesoSign.textContent = (val === 'USD') ? 'USD' : '$';
         saveState();
         recalc();
-      });
+      }, 'moneda');
 
       var eq = document.createElement('div');
       eq.className = 'eq-usd';
       eq.textContent = fxRate ? ('≈ ' + fmtUsd(itemUsd(it))) : '—';
 
-      row2.appendChild(tipoSel);
-      row2.appendChild(monedaSel);
-      row2.appendChild(montoWrap);
-      row2.appendChild(eq);
+      row3.appendChild(monedaGroup);
+      row3.appendChild(montoWrap);
+      row3.appendChild(eq);
 
       row.appendChild(row1);
-      row.appendChild(row2);
+      row.appendChild(formaGroup);
+      row.appendChild(row3);
       els.itemsList.appendChild(row);
     });
   }
@@ -709,6 +883,7 @@
     els.bkUnidad.textContent = fmtUsd(precioUsd);
     els.bkPagado.textContent = fmtUsd(totalUsd);
     els.bkDif.textContent = fmtUsd(saldo);
+    els.pagoTotalUsd.textContent = fmtUsd(totalUsd);
 
     els.saldoVal.textContent = fmtUsd(saldo);
     els.saldoVal.className = 'val ' + (saldo > 0.5 ? 'pos' : 'zero');
@@ -802,6 +977,7 @@
     saveState();
     renderItems();
     recalc();
+    switchStep('unidad');
   });
 
   // --- Cotización dólar MEP (venta) vía DolarAPI ---
@@ -891,78 +1067,129 @@
       '</body></html>';
   }
 
-  function generarPdfDesdeHtml(contenido, nombreArchivo){
-    var textoOriginal = els.pdfBtn.textContent;
-    els.pdfBtn.disabled = true;
-    els.pdfBtn.textContent = 'Generando PDF…';
+  // Genera el PDF y devuelve una Promise<Blob> — la usan tanto el botón de
+  // descargar como el de compartir, así el armado del PDF vive en un solo lugar.
+  function generarPdfBlob(){
+    return new Promise(function(resolve, reject){
+      var contenido = generarHtmlPresupuesto();
+      var iframe = document.createElement('iframe');
+      iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;height:auto;border:none;';
+      document.body.appendChild(iframe);
 
-    var iframe = document.createElement('iframe');
-    iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:800px;height:auto;border:none;';
-    document.body.appendChild(iframe);
+      function limpiar(){ if (iframe.parentNode) document.body.removeChild(iframe); }
 
-    function limpiar(){
-      if (iframe.parentNode) document.body.removeChild(iframe);
-      els.pdfBtn.disabled = false;
-      els.pdfBtn.textContent = textoOriginal;
-    }
+      iframe.onload = function(){
+        setTimeout(function(){
+          try{
+            var body = iframe.contentDocument.body;
+            html2canvas(body, {
+              scale: 1.5,
+              useCORS: true,
+              allowTaint: true,
+              backgroundColor: '#ffffff',
+              width: 800,
+              height: body.scrollHeight,
+              scrollX: 0,
+              scrollY: 0,
+              logging: false
+            }).then(function(canvas){
+              var A4_W = 595, A4_H = 842;
+              var imgHeight = (canvas.height * A4_W) / canvas.width;
+              var finalW = A4_W, finalH = imgHeight;
+              if (imgHeight > A4_H) {
+                var scale = A4_H / imgHeight;
+                finalW = A4_W * scale;
+                finalH = A4_H;
+              }
+              var offsetX = (A4_W - finalW) / 2;
+              var jsPDF = window.jspdf.jsPDF;
+              var pdf = new jsPDF({ orientation:'portrait', unit:'pt', format:'a4' });
+              var imgData = canvas.toDataURL('image/jpeg', 0.92);
+              pdf.addImage(imgData, 'JPEG', offsetX, 0, finalW, finalH);
+              var blob = pdf.output('blob');
+              limpiar();
+              resolve(blob);
+            }).catch(function(e){ limpiar(); reject(e); });
+          }catch(e){ limpiar(); reject(e); }
+        }, 500);
+      };
 
-    iframe.onload = function(){
-      setTimeout(function(){
-        try{
-          var body = iframe.contentDocument.body;
-          html2canvas(body, {
-            scale: 1.5,
-            useCORS: true,
-            allowTaint: true,
-            backgroundColor: '#ffffff',
-            width: 800,
-            height: body.scrollHeight,
-            scrollX: 0,
-            scrollY: 0,
-            logging: false
-          }).then(function(canvas){
-            var A4_W = 595, A4_H = 842;
-            var imgHeight = (canvas.height * A4_W) / canvas.width;
-            var finalW = A4_W, finalH = imgHeight;
-            if (imgHeight > A4_H) {
-              var scale = A4_H / imgHeight;
-              finalW = A4_W * scale;
-              finalH = A4_H;
-            }
-            var offsetX = (A4_W - finalW) / 2;
-            var jsPDF = window.jspdf.jsPDF;
-            var pdf = new jsPDF({ orientation:'portrait', unit:'pt', format:'a4' });
-            var imgData = canvas.toDataURL('image/jpeg', 0.92);
-            pdf.addImage(imgData, 'JPEG', offsetX, 0, finalW, finalH);
-            pdf.save(nombreArchivo);
-            limpiar();
-          }).catch(function(e){
-            console.error(e);
-            alert('No se pudo generar el PDF. Probá de nuevo.');
-            limpiar();
-          });
-        }catch(e){
-          console.error(e);
-          alert('No se pudo generar el PDF. Probá de nuevo.');
-          limpiar();
-        }
-      }, 500);
-    };
+      var blob0 = new Blob([contenido], { type:'text/html' });
+      var url = URL.createObjectURL(blob0);
+      iframe.src = url;
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 6000);
+    });
+  }
 
-    var blob = new Blob([contenido], { type:'text/html' });
-    var url = URL.createObjectURL(blob);
-    iframe.src = url;
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 6000);
+  function nombreArchivoPdf(){
+    var fecha = new Date().toISOString().slice(0, 10);
+    var slugCliente = (cliente.nombre || 'presupuesto').toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'presupuesto';
+    return 'presupuesto_' + slugCliente + '_' + fecha + '.pdf';
   }
 
   els.pdfBtn.addEventListener('click', function(){
     if (!items.length && !precioUsd) {
       if (!confirm('Todavía no cargaste datos de la operación. ¿Generar el PDF igual?')) return;
     }
-    var fecha = new Date().toISOString().slice(0, 10);
-    var slugCliente = (cliente.nombre || 'presupuesto').toLowerCase()
-      .replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'presupuesto';
-    generarPdfDesdeHtml(generarHtmlPresupuesto(), 'presupuesto_' + slugCliente + '_' + fecha + '.pdf');
+    var textoOriginal = els.pdfBtn.textContent;
+    els.pdfBtn.disabled = true;
+    els.pdfBtn.textContent = 'Generando PDF…';
+    generarPdfBlob().then(function(blob){
+      var nombre = nombreArchivoPdf();
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = nombre;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+      els.pdfBtn.disabled = false;
+      els.pdfBtn.textContent = textoOriginal;
+    }).catch(function(e){
+      console.error(e);
+      alert('No se pudo generar el PDF. Probá de nuevo.');
+      els.pdfBtn.disabled = false;
+      els.pdfBtn.textContent = textoOriginal;
+    });
+  });
+
+  els.shareBtn.addEventListener('click', function(){
+    if (!items.length && !precioUsd) {
+      if (!confirm('Todavía no cargaste datos de la operación. ¿Compartir igual?')) return;
+    }
+    var textoOriginal = els.shareBtn.textContent;
+    els.shareBtn.disabled = true;
+    els.shareBtn.textContent = 'Preparando…';
+    generarPdfBlob().then(function(blob){
+      var nombre = nombreArchivoPdf();
+      els.shareBtn.disabled = false;
+      els.shareBtn.textContent = textoOriginal;
+      var file;
+      try{ file = new File([blob], nombre, { type:'application/pdf' }); }catch(e){ file = null; }
+
+      if (file && navigator.canShare && navigator.canShare({ files:[file] })) {
+        navigator.share({
+          files:[file],
+          title:'Presupuesto BYD Yacopini',
+          text:'Presupuesto para ' + (cliente.nombre || 'el cliente') + ' — BYD Yacopini'
+        }).catch(function(){ /* el usuario canceló el share, no hacemos nada */ });
+      } else {
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = nombre;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+        toast('Este navegador no permite compartir el archivo directo — se descargó el PDF para compartirlo a mano.');
+      }
+    }).catch(function(e){
+      console.error(e);
+      alert('No se pudo generar el PDF para compartir. Probá de nuevo.');
+      els.shareBtn.disabled = false;
+      els.shareBtn.textContent = textoOriginal;
+    });
   });
 
   loadState();
